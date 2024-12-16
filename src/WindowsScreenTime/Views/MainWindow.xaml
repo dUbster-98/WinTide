@@ -1,0 +1,171 @@
+﻿<Window x:Class="WindowsScreenTime.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WindowsScreenTime"        
+        xmlns:units="clr-namespace:SmartDateControl.UI.Units;assembly=SmartDateControl" 
+        xmlns:vm="clr-namespace:WindowsScreenTime.ViewModels"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="720" Width="1080"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"    
+        AllowsTransparency="True" 
+        ResizeMode="CanResizeWithGrip"
+        Background="Transparent">
+
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <Style x:Key="RectStyle" TargetType="Rectangle">
+            <Setter Property="Fill" Value="#EEEEEE"/>
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="RadiusX" Value="10"/>
+            <Setter Property="RadiusY" Value="3"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Storyboard x:Key="GoHome_sb">
+            <DoubleAnimation Storyboard.TargetName="PART_rect"
+                                           Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                           To="0"
+                                           Duration="0:0:0.7">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseInOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Key="GoEdit_sb">
+            <DoubleAnimation Storyboard.TargetName="PART_rect"
+                                           Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                           To="55"
+                                           Duration="0:0:0.7">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseInOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Key="GoSettings_sb">
+            <DoubleAnimation Storyboard.TargetName="PART_rect"
+                                           Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                           To="555"
+                                           Duration="0:0:0.7">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseInOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </Window.Resources>
+    
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Border MouseDown="Window_MouseDown"
+                    CornerRadius="20,20,0,0"
+                    Background="#35343b">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 15 0">
+                    <Button x:Name="MinimizseButton"
+                            Style="{StaticResource MinimizeButton}" 
+                            Click="MinimizseButton_Click"/>
+                    <ToggleButton x:Name="MaximizeButton"
+                                  Style="{StaticResource MaximizeButton}"
+                                  Click="MaximizeButton_Click"/>
+                    <Button x:Name="CloseButton"
+                            Style="{StaticResource ExitButton}"
+                            Click="CloseButton_Click"/>
+
+                </StackPanel>                
+            </Border>                  
+        </Grid>
+        
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+
+            <Grid Grid.Column="0" HorizontalAlignment="Left" Background="Transparent">
+                <Border CornerRadius="0 0 0 20" Width="200" Background="#35343b">
+
+                    <DockPanel  Margin="10">
+
+                        <Button Style="{StaticResource MenuButton}"
+                                Command="{Binding MenuCommand}"
+                                DockPanel.Dock="Top"/>
+                        
+                        <RadioButton x:Name="PART_homeButton"
+                                     Style="{StaticResource HomeButton}"
+                                     Command="{Binding HomeCommand}"                                
+                                     DockPanel.Dock="Top">
+                            <RadioButton.Triggers>
+                                <EventTrigger RoutedEvent="RadioButton.Click">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard Storyboard="{StaticResource GoHome_sb}"/>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </RadioButton.Triggers>
+                        </RadioButton>
+
+                        <RadioButton x:Name="PART_editButton"
+                                     Style="{StaticResource EditButton}"
+                                     Command="{Binding EditCommand}"
+                                     DockPanel.Dock="Top">
+                            <RadioButton.Triggers>
+                                <EventTrigger RoutedEvent="RadioButton.Click">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard Storyboard="{StaticResource GoEdit_sb}"/>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </RadioButton.Triggers>
+                        </RadioButton>
+
+                        <units:SmartDate DockPanel.Dock="Top"/>
+
+                        <RadioButton x:Name="PART_settingsButton"
+                                     Style="{StaticResource SettingsButton}"
+                                     Command="{Binding SettingsCommand}"
+                                     VerticalAlignment="Bottom">
+                            <RadioButton.Triggers>
+                                <EventTrigger RoutedEvent="RadioButton.Click">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard Storyboard="{StaticResource GoSettings_sb}"/>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </RadioButton.Triggers>
+                        </RadioButton>
+                    </DockPanel>
+                </Border>
+
+                <Rectangle x:Name="PART_rect"
+                           Style="{StaticResource RectStyle}"
+                           HorizontalAlignment="Left"
+                           Margin="16,80,0,0">
+                    <Rectangle.RenderTransform>
+                        <TranslateTransform/>
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+
+            </Grid>
+
+
+            <Grid Grid.Column="1">
+                <Border Background="#2e2e30" CornerRadius="0 0 20 0">
+                    <ContentControl x:Name="Pages"
+                                    Content="{Binding CurrentView}"/>
+
+                </Border>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</Window>

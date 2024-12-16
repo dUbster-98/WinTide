@@ -5,9 +5,11 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsScreenTime", "WindowsScreenTime\WindowsScreenTime.csproj", "{8DA7100D-1EA1-4287-A884-0EE860890AFF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartDateControl", "..\WPF_UI_Practice\DatePicker\SmartDateControl\SmartDateControl.csproj", "{CBF06CA5-3A35-4EE9-B8C8-F8750EEA9F84}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UIComponents", "UIComponents", "{ED377FB9-EF09-430A-AF3E-3CFBC9A40628}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfCustomControlLibrary1", "WpfCustomControlLibrary1\WpfCustomControlLibrary1.csproj", "{0FD5A23A-028F-4732-BAC6-7B5BA7E9AF82}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{503901ED-D130-4A91-826D-C90407E83A0D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartDateControl", "UIComponents\DatePicker\SmartDateControl\SmartDateControl.csproj", "{816B6699-D0F6-468F-B088-10623D1C4768}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,17 +21,17 @@ Global
 		{8DA7100D-1EA1-4287-A884-0EE860890AFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DA7100D-1EA1-4287-A884-0EE860890AFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DA7100D-1EA1-4287-A884-0EE860890AFF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CBF06CA5-3A35-4EE9-B8C8-F8750EEA9F84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CBF06CA5-3A35-4EE9-B8C8-F8750EEA9F84}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CBF06CA5-3A35-4EE9-B8C8-F8750EEA9F84}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CBF06CA5-3A35-4EE9-B8C8-F8750EEA9F84}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0FD5A23A-028F-4732-BAC6-7B5BA7E9AF82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0FD5A23A-028F-4732-BAC6-7B5BA7E9AF82}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0FD5A23A-028F-4732-BAC6-7B5BA7E9AF82}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0FD5A23A-028F-4732-BAC6-7B5BA7E9AF82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{816B6699-D0F6-468F-B088-10623D1C4768}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{816B6699-D0F6-468F-B088-10623D1C4768}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{816B6699-D0F6-468F-B088-10623D1C4768}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{816B6699-D0F6-468F-B088-10623D1C4768}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8DA7100D-1EA1-4287-A884-0EE860890AFF} = {503901ED-D130-4A91-826D-C90407E83A0D}
+		{816B6699-D0F6-468F-B088-10623D1C4768} = {ED377FB9-EF09-430A-AF3E-3CFBC9A40628}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {81E311C2-3308-4503-B07F-E04E57DA862C}
