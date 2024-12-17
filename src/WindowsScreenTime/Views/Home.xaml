@@ -4,18 +4,64 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WindowsScreenTime.Views"
+             xmlns:units="clr-namespace:SmartDateControl.UI.Units;assembly=SmartDateControl"
              xmlns:vm="clr-namespace:WindowsScreenTime.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="685" d:DesignWidth="860">
 
     <UserControl.DataContext>
         <vm:HomeViewModel/>
     </UserControl.DataContext>
-    
-    <Grid>
-        <Grid Background="AliceBlue"
-              Width="333"
-              Height="333">
+
+    <UserControl.Resources>
+
+        
+        <Style TargetType="Path">
+            <Setter Property="Data" Value="M8,14V18L2,12L8,6V10H16V6L22,12L16,18V14H8Z"/>
+            <Setter Property="Fill" Value="#6449FC"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="#2e2e30">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid Grid.Column="1" Background="AliceBlue">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="5*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center">
+                    <Button Style="{StaticResource DayButton}"/>
+                    <Button Style="{StaticResource WeekButton}"/>
+                    <Button Style="{StaticResource MonthButton}"/>
+                </StackPanel>
+            </Grid>
+            
+            <Grid Grid.Row="1">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                    <TextBlock Text="기간별 보기" Style="{StaticResource Text_Style}"
+                               Foreground="Black"/>
+                    <units:SmartDate Width="120"/>
+                    <Path Margin="10 0 10 0"
+                          Width="30"
+                          Stretch="Uniform"/>
+                    <units:SmartDate Width="120"/>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="1">
+                
+            </Grid>
             
         </Grid>
             

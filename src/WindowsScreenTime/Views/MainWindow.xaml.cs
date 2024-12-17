@@ -25,12 +25,13 @@ namespace WindowsScreenTime
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Border _upperBar;
 
         public MainWindow()
         {
             InitializeComponent();
             MaxHeight = SystemParameters.WorkArea.Height;
+            PART_homeButton.IsChecked = true;
+            PART_menuButton.IsChecked = true;
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -62,6 +63,71 @@ namespace WindowsScreenTime
         private void MinimizseButton_Click(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (this.ActualWidth < 700)
+            {
+                VisualStateManager.GoToElementState(this, "SmallWindow", true);
+                PART_menuButton.IsChecked = false;
+            }
+            else
+            {
+                VisualStateManager.GoToElementState(this, "LargeWindow", true);
+                PART_menuButton.IsChecked = true;
+            }
+
+            if (PART_settingsButton.IsChecked == true)
+            {
+                var buttonY = PART_settingsButton.TranslatePoint(new System.Windows.Point(0, 0), this).Y;
+
+                Storyboard storyboard = (Storyboard)FindResource("GoSettings_sb");
+
+                foreach (var timeline in storyboard.Children)
+                {
+                    if (timeline is DoubleAnimation animation)
+                    {
+                        animation.To = buttonY - 100;
+                        animation.Duration = new Duration(TimeSpan.FromMilliseconds(10));
+                    }
+                }
+                storyboard.Begin(this);
+            }
+        }
+
+        private void PART_settingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var buttonY = PART_settingsButton.TranslatePoint(new System.Windows.Point(0, 0), this).Y;
+            // Storyboard 가져오기
+            Storyboard storyboard = (Storyboard)FindResource("GoSettings_sb");
+
+            // Storyboard에서 DoubleAnimation 가져오기
+            foreach (var timeline in storyboard.Children)
+            {
+                if (timeline is DoubleAnimation animation)
+                {
+                    // 동적으로 To 값 설정
+                    animation.To = buttonY - 100;
+                }
+            }
+
+            // 애니메이션 실행
+            storyboard.Begin(this);
+        }
+
+        private void PART_menuButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (PART_menuButton.IsChecked == true)
+            {
+                Storyboard storyboard = (Storyboard)FindResource("OpenMenu_sb");
+                storyboard.Begin(this);
+            }
+            else
+            {
+                Storyboard storyboard = (Storyboard)FindResource("CloseMenu_sb");
+                storyboard.Begin(this);
+            }
         }
     }
 }
