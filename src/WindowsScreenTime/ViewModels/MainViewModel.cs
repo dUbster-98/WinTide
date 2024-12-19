@@ -11,14 +11,14 @@ namespace WindowsScreenTime.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
-        private object _currentView;
+        private object? _currentView;
         public object CurrentView
         {
             get => _currentView;
             set => SetProperty(ref _currentView, value);
         }
 
-        public ICommand _menuCommand;
+        public ICommand? _menuCommand;
         public ICommand MenuCommand
         {
             get
@@ -28,7 +28,7 @@ namespace WindowsScreenTime.ViewModels
             }
         }
 
-        public ICommand _homeCommand;
+        public ICommand? _homeCommand;
         public ICommand HomeCommand
         {
             get
@@ -38,7 +38,7 @@ namespace WindowsScreenTime.ViewModels
             }
         }
 
-        public ICommand _editCommand;
+        public ICommand? _editCommand;
         public ICommand EditCommand
         {
             get
@@ -48,7 +48,7 @@ namespace WindowsScreenTime.ViewModels
             }
         }
 
-        public ICommand _settingsCommand;
+        public ICommand? _settingsCommand;
         public ICommand SettingsCommand
         {
             get
@@ -61,7 +61,7 @@ namespace WindowsScreenTime.ViewModels
 
         public MainViewModel()
         {
-
+            CurrentView = new HomeViewModel();
         }
 
         private void GoMenu()

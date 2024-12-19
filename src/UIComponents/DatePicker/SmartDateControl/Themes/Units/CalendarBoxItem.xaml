@@ -30,6 +30,9 @@
                             <Setter Property="Background" Value="#FFFFFF"/>
                             <Setter Property="Foreground" Value="#000000"/>
                         </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#AAAAAA"/>
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

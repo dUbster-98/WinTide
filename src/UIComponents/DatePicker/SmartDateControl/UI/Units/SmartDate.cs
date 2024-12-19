@@ -20,9 +20,7 @@ namespace SmartDateControl.UI.Units
     {
         private Popup _popup;
         private CalendarSwitch _switch;
-        private CalendarBox _listBox;
-
-
+        private CalendarBox _listbox;
 
         public bool KeepPopupOpen
         {
@@ -30,7 +28,6 @@ namespace SmartDateControl.UI.Units
             set { SetValue(KeepPopupOpenProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for KeepPopupOpen.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty KeepPopupOpenProperty =
             DependencyProperty.Register("KeepPopupOpen", typeof(bool), typeof(SmartDate), new PropertyMetadata(true));
 
@@ -42,9 +39,9 @@ namespace SmartDateControl.UI.Units
             set { SetValue(CurrentMonthProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for CurrentMonth.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CurrentMonthProperty =
             DependencyProperty.Register("CurrentMonth", typeof(DateTime), typeof(SmartDate), new PropertyMetadata(null));
+
 
 
         public DateTime? SelectedDate
@@ -61,23 +58,23 @@ namespace SmartDateControl.UI.Units
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(SmartDate), new FrameworkPropertyMetadata(typeof(SmartDate)));
         }
-
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
             _popup = (Popup)GetTemplateChild("PART_Popup");
             _switch = (CalendarSwitch)GetTemplateChild("PART_Switch");
-            _listBox = (CalendarBox)GetTemplateChild("PART_ListBox");
+            _listbox = (CalendarBox)GetTemplateChild("PART_ListBox");
             ChevronButton leftButton = (ChevronButton)GetTemplateChild("PART_Left");
             ChevronButton rightButton = (ChevronButton)GetTemplateChild("PART_Right");
 
             _popup.Closed += _popup_Closed;
             _switch.Click += _switch_Click;
-            _listBox.MouseLeftButtonUp += _listBox_MouseLeftButtonUp;
+            _listbox.MouseLeftButtonUp += _listbox_MouseLeftButtonUp;
 
             leftButton.Click += (s, e) => MoveMonthClick(-1);
             rightButton.Click += (s, e) => MoveMonthClick(1);
+
         }
 
         private void MoveMonthClick(int month)
@@ -85,7 +82,7 @@ namespace SmartDateControl.UI.Units
             GenerateCalendar(CurrentMonth.AddMonths(month));
         }
 
-        private void _popup_Closed(object? sender, EventArgs e)
+        private void _popup_Closed(object sender, EventArgs e)
         {
             _switch.IsChecked = IsMouseOver;
         }
@@ -96,13 +93,13 @@ namespace SmartDateControl.UI.Units
             {
                 _popup.IsOpen = true;
 
-                GenerateCalendar(SelectedDate != null ? SelectedDate.Value : DateTime.Now);
+                GenerateCalendar(SelectedDate ?? DateTime.Now);     // SelectedDate가 Null이면 datetime.Now
             }
         }
 
-        private void _listBox_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void _listbox_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (_listBox.SelectedItem is CalendarBoxItem selected)
+            if (_listbox.SelectedItem is CalendarBoxItem selected)
             {
                 SelectedDate = selected.Date;
                 GenerateCalendar(selected.Date);
@@ -110,24 +107,20 @@ namespace SmartDateControl.UI.Units
                 _popup.IsOpen = KeepPopupOpen;
             }
         }
-
         private void GenerateCalendar(DateTime current)
         {
-            if (current.ToString("yyyyMM") == CurrentMonth.ToString("yyyyMM"))
-            {
-                return;
-            }
+            if (current.ToString("yyyyMM") == CurrentMonth.ToString("yyyyMM")) return;
 
             CurrentMonth = current;
-            _listBox.Items.Clear();
-            DateTime firstDayOfMonth = new(current.Year, current.Month, 1);
-            DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+            _listbox.Items.Clear();
+            DateTime fDayOfMonth = new(current.Year, current.Month, 1);
+            DateTime lDayOfMonth = fDayOfMonth.AddMonths(1).AddDays(-1);
 
-            int fOffset = (int)firstDayOfMonth.DayOfWeek;
-            int lOffset = 6 - (int)lastDayOfMonth.DayOfWeek;
+            int fOffset = (int)fDayOfMonth.DayOfWeek;
+            int lOffset = 6 - (int)lDayOfMonth.DayOfWeek;
 
-            DateTime fDay = firstDayOfMonth.AddDays(-fOffset);
-            DateTime lDay = lastDayOfMonth.AddDays(lOffset);
+            DateTime fDay = fDayOfMonth.AddDays(-fOffset);
+            DateTime lDay = lDayOfMonth.AddDays(lOffset);
 
             for (DateTime day = fDay; day <= lDay; day = day.AddDays(1))
             {
@@ -135,13 +128,13 @@ namespace SmartDateControl.UI.Units
                 boxItem.Date = day;
                 boxItem.DateFormat = day.ToString("yyyyMMdd");
                 boxItem.Content = day.Day;
-                boxItem.IsCurrentMonth = (day.Month == current.Month ? true : false);
+                boxItem.IsCurrentMonth = day.Month == current.Month;
 
-                _listBox.Items.Add(boxItem);
+                _listbox.Items.Add(boxItem);
             }
             if (SelectedDate != null)
             {
-                _listBox.SelectedValue = SelectedDate.Value.ToString("yyyyMMdd");
+                _listbox.SelectedValue = SelectedDate.Value.ToString("yyyyMMdd");
             }
         }
     }

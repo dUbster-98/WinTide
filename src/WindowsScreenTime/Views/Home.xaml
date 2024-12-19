@@ -17,51 +17,98 @@
 
         
         <Style TargetType="Path">
-            <Setter Property="Data" Value="M8,14V18L2,12L8,6V10H16V6L22,12L16,18V14H8Z"/>
+            <Setter Property="Data" Value="M5.59,7.41L7,6L13,12L7,18L5.59,16.59L10.17,12L5.59,7.41M11.59,7.41L13,6L19,12L13,18L11.59,16.59L16.17,12L11.59,7.41Z"/>
             <Setter Property="Fill" Value="#6449FC"/>
         </Style>
     </UserControl.Resources>
 
     <Grid Background="#2e2e30">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="8*"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="30"/>
         </Grid.ColumnDefinitions>
         
-        <Grid Grid.Column="1" Background="AliceBlue">
+        <Grid Grid.Column="0" Background="AliceBlue">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="5*"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center">
-                    <Button Style="{StaticResource DayButton}"/>
-                    <Button Style="{StaticResource WeekButton}"/>
-                    <Button Style="{StaticResource MonthButton}"/>
-                </StackPanel>
+                <UniformGrid Columns="3" HorizontalAlignment="Center" Margin="0 0 0 0">
+                    <Button Style="{StaticResource DayButton}"
+                            Margin="10 0 0 0"
+                            Command="{Binding SetPeriodDayCommand}"/>
+                    <Button Style="{StaticResource WeekButton}"
+                            Command="{Binding SetPeriodWeekCommand}"/>
+                    <Button Style="{StaticResource MonthButton}"
+                            Command="{Binding SetPeriodMonthCommand}"/>
+                </UniformGrid>
             </Grid>
             
             <Grid Grid.Row="1">
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
-                    <TextBlock Text="기간별 보기" Style="{StaticResource Text_Style}"
-                               Foreground="Black"/>
-                    <units:SmartDate Width="120"/>
-                    <Path Margin="10 0 10 0"
-                          Width="30"
-                          Stretch="Uniform"/>
-                    <units:SmartDate Width="120"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="0.5*"/>
+
+                </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                               HorizontalAlignment="Right"
+                               Text="기간별 보기" Style="{StaticResource Text_Style}"
+                               Foreground="Black"
+                               Margin="0 5 20 0"/>
+                    <units:SmartDate 
+                        Grid.Column="1"
+                        Width="auto"
+                        HorizontalAlignment="Stretch"
+                        TextBlock.FontSize="15"
+                        SelectedDate="{Binding StartDate, Mode=TwoWay}"/>
+                    <Path 
+                        Grid.Column="2"
+                        Margin="10 0 10 0"
+                        Width="25"
+                        Stretch="Uniform"/>
+                    <units:SmartDate 
+                        Grid.Column="3"
+                        Width="auto"
+                        HorizontalAlignment="Stretch"
+                        TextBlock.FontSize="15"
+                        SelectedDate="{Binding EndDate, Mode=TwoWay}"/>
+            </Grid>
+                                  
+            <Grid Grid.Row="2">
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBox x:Name="ProcessNametb" Width="200" Margin="5"/>
+                    <Button Content="Add Process" Command="{Binding AddProcessCommand}"
+                            CommandParameter="{Binding Text, ElementName=ProcessNametb}"
+                            Margin="5"/>
+
                 </StackPanel>
             </Grid>
-            <Grid Grid.Row="1">
-                
-            </Grid>
+
+            <DataGrid Grid.Row="3"
+                      ItemsSource="{Binding ProcessList}"
+                      AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Process Name" Binding="{Binding ProcessName}"/>
+                    <DataGridTextColumn Header="Usage Time" Binding="{Binding UsageTime}"/>
+                    <DataGridTemplateColumn Header="Actions">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Remove" 
+                                        Command="{Binding RemoveProcessCommand,
+                                                        RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>                
+            </DataGrid>
             
         </Grid>
             

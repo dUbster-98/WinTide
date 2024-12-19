@@ -6,15 +6,20 @@
     <Style TargetType="{x:Type TextBlock}" x:Key="MonthStyle">
         <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=CurrentMonth, StringFormat={}{0:yyyy.MM}}"/>
         <Setter Property="Foreground" Value="#FFFFFF"/>
-        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontSize" Value="15"/>
         <Setter Property="Margin" Value="10"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
 
+    <Style TargetType="{x:Type TextBlock}">
+        
+    </Style>
+
     <Style TargetType="{x:Type units:SmartDate}">
         <Setter Property="Background" Value="#151515"/>
         <Setter Property="Height" Value="30"/>
+        <Setter Property="TextBlock.Text" Value="gg"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type units:SmartDate}">
@@ -60,7 +65,7 @@
                                         </UniformGrid>
 
                                         <units:CalendarBox x:Name="PART_ListBox" Grid.Row="2" Grid.ColumnSpan="7">
-                                            <units:CalendarBoxItem>1</units:CalendarBoxItem>
+                                            <units:CalendarBoxItem/>
                                         </units:CalendarBox>
                                     </Grid>
                                 </Border>
