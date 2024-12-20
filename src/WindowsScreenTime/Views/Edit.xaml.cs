@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WindowsScreenTime.ViewModels;
 
 namespace WindowsScreenTime.Views
 {
@@ -23,6 +24,7 @@ namespace WindowsScreenTime.Views
         public Edit()
         {
             InitializeComponent();
+            DataContext = new EditViewModel();
         }
     }
 }

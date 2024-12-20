@@ -2,26 +2,32 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace WindowsScreenTime.Models
 {
-    public class ProcessUsage : ObservableObject
+    public partial class ProcessUsage : ObservableObject
     {
-        private string _processName;
-        public string ProcessName
-        {
-            get => _processName; 
-            set => SetProperty(ref _processName, value);
-        }
+        [ObservableProperty]
+        private BitmapImage? processIcon;
 
-        public int _usageTime;
-        public int UsageTime
-        {
-            get => _usageTime;
-            set => SetProperty(ref _usageTime, value);
-        }
+        [ObservableProperty]
+        private string? processName;
+
+        [ObservableProperty]
+        private int usageTime;
+
+        [ObservableProperty]
+        private double ramUsagePer;
+
+        [ObservableProperty]
+        private long memorySize;
+
+        [ObservableProperty]
+        private string? executablePath;
     }
 }

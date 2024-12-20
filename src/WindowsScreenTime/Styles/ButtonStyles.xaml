@@ -1,6 +1,19 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <Style x:Key="ChevronRight" TargetType="Path">
+        <Setter Property="Data" Value="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M10,18L16,12L10,6L8.6,7.4L13.2,12L8.6,16.6L10,18Z"/>
+    </Style>
+    <Style x:Key="ChevronLeft" TargetType="Path">
+        <Setter Property="Data" Value="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M15.4,16.6L10.8,12L15.4,7.4L14,6L8,12L14,18L15.4,16.6Z"/>
+    </Style>
+
+    <Style x:Key="MyFont_Style" TargetType="Control">
+        <Setter Property="FontFamily" Value="/Resources/Fonts/#레시피코리아 Medium"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontWeight" Value="Light"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
 
     <Style x:Key="Text_Style" TargetType="TextBlock">
         <Setter Property="FontFamily"
@@ -386,6 +399,54 @@
                             <Setter TargetName="back" Property="Background" Value="#6449FC"/>
                             <Setter TargetName="text" Property="Foreground" Value="#FFFFFF"/>
                             <Setter TargetName="path" Property="Fill" Value="#FFFFFF"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ProcessAddButton" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Width" Value="50"/>
+        <Setter Property="Height" Value="50"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Background="{TemplateBinding Background}" x:Name="back" Width="{TemplateBinding Width}" Height="30" CornerRadius="10">
+                        <Path x:Name="path" Style="{StaticResource ChevronRight}"
+                              Fill="#9f93f3" Stretch="Uniform"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="path" Property="Fill" Value="#6449fc"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="path" Property="Fill" Value="#3e21e3"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ProcessRemoveButton" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Width" Value="50"/>
+        <Setter Property="Height" Value="50"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Background="{TemplateBinding Background}" x:Name="back" Width="{TemplateBinding Width}" Height="30" CornerRadius="10">
+                        <Path x:Name="path" Style="{StaticResource ChevronLeft}"
+                              Fill="#f2a896" Stretch="Uniform"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="path" Property="Fill" Value="#ff8f79"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="path" Property="Fill" Value="#da6953"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

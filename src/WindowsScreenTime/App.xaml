@@ -4,9 +4,13 @@
              xmlns:local="clr-namespace:WindowsScreenTime"
              xmlns:vm="clr-namespace:WindowsScreenTime.ViewModels"
              xmlns:view="clr-namespace:WindowsScreenTime.Views"
+             xmlns:cvts="clr-namespace:WindowsScreenTime.Converters"
              StartupUri="/Views/MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
+            
+            <cvts:BytesToMBConverter x:Key="BytesToMBConverter"/>
+            
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/ButtonStyles.xaml"/>
 

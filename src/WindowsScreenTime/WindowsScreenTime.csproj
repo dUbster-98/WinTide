@@ -36,13 +36,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\UIComponents\DatePicker\SmartDateControl\SmartDateControl.csproj" />
+    <ProjectReference Include="..\UIComponents\NavigationBar\NavigationBar.csproj" />
+    <ProjectReference Include="..\UIComponents\TreeView\Cupertino.Support\Cupertino.Support.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageReference Include="SQLite" Version="3.13.0" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
+    <PackageReference Include="System.Management" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>

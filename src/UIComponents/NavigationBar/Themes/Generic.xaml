@@ -1,0 +1,122 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:NavigationBar"
+    xmlns:james="https://jamesnet.dev/xaml/presentation">
+
+    <Geometry x:Key="ArcData">
+        M0,0 L75,0 C71.625885,0 68.710945,1.9659691 67.338196,4.8148994 L67.299286,4.9009552 67.224083,4.9009552 67.185059,5.0605125 67.110825,5.3363495 67.015778,5.5774155 C66.872772,5.9679756 66.757614,6.3719559 66.672691,6.786953 L66.666206,6.8232727 66.448029,7.4920692 C62.27446,19.432671 50.889938,28 37.5,28 24.11006,28 12.725543,19.432671 8.5519695,7.4920692 L8.3337936,6.8232689 8.3273087,6.786953 C8.2423897,6.3719559 8.1272259,5.9679756 7.9842219,5.5774155 L7.8891735,5.3363495 7.8149424,5.0605125 7.7759209,4.9009552 7.7007127,4.9009552 7.6618085,4.8148994 C6.2890534,1.9659691 3.3741148,0 0,0 z
+    </Geometry>
+
+
+    <Storyboard x:Key="Selected">
+        <james:ThickItem Mode="CubicEaseInOut" TargetName="icon" Duration="0:0:0.5" Property="Margin" To="0,-20,0,0"/>
+        <james:ColorItem Mode="CubicEaseInOut" TargetName="icon" Duration="0:0:0.5" Property="Fill.Color" To="#333333"/>
+
+    </Storyboard>
+    
+    <Storyboard x:Key="UnSelected">
+        <james:ThickItem Mode="CubicEaseInOut" TargetName="icon" Duration="0:0:0.5" Property="Margin" To="0,0,0,0"/>
+        <james:ColorItem Mode="CubicEaseInOut" TargetName="icon" Duration="0:0:0.5" Property="Fill.Color" To="#44333333"/>
+    </Storyboard>
+
+    <Style TargetType="{x:Type Path}" x:Key="Icon">
+        <Setter Property="Data" Value="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=Tag}"/>
+        <Setter Property="Width" Value="28"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="Margin" Value="0,0,0,0"/>
+        <Setter Property="Fill" Value="#44333333"/>
+    </Style>
+
+    <Style TargetType="{x:Type TextBlock}" x:Key="Name">
+        <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=Content}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="#44333333"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Margin" Value="0,42,0,0"/>
+    </Style>
+
+    <Style TargetType="{x:Type ListBoxItem}" x:Key="MagicBarItem">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <Grid Background="{TemplateBinding Background}">
+                        <Path x:Name="icon" Style="{StaticResource Icon}" Width="30" Stretch="Uniform"/>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource Selected}"/>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard Storyboard="{StaticResource UnSelected}"/>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Path}" x:Key="Arc">
+        <Setter Property="Data" Value="{StaticResource ArcData}"/>
+        <Setter Property="Width" Value="100"/>
+        <Setter Property="Height" Value="100"/>
+        <Setter Property="Fill" Value="#ecf2f9"/>
+        <Setter Property="Margin" Value="-10,18,-10,0"/>
+    </Style>
+    
+    <Style TargetType="{x:Type Border}" x:Key="Bar">
+        <Setter Property="Background" Value="#d0d8e1"/>
+        <Setter Property="Margin" Value="18,30,18,0"/>
+        <Setter Property="CornerRadius" Value="10"/>
+    </Style>
+
+    <Style TargetType="{x:Type Grid}" x:Key="Circle">
+        <Setter Property="Width" Value="55"/>
+        <Setter Property="Height" Value="55"/>
+        <Setter Property="Canvas.Left" Value="-100"/>
+    </Style>
+
+    <Style TargetType="{x:Type local:MagicBar}">
+        <Setter Property="ItemContainerStyle" Value="{StaticResource MagicBarItem}"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="UseLayoutRounding" Value="True"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Width" Value="440"/>
+        <Setter Property="Height" Value="60"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:MagicBar}">
+                    <Grid Background="{TemplateBinding Background}">
+                        <Grid.Clip>
+                            <RectangleGeometry Rect="20,0,440,100"/> <!-- 써클을 안보이게 하는 코드이다 -->
+                        </Grid.Clip>
+                                                
+                        <Border Style="{StaticResource Bar}"/>
+                        <Canvas Margin="32,12,0,0">
+                            <Grid x:Name="PART_Circle" Style="{StaticResource Circle}">
+                                <Path Style="{StaticResource Arc}"/>
+                                <Ellipse Fill="#F5f5f5"/>
+                                <Ellipse Fill="CadetBlue" Margin="5"/>
+                            </Grid>
+                        </Canvas>
+                        <ItemsPresenter Margin="20,30,20,0"/>
+
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="5"/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

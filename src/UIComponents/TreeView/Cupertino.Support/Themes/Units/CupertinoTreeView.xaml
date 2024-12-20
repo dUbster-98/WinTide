@@ -5,7 +5,6 @@
 
 
     <Style TargetType="{x:Type units:CupertinoTreeView}">
-        <Setter Property="Margin" Value="100"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="BorderBrush" Value="#AAAAAA"/>
         <Setter Property="Template">
@@ -22,8 +21,8 @@
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="auto" MinWidth="200" SharedSizeGroup="Path"/>
-                                <ColumnDefinition Width="auto" MinWidth="100" SharedSizeGroup="Size"/>
+                                <ColumnDefinition Width="auto"  SharedSizeGroup="Path"/>
+                                <ColumnDefinition Width="auto"  SharedSizeGroup="Size"/>
                             </Grid.ColumnDefinitions>
                             <Label Grid.Column="1" Content="Path" Background="#FAFAFA" Padding="10" BorderBrush="#AAAAAA" BorderThickness="0 0 1 1"/>
                             <Label Grid.Column="0" Content="Name" Background="#FAFAFA" Padding="10" BorderBrush="#AAAAAA" BorderThickness="0 0 1 1"/>

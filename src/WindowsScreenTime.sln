@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{503901ED-D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartDateControl", "UIComponents\DatePicker\SmartDateControl\SmartDateControl.csproj", "{816B6699-D0F6-468F-B088-10623D1C4768}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NavigationBar", "UIComponents\NavigationBar\NavigationBar.csproj", "{ABA9B163-AB4C-47FB-8283-3C501E84539D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cupertino.Support", "UIComponents\TreeView\Cupertino.Support\Cupertino.Support.csproj", "{4DC0C47F-1640-4222-87A6-D4F194D91D90}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,14 @@ Global
 		{816B6699-D0F6-468F-B088-10623D1C4768}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{816B6699-D0F6-468F-B088-10623D1C4768}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{816B6699-D0F6-468F-B088-10623D1C4768}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABA9B163-AB4C-47FB-8283-3C501E84539D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABA9B163-AB4C-47FB-8283-3C501E84539D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABA9B163-AB4C-47FB-8283-3C501E84539D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABA9B163-AB4C-47FB-8283-3C501E84539D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DC0C47F-1640-4222-87A6-D4F194D91D90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DC0C47F-1640-4222-87A6-D4F194D91D90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DC0C47F-1640-4222-87A6-D4F194D91D90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DC0C47F-1640-4222-87A6-D4F194D91D90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +44,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8DA7100D-1EA1-4287-A884-0EE860890AFF} = {503901ED-D130-4A91-826D-C90407E83A0D}
 		{816B6699-D0F6-468F-B088-10623D1C4768} = {ED377FB9-EF09-430A-AF3E-3CFBC9A40628}
+		{ABA9B163-AB4C-47FB-8283-3C501E84539D} = {ED377FB9-EF09-430A-AF3E-3CFBC9A40628}
+		{4DC0C47F-1640-4222-87A6-D4F194D91D90} = {ED377FB9-EF09-430A-AF3E-3CFBC9A40628}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {81E311C2-3308-4503-B07F-E04E57DA862C}

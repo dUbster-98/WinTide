@@ -24,6 +24,7 @@ namespace WindowsScreenTime.ViewModels
 
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
         private System.Timers.Timer monitoringTimer;
+        private readonly double totalRam;
 
         public HomeViewModel() 
         {
@@ -60,18 +61,10 @@ namespace WindowsScreenTime.ViewModels
             }
         }
 
-        public ICommand? _removeProcessCommand;
-        public ICommand RemoveProcessCommand
+        [RelayCommand]
+        public void RemoveProcess(ProcessUsage processName)
         {
-            get
-            {
-                return _removeProcessCommand ??
-                    (_removeProcessCommand = new RelayCommand<ProcessUsage>(RemoveProcess));      // 1. viewmodel 변경시 커맨드 실행
-            }
-        }
-        private void RemoveProcess(ProcessUsage process)
-        {
-            ProcessList.Remove(process);
+            ProcessList.Remove(processName);
         }
 
         [RelayCommand]

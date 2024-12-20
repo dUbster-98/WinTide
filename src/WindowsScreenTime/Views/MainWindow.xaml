@@ -192,9 +192,7 @@
                             </EventTrigger>
                         </RadioButton.Triggers>
                     </RadioButton>
-
-                    <units:SmartDate DockPanel.Dock="Top"/>
-
+                    
                     <RadioButton x:Name="PART_settingsButton"
                                      Width="200"
                                      Style="{StaticResource SettingsButton}"
@@ -224,7 +222,7 @@
 
             <Grid Grid.Column="1">
                 <Border x:Name="ContentBorder"
-                        Background="#2e2e30" CornerRadius="0 0 20 0"
+                        Background="#e3edf7" CornerRadius="0 0 20 0"
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <ContentControl x:Name="Pages"
                                     Content="{Binding CurrentView}"/>
