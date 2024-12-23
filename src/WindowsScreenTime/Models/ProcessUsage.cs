@@ -12,22 +12,22 @@ namespace WindowsScreenTime.Models
 {
     public partial class ProcessUsage : ObservableObject
     {
-        [ObservableProperty]
-        private BitmapImage? processIcon;
 
-        [ObservableProperty]
-        private string? processName;
+        public BitmapImage? ProcessIcon { get; set; }
 
-        [ObservableProperty]
-        private int usageTime;
 
-        [ObservableProperty]
-        private double ramUsagePer;
+        public string? ProcessName { get; set; }
 
-        [ObservableProperty]
-        private long memorySize;
 
-        [ObservableProperty]
-        private string? executablePath;
+        public int UsageTime { get; set; }
+
+
+        public double RamUsagePer { get; set; }
+
+
+        public long MemorySize { get; set; }
+
+
+        public string? ExecutablePath { get; set; }
     }
 }

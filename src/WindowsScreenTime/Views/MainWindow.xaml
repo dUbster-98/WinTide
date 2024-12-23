@@ -16,10 +16,6 @@
         
         SizeChanged="Window_SizeChanged">
 
-    <Window.DataContext>
-        <vm:MainViewModel/>
-    </Window.DataContext>
-
     <Window.Resources>
         <Style x:Key="RectStyle" TargetType="Rectangle">
             <Setter Property="Fill" Value="#EEEEEE"/>

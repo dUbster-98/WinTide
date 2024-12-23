@@ -10,11 +10,6 @@
              xmlns:tree="clr-namespace:Cupertino.Support.UI.Units;assembly=Cupertino.Support"
              mc:Ignorable="d" 
              d:DesignHeight="685" d:DesignWidth="860">
-
-    <UserControl.DataContext>
-        <vm:EditViewModel/>
-    </UserControl.DataContext>
-
     <Grid Background="#e3edf7">
 
         <Grid.RowDefinitions>
@@ -37,28 +32,41 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
 
-            <DataGrid Grid.Column="0" Style="{StaticResource MyFont_Style}"
-                      ItemsSource="{Binding ProcessList}" AutoGenerateColumns="False" Margin="10 0 0 0" Width="auto"
-                      SelectedItem="{Binding SelectedProcess}">
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn Width="auto">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Image Source="{Binding ProcessIcon}" Width="12" Height="12" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                        <DataGridTemplateColumn.CellStyle>
-                            <Style TargetType="DataGridCell">
-                                <Setter Property="BorderThickness" Value="0"/>
-                            </Style>
-                        </DataGridTemplateColumn.CellStyle>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Process Name" Binding="{Binding ProcessName}"/>
-                    <DataGridTextColumn Header="Memory(MB)" Binding="{Binding MemorySize, Converter={StaticResource BytesToMBConverter}}" />
-                    <DataGridTextColumn Header="Usage (%)" Binding="{Binding RamUsagePer, StringFormat={}{0:F2}}" />
-                    <DataGridTextColumn Header="Path" Binding="{Binding ExecutablePath}"/>
-                </DataGrid.Columns>
-            </DataGrid>
+            <Grid Grid.Column="0">
+                <DataGrid
+                    Style="{StaticResource MyFont_Style}"
+                    ItemsSource="{Binding ProcessList, IsAsync=True}"
+                    SelectedItem="{Binding SelectedProcess}"
+                    Margin="10 0 0 0" Width="auto"
+                    VerticalAlignment="Top"
+                    IsReadOnly="True"
+                    AutoGenerateColumns="False"
+                    EnableRowVirtualization="True"
+                    EnableColumnVirtualization="True"
+                    VirtualizingPanel.IsVirtualizing="True"
+                    VirtualizingPanel.VirtualizationMode="Recycling"
+                    RowDetailsVisibilityMode="Collapsed">
+                    
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Image Source="{Binding ProcessIcon}" Width="12" Height="12" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                            <DataGridTemplateColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                            </DataGridTemplateColumn.CellStyle>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Process Name" Binding="{Binding ProcessName}"/>
+                        <DataGridTextColumn Header="Memory(MB)" Binding="{Binding MemorySize, Converter={StaticResource BytesToMBConverter}}" />
+                        <DataGridTextColumn Header="Usage (%)" Binding="{Binding RamUsagePer, StringFormat={}{0:F2}}" />
+                        <DataGridTextColumn Header="Path" Binding="{Binding ExecutablePath}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
 
             <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Button Style="{StaticResource ProcessAddButton}"
@@ -68,13 +76,11 @@
                         Margin="0 30 0 0"/>
             </StackPanel>
 
-            <Grid Grid.Column="2">
-                <TreeView ItemsSource="{Binding ViewList}"/>
-                <!--<tree:CupertinoTreeView ItemsSource="{Binding ViewList}"
-                                        Width="auto"
-                                        Height="auto"
-                                        Margin="0 0 10 0"/>-->
+            <Grid Grid.Column="2" Margin="0 0 10 0">
+                <tree:CupertinoTreeView ItemsSource="{Binding Files}"/>
+
             </Grid>
+
         </Grid>
 
         <Grid Grid.Row="2">
@@ -95,6 +101,5 @@
                 </b:Interaction.Triggers>
             </bar:MagicBar>
         </Grid>
-       
     </Grid>
 </UserControl>

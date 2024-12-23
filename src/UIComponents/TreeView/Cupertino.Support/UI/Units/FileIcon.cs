@@ -30,9 +30,9 @@ namespace Cupertino.Support.UI.Units
 
 
         // propdp 의존성 속성을 만든다
-        public string Type
+        public BitmapImage Type
         {
-            get { return (string)GetValue(TypeProperty); }
+            get { return (BitmapImage)GetValue(TypeProperty); }
             set { SetValue(TypeProperty, value); }
         }
 

@@ -33,7 +33,7 @@
                                         VerticalAlignment="Top"
                                         Background="Green">
                             </units:MagicStackPanel>
-                            
+
                             <ItemsPresenter Grid.Row="1" Grid.ColumnSpan="3"
                                             x:Name="Items" VerticalAlignment="Top"/>
 

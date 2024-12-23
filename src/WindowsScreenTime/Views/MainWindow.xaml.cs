@@ -17,6 +17,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using WindowsScreenTime.ViewModels;
 
 namespace WindowsScreenTime
 {
@@ -29,6 +30,8 @@ namespace WindowsScreenTime
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainViewModel();
+
             MaxHeight = SystemParameters.WorkArea.Height;
             PART_homeButton.IsChecked = true;
             PART_menuButton.IsChecked = true;
