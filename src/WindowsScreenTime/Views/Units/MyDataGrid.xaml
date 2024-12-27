@@ -1,0 +1,54 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:WindowsScreenTime"
+    xmlns:units="clr-namespace:WindowsScreenTime.Views.Units"
+    xmlns:cupertino="clr-namespace:Cupertino.Support.UI.Units;assembly=Cupertino.Support">
+
+
+    <Style TargetType="{x:Type units:MyDataGrid}">
+        <Setter Property="ItemsSource" Value="{Binding ViewList}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type units:MyDataGrid}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+
+                        <Grid Height="auto" Width="auto">
+                            <DataGrid AutoGenerateColumns="True">
+
+                                <ControlTemplate>
+                                    <Grid Grid.IsSharedSizeScope="True">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="auto"  SharedSizeGroup="Path"/>
+                                            <ColumnDefinition Width="auto"  SharedSizeGroup="Size"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="1" Content="Path" Background="#FAFAFA" Padding="10" BorderBrush="#AAAAAA" BorderThickness="0 0 1 1"/>
+                                        <Label Grid.Column="0" Content="Name" Background="#FAFAFA" Padding="10" BorderBrush="#AAAAAA" BorderThickness="0 0 1 1"/>
+                                        <Label Grid.Column="2" Content="Size" Background="#FAFAFA" Padding="10" BorderBrush="#AAAAAA" BorderThickness="0 0 0 1"/>
+
+                                        <cupertino:MagicStackPanel Grid.Row="1" Grid.ColumnSpan="3"
+                                                                   ItemHeight="{Binding ElementName=Items, Path=ActualHeight}"
+                                                                   VerticalAlignment="Top"
+                                                                   Background="Green">
+                                        </cupertino:MagicStackPanel>
+                                        
+                                        <ItemsPresenter Grid.Row="1" Grid.ColumnSpan="3"
+                                                        x:Name="Items" VerticalAlignment="Top"/>
+                                    </Grid>
+
+                                </ControlTemplate>
+                            </DataGrid>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

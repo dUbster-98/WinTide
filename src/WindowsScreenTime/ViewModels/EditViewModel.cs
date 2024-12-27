@@ -25,7 +25,7 @@ namespace WindowsScreenTime.ViewModels
     public partial class EditViewModel : ObservableObject, IDisposable
     {
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
-        public ObservableCollection<FileItem> ViewList { get; set; }
+        public ObservableCollection<ProcessUsage> ViewList { get; set; }
 
 
         private readonly Dictionary<string, WeakReference<BitmapImage>> iconCache;
@@ -34,7 +34,7 @@ namespace WindowsScreenTime.ViewModels
         private bool _disposed = false;
 
         [ObservableProperty]
-        private FileItem selectedProcess;
+        private ProcessUsage selectedProcess;
         [ObservableProperty]
         public ListBoxItem selectedPreset;        
 
@@ -62,17 +62,10 @@ namespace WindowsScreenTime.ViewModels
 
             Task.Run(PeriodicProcessUpdate);
 
-            //ProcessUsage item = new();
-            //item.ProcessName = "asd";
-            //item.RamUsagePer = 123;
-            //item.UsageTime = 123;
-            //item.ExecutablePath = "12";
-            FileItem item = new();
-            item.Name = "asd";
-            item.Path = "asd";
-            item.Size = null;
-            item.Type = "Folder";
-            item.Depth = 1;
+            ProcessUsage item = new();
+            item.ProcessIcon = null;
+            item.ProcessName = "ThisisNotaTest";
+
             ViewList.Add(item);
 
         }

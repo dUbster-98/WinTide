@@ -53,4 +53,8 @@
     <Resource Include="Resources\Fonts\Recipekorea 레코체 FONT.ttf" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Themes\" />
+  </ItemGroup>
+
 </Project>

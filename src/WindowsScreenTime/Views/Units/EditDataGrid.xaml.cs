@@ -13,14 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Cupertino.Support.UI.Units
+namespace WindowsScreenTime.Views.Units
 {
-    public class CupertinoTreeView : DataGrid
+    /// <summary>
+    /// EditDataGrid.xaml에 대한 상호 작용 논리
+    /// </summary>
+    public partial class EditDataGrid : UserControl
     {
-        static CupertinoTreeView()
+        public EditDataGrid()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(CupertinoTreeView), new FrameworkPropertyMetadata(typeof(CupertinoTreeView)));
+            InitializeComponent();
         }
-
     }
 }

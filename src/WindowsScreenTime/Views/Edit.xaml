@@ -7,7 +7,7 @@
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:vm="clr-namespace:WindowsScreenTime.ViewModels"
              xmlns:bar="clr-namespace:NavigationBar;assembly=NavigationBar"
-             xmlns:tree="clr-namespace:Cupertino.Support.UI.Units;assembly=Cupertino.Support"
+             xmlns:units="clr-namespace:WindowsScreenTime.Views.Units"
              mc:Ignorable="d" 
              d:DesignHeight="685" d:DesignWidth="860">
     <Grid Background="#e3edf7">
@@ -77,8 +77,7 @@
             </StackPanel>
 
             <Grid Grid.Column="2" Margin="0 0 10 0">
-                <tree:CupertinoTreeView ItemsSource="{Binding Files}"/>
-
+                <units:EditDataGrid/>
             </Grid>
 
         </Grid>

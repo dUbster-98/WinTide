@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 
 namespace Cupertino.Support.UI.Units
 {
-    public class CupertinoTreeItem : TreeViewItem
+    public class CupertinoTreeItem : DataGridCell
     {
 
 
@@ -31,19 +31,10 @@ namespace Cupertino.Support.UI.Units
             DependencyProperty.Register("SelectionCommand", typeof(ICommand), typeof(CupertinoTreeItem), new PropertyMetadata(null));
 
 
-
-
         static CupertinoTreeItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CupertinoTreeItem), new FrameworkPropertyMetadata(typeof(CupertinoTreeItem)));
         }
-
-        // TreeView에서의 자식 항목을 다시 정의함
-        protected override DependencyObject GetContainerForItemOverride()
-        {
-            return new CupertinoTreeItem();
-        }
-
 
         // TreeView의 부모자식 관계 때문에 직접 바인딩이 불가능하여 ICommand 이용
         public CupertinoTreeItem()

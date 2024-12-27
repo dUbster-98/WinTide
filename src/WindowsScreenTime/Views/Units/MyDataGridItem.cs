@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cupertino.Support.UI.Units;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,14 +14,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Cupertino.Support.UI.Units
+namespace WindowsScreenTime.Views.Units
 {
-    public class CupertinoTreeView : DataGrid
+    public class MyDataGridItem : DataGridCell
     {
-        static CupertinoTreeView()
+        static MyDataGridItem()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(CupertinoTreeView), new FrameworkPropertyMetadata(typeof(CupertinoTreeView)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(MyDataGridItem), new FrameworkPropertyMetadata(typeof(MyDataGridItem)));
         }
-
     }
 }
