@@ -9,8 +9,6 @@ using System.Timers;
 using WindowsScreenTime.Models;
 using System.Windows;
 using System.Management;
-using Cupertino.Support.Local.Helpers;
-using Cupertino.Support.Local.Models;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -27,16 +25,17 @@ namespace WindowsScreenTime.ViewModels
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
         public ObservableCollection<ProcessUsage> ViewList { get; set; }
 
-
         private readonly Dictionary<string, WeakReference<BitmapImage>> iconCache;
 
         private CancellationTokenSource? _cts;
-        private bool _disposed = false;
 
         [ObservableProperty]
-        private ProcessUsage selectedProcess;
+        private ProcessUsage? selectedProcess;
+        private ProcessUsage selectedProcessTmp;
         [ObservableProperty]
-        public ListBoxItem selectedPreset;        
+        private ProcessUsage? itemToRemove;
+        [ObservableProperty]
+        private ListBoxItem selectedPreset;
 
         private string filterText;
         public string FilterText
@@ -49,6 +48,7 @@ namespace WindowsScreenTime.ViewModels
             }
         }
 
+        private List<string?> ViewListStr;
         private readonly double totalRam;        
 
         public EditViewModel()
@@ -58,16 +58,10 @@ namespace WindowsScreenTime.ViewModels
             ProcessList = new();
             ViewList = new();
             iconCache = new();
+            ViewListStr = new();
             _cts = new();
 
             Task.Run(PeriodicProcessUpdate);
-
-            ProcessUsage item = new();
-            item.ProcessIcon = null;
-            item.ProcessName = "ThisisNotaTest";
-
-            ViewList.Add(item);
-
         }
 
         public void Dispose()
@@ -86,7 +80,7 @@ namespace WindowsScreenTime.ViewModels
             {
                 if (_cts.IsCancellationRequested) return;
                 UpdateProcesses();
-
+                SelectedProcess = selectedProcessTmp;
                 await Task.Delay(5000); // 5초 간격 업데이트
             }
         }
@@ -165,7 +159,6 @@ namespace WindowsScreenTime.ViewModels
                         ProcessList[existingIndex] = process;
                     }
                 }
-                GC.Collect();
             });
         }
 
@@ -276,13 +269,24 @@ namespace WindowsScreenTime.ViewModels
         [RelayCommand]
         private void AddViewList()
         {
-            ViewList.Add(SelectedProcess);
+            if (SelectedProcess == null)
+                return;
+
+            if (ViewListStr.Contains(SelectedProcess.ProcessName))
+                return;
+
+            ViewListStr.Add(SelectedProcess.ProcessName);
+            ViewList.Add(SelectedProcess);                
         }
 
         [RelayCommand]
         private void RemoveViewList()
         {
-            ViewList.Remove(SelectedProcess);
+            if (ItemToRemove == null)
+                return;
+
+            ViewListStr.Remove(ItemToRemove.ProcessName);
+            ViewList.Remove(ItemToRemove);            
         }
 
         [RelayCommand]
@@ -291,6 +295,15 @@ namespace WindowsScreenTime.ViewModels
             if (SelectedPreset != null)
             {
                 int presetIndex = (int)SelectedPreset.Content;
+            }
+        }
+
+        [RelayCommand]
+        private void ProcessSelect()
+        {
+            if (SelectedProcess != null)
+            {
+                selectedProcessTmp = SelectedProcess;
             }
         }
     }

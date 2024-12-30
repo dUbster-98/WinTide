@@ -408,8 +408,8 @@
 
     <Style x:Key="ProcessAddButton" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Width" Value="50"/>
-        <Setter Property="Height" Value="50"/>
+        <Setter Property="Width" Value="60"/>
+        <Setter Property="Height" Value="60"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -432,8 +432,8 @@
 
     <Style x:Key="ProcessRemoveButton" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Width" Value="50"/>
-        <Setter Property="Height" Value="50"/>
+        <Setter Property="Width" Value="60"/>
+        <Setter Property="Height" Value="60"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -447,6 +447,45 @@
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="path" Property="Fill" Value="#da6953"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SaveButton" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="#7777ff"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <StackPanel Orientation="Horizontal">
+                        <Border Background="{TemplateBinding Background}" x:Name="back" Width="{TemplateBinding Width}" Height="45" CornerRadius="10">
+                            <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                                <Path x:Name="path"
+                                      Data="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z"
+                                      Width="20" Margin="0 0 0 0"
+                                      Fill="#FFFFFF"
+                                      Stretch="Uniform"/>
+                                <TextBlock x:Name="text"
+                                           Foreground="#FFFFFF" Margin="5 5 0 0"
+                                           Text="SAVE"                             
+                                           Style="{StaticResource Text_Style}"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="text" Property="Foreground" Value="#FFFFFF"/>
+                            <Setter TargetName="path" Property="Fill" Value="#FFFFFF"/>
+                            <Setter TargetName="back" Property="Background" Value="#9999ff"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="back" Property="Background" Value="#5555ff"/>
+                            <Setter TargetName="text" Property="Foreground" Value="#FFFFFF"/>
+                            <Setter TargetName="path" Property="Fill" Value="#FFFFFF"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

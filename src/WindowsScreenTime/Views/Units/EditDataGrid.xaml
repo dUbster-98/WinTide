@@ -5,84 +5,32 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WindowsScreenTime.Views.Units"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <!-- Row Style -->
-        <Style TargetType="DataGridRow">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="BorderBrush" Value="Gray"/>
-            <Setter Property="BorderThickness" Value="0,0,0,1"/>
-            <Setter Property="SnapsToDevicePixels" Value="True"/>
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#FFDCF1FF"/>
-                    <Setter Property="Foreground" Value="Black"/>
-                </Trigger>
-                <Trigger Property="AlternationIndex" Value="1">
-                    <Setter Property="Background" Value="#F5F5F5"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- Column Header Style -->
-        <Style TargetType="DataGridColumnHeader">
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Background" Value="#E0E0E0"/>
-            <Setter Property="Padding" Value="5"/>
-            <Setter Property="BorderBrush" Value="#AAAAAA"/>
-            <Setter Property="BorderThickness" Value="0,0,0,1"/>
-        </Style>
-    </UserControl.Resources>
-
+             d:DesignHeight="450" d:DesignWidth="400">
+    
     <Grid>
-        <DataGrid ItemsSource="{Binding ViewList}" AutoGenerateColumns="False" HeadersVisibility="Column" 
-                  Grid.IsSharedSizeScope="True" RowStyle="{StaticResource {x:Type DataGridRow}}">
+        <DataGrid ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                  AutoGenerateColumns="False" HeadersVisibility="Column"                  
+                  RowStyle="{StaticResource RowStyle}"
+                  ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
+                  IsReadOnly="True" CanUserResizeColumns="False"
+                  SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                  AlternationCount="2"
+                  GridLinesVisibility="None">
             <DataGrid.Columns>
                 <!-- Name Column -->
-                <DataGridTemplateColumn Header="Name">
+                <DataGridTemplateColumn Header="Selected Processes"
+                                        CellStyle="{StaticResource CellStyle}"
+                                        Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Grid Grid.IsSharedSizeScope="True">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" SharedSizeGroup="NameColumn"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Image Source="{Binding ProcessIcon}" Width="24" Height="24" Margin="0,0,5,0"/>
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5,0,0,0"/>
-                                </StackPanel>
-                            </Grid>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Image Source="{Binding ProcessIcon}" Width="24" Height="24" Margin="5"/>
+                                <TextBlock Text="{Binding ProcessName}" VerticalAlignment="Center" Margin="5"/>
+                            </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <!-- Path Column -->
-                <DataGridTemplateColumn Header="Path">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Grid Grid.IsSharedSizeScope="True">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" SharedSizeGroup="PathColumn"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Path}" VerticalAlignment="Center" Margin="5"/>
-                            </Grid>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-
-                <!-- Size Column -->
-                <DataGridTemplateColumn Header="Size">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Grid Grid.IsSharedSizeScope="True">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="SizeColumn"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Size}" VerticalAlignment="Center" Margin="5"/>
-                            </Grid>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

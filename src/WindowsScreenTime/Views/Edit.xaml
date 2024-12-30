@@ -10,8 +10,8 @@
              xmlns:units="clr-namespace:WindowsScreenTime.Views.Units"
              mc:Ignorable="d" 
              d:DesignHeight="685" d:DesignWidth="860">
-    <Grid Background="#e3edf7">
 
+    <Grid Background="#e3edf7">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="10*"/>
@@ -20,8 +20,15 @@
 
         <Grid Grid.Row="0">
             <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="10">
-                <TextBox Width="300" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" 
-                         Margin="5" />
+                <TextBlock Text="Search" Style="{StaticResource Text_Style}"
+                           Foreground="Black"/>
+                <TextBox Style="{StaticResource MyFont_Style}" 
+                         Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" 
+                         Width="300" Height="25" Margin="10 0 0 0"/>
+                <Path Fill="#6449FC" 
+                      Stretch="Uniform"
+                      Height="35" Width="35" Margin="10 0 0 0"
+                      Data="M11.5 9C10.12 9 9 10.12 9 11.5S10.12 14 11.5 14 14 12.88 14 11.5 12.88 9 11.5 9M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4M16.79 18.21L13.88 15.3C13.19 15.74 12.37 16 11.5 16C9 16 7 14 7 11.5S9 7 11.5 7 16 9 16 11.5C16 12.38 15.74 13.19 15.3 13.89L18.21 16.79L16.79 18.21Z"/>
             </StackPanel>
         </Grid>
 
@@ -36,35 +43,73 @@
                 <DataGrid
                     Style="{StaticResource MyFont_Style}"
                     ItemsSource="{Binding ProcessList, IsAsync=True}"
-                    SelectedItem="{Binding SelectedProcess}"
+                    SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
                     Margin="10 0 0 0" Width="auto"
                     VerticalAlignment="Top"
                     IsReadOnly="True"
+                    CanUserReorderColumns="False"
+                    CanUserResizeColumns="False"
                     AutoGenerateColumns="False"
+                    RowDetailsVisibilityMode="Collapsed"
+                    AlternationCount="2"
+                    HeadersVisibility="Column"
+                    RowStyle="{StaticResource RowStyle}"
+                    ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
+                    CellStyle="{StaticResource CellStyle}"
+                    RowHeight="18"
                     EnableRowVirtualization="True"
                     EnableColumnVirtualization="True"
                     VirtualizingPanel.IsVirtualizing="True"
-                    VirtualizingPanel.VirtualizationMode="Recycling"
-                    RowDetailsVisibilityMode="Collapsed">
-                    
+                    VirtualizingPanel.VirtualizationMode="Recycling">
+
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="auto">
+                        <DataGridTemplateColumn Header="Process Name" Width="auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Image Source="{Binding ProcessIcon}" Width="12" Height="12" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="{Binding ProcessIcon}" Width="14" Height="14" Margin="5 0 7 0"/>
+                                        <TextBlock Text="{Binding ProcessName}" Padding="0 3 0 0"/>
+                                    </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
-                            <DataGridTemplateColumn.CellStyle>
-                                <Style TargetType="DataGridCell">
-                                    <Setter Property="BorderThickness" Value="0"/>
-                                </Style>
-                            </DataGridTemplateColumn.CellStyle>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Process Name" Binding="{Binding ProcessName}"/>
-                        <DataGridTextColumn Header="Memory(MB)" Binding="{Binding MemorySize, Converter={StaticResource BytesToMBConverter}}" />
-                        <DataGridTextColumn Header="Usage (%)" Binding="{Binding RamUsagePer, StringFormat={}{0:F2}}" />
-                        <DataGridTextColumn Header="Path" Binding="{Binding ExecutablePath}"/>
+                        
+                        <DataGridTemplateColumn Header="Memory (MB)" Width="auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MemorySize, Converter={StaticResource BytesToMBConverter}}" Padding="5 3 0 0"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Usage (%)">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding RamUsagePer, StringFormat={}{0:F2}}" Padding="5 3 0 0"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Path">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ExecutablePath}" Padding="5 3 0 0"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
+
+                    <b:Interaction.Triggers>
+                        <b:EventTrigger EventName="SelectionChanged">
+                            <b:InvokeCommandAction Command="{Binding ProcessSelectCommand}"
+                                                   CommandParameter="{Binding SelectedItem}"/>
+                        </b:EventTrigger>
+                        <b:EventTrigger EventName="MouseDoubleClick">
+                            <b:InvokeCommandAction Command="{Binding AddViewListCommand}"
+                                                   CommandParameter="{Binding SelectedItem}"/>
+                        </b:EventTrigger>
+                    </b:Interaction.Triggers>
+
                 </DataGrid>
             </Grid>
 
@@ -77,28 +122,44 @@
             </StackPanel>
 
             <Grid Grid.Column="2" Margin="0 0 10 0">
-                <units:EditDataGrid/>
+                <units:EditDataGrid ItemsSource="{Binding ViewList}"
+                                    SelectedItem="{Binding ItemToRemove, Mode=TwoWay}"
+                                    Style="{StaticResource MyFont_Style}"
+                                    Height="auto"
+                                    VerticalAlignment="Top">
+                    <b:Interaction.Triggers>
+                        <b:EventTrigger EventName="MouseDoubleClick">
+                            <b:InvokeCommandAction Command="{Binding RemoveViewListCommand}"
+                                                   CommandParameter="{Binding ItemToRemove}"/>
+                    </b:EventTrigger>
+                    </b:Interaction.Triggers>
+                </units:EditDataGrid>
             </Grid>
 
         </Grid>
 
         <Grid Grid.Row="2">
-            <bar:MagicBar                    
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <bar:MagicBar                    
                 x:Name="bar" SelectedItem="{Binding SelectedPreset, Mode=TwoWay}"                                       
                 Margin="0 -10 0 0" Height="70">
-                <ListBoxItem Content="1" Tag="M10,7V9H12V17H14V7H10M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
-                <ListBoxItem Content="2" Tag="M9,7V9H13V11H11A2,2 0 0,0 9,13V17H11L15,17V15H11V13H13A2,2 0 0,0 15,11V9A2,2 0 0,0 13,7H9M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
-                <ListBoxItem Content="3" Tag="M15,15V13.5A1.5,1.5 0 0,0 13.5,12A1.5,1.5 0 0,0 15,10.5V9C15,7.89 14.1,7 13,7H9V9H13V11H11V13H13V15H9V17H13A2,2 0 0,0 15,15M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
-                <ListBoxItem Content="4" Tag="M9,7V13H13V17H15V7H13V11H11V7H9M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
-                <ListBoxItem Content="5" Tag="M9,7V13H13V15H9V17H13A2,2 0 0,0 15,15V13A2,2 0 0,0 13,11H11V9H15V7H9M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
+                    <ListBoxItem Content="1" Tag="M10,7V9H12V17H14V7H10M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
+                    <ListBoxItem Content="2" Tag="M9,7V9H13V11H11A2,2 0 0,0 9,13V17H11L15,17V15H11V13H13A2,2 0 0,0 15,11V9A2,2 0 0,0 13,7H9M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
+                    <ListBoxItem Content="3" Tag="M15,15V13.5A1.5,1.5 0 0,0 13.5,12A1.5,1.5 0 0,0 15,10.5V9C15,7.89 14.1,7 13,7H9V9H13V11H11V13H13V15H9V17H13A2,2 0 0,0 15,15M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
+                    <ListBoxItem Content="4" Tag="M9,7V13H13V17H15V7H13V11H11V7H9M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
+                    <ListBoxItem Content="5" Tag="M9,7V13H13V15H9V17H13A2,2 0 0,0 15,15V13A2,2 0 0,0 13,11H11V9H15V7H9M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
 
-                <b:Interaction.Triggers>
-                    <b:EventTrigger EventName="SelectionChanged">
-                        <b:InvokeCommandAction Command="{Binding PresetChangeCommand}"
+                    <b:Interaction.Triggers>
+                        <b:EventTrigger EventName="SelectionChanged">
+                            <b:InvokeCommandAction Command="{Binding PresetChangeCommand}"
                                                CommandParameter="{Binding SelectedItem, ElementName=bar}"/>
-                    </b:EventTrigger>
-                </b:Interaction.Triggers>
-            </bar:MagicBar>
+                        </b:EventTrigger>
+                    </b:Interaction.Triggers>
+                </bar:MagicBar>
+
+                <Button Width="90" Margin="10 0 0 0"
+                        Style="{StaticResource SaveButton}"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>

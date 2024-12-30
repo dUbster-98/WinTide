@@ -37,7 +37,6 @@
   <ItemGroup>
     <ProjectReference Include="..\UIComponents\DatePicker\SmartDateControl\SmartDateControl.csproj" />
     <ProjectReference Include="..\UIComponents\NavigationBar\NavigationBar.csproj" />
-    <ProjectReference Include="..\UIComponents\TreeView\Cupertino.Support\Cupertino.Support.csproj" />
   </ItemGroup>
 
   <ItemGroup>
