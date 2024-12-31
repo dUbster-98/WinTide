@@ -60,13 +60,11 @@ namespace WindowsScreenTime.ViewModels
                 ProcessList.Add(new ProcessUsage { ProcessName = processName, UsageTime = 0 });
             }
         }
-
         [RelayCommand]
         public void RemoveProcess(ProcessUsage processName)
         {
             ProcessList.Remove(processName);
         }
-
         [RelayCommand]
         private void SetPeriodDay()
         {

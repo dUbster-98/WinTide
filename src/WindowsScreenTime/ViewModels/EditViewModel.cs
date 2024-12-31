@@ -17,17 +17,20 @@ using System.Windows.Media.Imaging;
 using System.Drawing;
 using System.Collections.Concurrent;
 using Prism.Regions;
+using WindowsScreenTime.Services;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace WindowsScreenTime.ViewModels
 {
-    public partial class EditViewModel : ObservableObject, IDisposable
+    public partial class EditViewModel : ObservableObject
     {
+        private readonly IIniSetService _iniSetService;
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
         public ObservableCollection<ProcessUsage> ViewList { get; set; }
 
         private readonly Dictionary<string, WeakReference<BitmapImage>> iconCache;
 
-        private CancellationTokenSource? _cts;
+        public CancellationTokenSource? _cts;
 
         [ObservableProperty]
         private ProcessUsage? selectedProcess;
@@ -47,41 +50,54 @@ namespace WindowsScreenTime.ViewModels
                 UpdateProcesses();
             }
         }
+        private int presetIndex { get; set; }
 
         private List<string?> ViewListStr;
-        private readonly double totalRam;        
+        private readonly double totalRam;
 
-        public EditViewModel()
+        private Task _processSerchTask;
+
+        public EditViewModel(IIniSetService iniSetService)
         {
+            _iniSetService = iniSetService;
+
+            WeakReferenceMessenger.Default.Register<TransferViewModelActivation>(this, OnTransferViewModelState);
+
             totalRam = GetTotalRam();
 
             ProcessList = new();
             ViewList = new();
             iconCache = new();
             ViewListStr = new();
+
+        }
+
+        public void Initialize()
+        {
             _cts = new();
-
-            Task.Run(PeriodicProcessUpdate);
+            var token = _cts.Token;
+            _processSerchTask = Task.Run(() => PeriodicProcessUpdate(token));
         }
 
-        public void Dispose()
+        public void StopTask()
         {
-            if (ProcessList != null)
+            if (_cts != null)
             {
-                ProcessList.Clear();
-                ProcessList = null;
+                _cts.Cancel();
+                _cts.Dispose();
+                _cts = null;
             }
-            GC.SuppressFinalize(this);
+
+            _processSerchTask = null;
         }
 
-        private async Task PeriodicProcessUpdate()
+        private async Task PeriodicProcessUpdate(CancellationToken token)
         {
-            while (true)
+            while (!token.IsCancellationRequested)
             {
-                if (_cts.IsCancellationRequested) return;
                 UpdateProcesses();
                 SelectedProcess = selectedProcessTmp;
-                await Task.Delay(5000); // 5초 간격 업데이트
+                await Task.Delay(5000, token); // 5초 간격 업데이트
             }
         }
         private async void UpdateProcesses()
@@ -98,7 +114,6 @@ namespace WindowsScreenTime.ViewModels
                         string.Equals(process.ProcessName, "WindowsScreenTime", StringComparison.OrdinalIgnoreCase))
 
                         continue;
-
                     try
                     {
                         var path = GetProcessPath(process);
@@ -286,7 +301,7 @@ namespace WindowsScreenTime.ViewModels
                 return;
 
             ViewListStr.Remove(ItemToRemove.ProcessName);
-            ViewList.Remove(ItemToRemove);            
+            ViewList.Remove(ItemToRemove);
         }
 
         [RelayCommand]
@@ -294,7 +309,7 @@ namespace WindowsScreenTime.ViewModels
         {
             if (SelectedPreset != null)
             {
-                int presetIndex = (int)SelectedPreset.Content;
+                presetIndex = Convert.ToInt32(SelectedPreset.Content);
             }
         }
 
@@ -304,6 +319,34 @@ namespace WindowsScreenTime.ViewModels
             if (SelectedProcess != null)
             {
                 selectedProcessTmp = SelectedProcess;
+            }
+        }
+
+        [RelayCommand]
+        private void PresetSave()
+        {
+            string[] ViewProcess = ViewList.Select(ProcessUsage => ProcessUsage.ProcessName).ToArray();
+
+            foreach (string process in ViewProcess)
+            {
+                _iniSetService.SetIni(SelectedPreset.ToString(), process, "", IniSetService.path);
+            }
+
+            foreach (ProcessUsage process in ViewList)
+            {
+                _iniSetService.SetIni(SelectedPreset.ToString(), process.ProcessName, process.EditedName, IniSetService.path);
+            }
+        }
+
+        private void OnTransferViewModelState(object recipient, TransferViewModelActivation message)
+        {
+            if (message.isActivated == true)
+            {
+                Initialize();
+            }
+            else
+            {
+                StopTask();
             }
         }
     }

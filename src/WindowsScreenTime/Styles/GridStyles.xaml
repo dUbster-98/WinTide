@@ -4,15 +4,18 @@
     <!-- Row Style -->
     <Style TargetType="DataGridRow" x:Key="RowStyle">
         <Setter Property="Background" Value="#D6E1F0"/>
-        <Setter Property="BorderBrush" Value="AliceBlue"/>
+        <Setter Property="BorderBrush" Value="#4977b6"/>
         <Setter Property="BorderThickness" Value="0,0,0,0"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Style.Triggers>
             <Trigger Property="AlternationIndex" Value="0">
-                <Setter Property="Background" Value="#EDF2F9"/>
+                <Setter Property="Background" Value="#eef2f8"/>
             </Trigger>
             <Trigger Property="AlternationIndex" Value="1">
-                <Setter Property="Background" Value="#d8e1f1"/>
+                <Setter Property="Background" Value="#c9d7e9"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#a5bbdb"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -21,9 +24,9 @@
     <Style TargetType="DataGridColumnHeader" x:Key="ColumnHeaderStyle">
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
         <Setter Property="FontWeight" Value="Bold"/>
-        <Setter Property="Background" Value="#99B6DB"/>
+        <Setter Property="Background" Value="#9993d3"/>
         <Setter Property="Padding" Value="5"/>
-        <Setter Property="BorderBrush" Value="#AAAAAA"/>
+        <Setter Property="BorderBrush" Value="#5349b6"/>
         <Setter Property="BorderThickness" Value="0,0,0,1"/>
     </Style>
     
@@ -33,12 +36,9 @@
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Padding" Value="1"/>
         <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#B7C9E2"/>
-            </Trigger>
             <Trigger Property="IsSelected" Value="True">
                 <Setter Property="Background" Value="#6E66C8"/>
-                <Setter Property="Foreground" Value="Black"/>
+                <Setter Property="Foreground" Value="#0a111b"/>
             </Trigger>
         </Style.Triggers>
     </Style>

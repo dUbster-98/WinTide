@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using WindowsScreenTime.Services;
 using WindowsScreenTime.ViewModels;
 
 namespace WindowsScreenTime
@@ -29,13 +30,16 @@ namespace WindowsScreenTime
         {
             var services = new ServiceCollection();
 
-            services.AddSingleton(typeof(MainViewModel));
-            services.AddSingleton(typeof(HomeViewModel));
-            services.AddSingleton(typeof(EditViewModel));
-            services.AddSingleton(typeof(SettingsViewModel));
+            services.AddSingleton<MainViewModel>();
+            services.AddSingleton<HomeViewModel>();
+            services.AddSingleton<EditViewModel>();
+            services.AddSingleton<SettingsViewModel>();
+
+            services.AddTransient<IIniSetService, IniSetService>();
 
             return services.BuildServiceProvider();
         }
+
     }
 
 }

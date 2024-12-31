@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:local="clr-namespace:WindowsScreenTime.Views.Units"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="400">
@@ -12,15 +13,26 @@
                   AutoGenerateColumns="False" HeadersVisibility="Column"                  
                   RowStyle="{StaticResource RowStyle}"
                   ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
-                  IsReadOnly="True" CanUserResizeColumns="False"
+                  CanUserResizeColumns="False"
                   SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=UserControl}}"
                   AlternationCount="2"
-                  GridLinesVisibility="None">
+                  GridLinesVisibility="Vertical"
+                  CanUserAddRows="False">
+
+            <b:Interaction.Triggers>
+                <b:EventTrigger EventName="MouseDoubleClick">
+                    <b:InvokeCommandAction 
+                    Command="{Binding DataContext.RemoveViewListCommand, 
+                    RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                    CommandParameter="{Binding ItemToRemove}"/>
+                </b:EventTrigger>
+            </b:Interaction.Triggers>
+
             <DataGrid.Columns>
                 <!-- Name Column -->
-                <DataGridTemplateColumn Header="Selected Processes"
+                <DataGridTemplateColumn Header="Process"
                                         CellStyle="{StaticResource CellStyle}"
-                                        Width="*">
+                                        Width="*" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -29,6 +41,22 @@
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Name"
+                                        CellStyle="{StaticResource CellStyle}"
+                                        Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding EditedName}" VerticalAlignment="Center" Margin="5" FontSize="20"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding EditedName}" VerticalAlignment="Center" Margin="5"
+                                     Height="25" FontSize="18"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
             </DataGrid.Columns>

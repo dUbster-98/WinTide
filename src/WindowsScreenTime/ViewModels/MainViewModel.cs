@@ -1,11 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using WindowsScreenTime.Models;
 
 namespace WindowsScreenTime.ViewModels
 {
@@ -61,7 +64,7 @@ namespace WindowsScreenTime.ViewModels
 
         public MainViewModel()
         {
-            CurrentView = new HomeViewModel();
+            GoHome();
         }
 
         private void GoMenu()
@@ -70,15 +73,21 @@ namespace WindowsScreenTime.ViewModels
         }
         private void GoHome()
         {
-            CurrentView = new HomeViewModel();
+            CurrentView = App.Current.Services.GetService(typeof(HomeViewModel));
+            var message = new TransferViewModelActivation { isActivated = false };
+            WeakReferenceMessenger.Default.Send(message);
         }
         private void GoEdit()
         {
-            CurrentView = new EditViewModel();
+            CurrentView = App.Current.Services.GetService(typeof(EditViewModel));
+            var message = new TransferViewModelActivation { isActivated = true };
+            WeakReferenceMessenger.Default.Send(message);
         }
         private void GoSettings()
         {
-            CurrentView = new SettingsViewModel();
+            CurrentView = App.Current.Services.GetService(typeof(SettingsViewModel));
+            var message = new TransferViewModelActivation { isActivated = false };
+            WeakReferenceMessenger.Default.Send(message);
         }
 
 

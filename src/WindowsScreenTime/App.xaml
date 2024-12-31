@@ -16,9 +16,6 @@
                 <ResourceDictionary Source="Styles/GridStyles.xaml"/>
 
                 <ResourceDictionary>
-                    <DataTemplate DataType="{x:Type vm:MainViewModel}">
-                        <local:MainWindow/>
-                    </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:HomeViewModel}">
                         <view:Home/>
                     </DataTemplate>

@@ -24,7 +24,7 @@ namespace WindowsScreenTime.Views
         public Home()
         {
             InitializeComponent();
-            //DataContext = new HomeViewModel();
+            DataContext = App.Current.Services.GetService(typeof(HomeViewModel));
         }
     }
 }
