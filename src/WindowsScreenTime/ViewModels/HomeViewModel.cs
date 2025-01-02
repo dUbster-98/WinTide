@@ -28,7 +28,7 @@ namespace WindowsScreenTime.ViewModels
 
         public HomeViewModel() 
         {
-            ProcessList = new ObservableCollection<ProcessUsage>();
+            ProcessList = new ();
             monitoringTimer = new System.Timers.Timer(1000);
             monitoringTimer.Elapsed += MonitorActiveWindow;
             monitoringTimer.Start();

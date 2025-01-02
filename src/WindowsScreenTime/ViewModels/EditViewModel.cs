@@ -329,12 +329,12 @@ namespace WindowsScreenTime.ViewModels
 
             foreach (string process in ViewProcess)
             {
-                _iniSetService.SetIni(SelectedPreset.ToString(), process, "", IniSetService.path);
+                _iniSetService.SetIni(SelectedPreset.ToString(), process, "", IniSetService.filePath);
             }
 
             foreach (ProcessUsage process in ViewList)
             {
-                _iniSetService.SetIni(SelectedPreset.ToString(), process.ProcessName, process.EditedName, IniSetService.path);
+                _iniSetService.SetIni(SelectedPreset.ToString(), process.ProcessName, process.EditedName, IniSetService.filePath);
             }
         }
 
