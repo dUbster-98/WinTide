@@ -19,14 +19,14 @@
                   GridLinesVisibility="Vertical"
                   CanUserAddRows="False">
 
-            <b:Interaction.Triggers>
+            <!--<b:Interaction.Triggers>
                 <b:EventTrigger EventName="MouseDoubleClick">
                     <b:InvokeCommandAction 
-                    Command="{Binding DataContext.RemoveViewListCommand, 
-                    RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                    CommandParameter="{Binding ItemToRemove}"/>
+                                            Command="{Binding DataContext.RemoveViewListCommand, 
+                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding ItemToRemove}"/>
                 </b:EventTrigger>
-            </b:Interaction.Triggers>
+            </b:Interaction.Triggers>-->
 
             <DataGrid.Columns>
                 <!-- Name Column -->
@@ -36,6 +36,12 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <StackPanel.InputBindings>
+                                    <MouseBinding MouseAction="LeftDoubleClick" 
+                                        Command="{Binding DataContext.RemoveViewListCommand, 
+                                        RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding ItemToRemove}"/>
+                                </StackPanel.InputBindings>
                                 <Image Source="{Binding ProcessIcon}" Width="24" Height="24" Margin="5"/>
                                 <TextBlock Text="{Binding ProcessName}" VerticalAlignment="Center" Margin="5"/>
                             </StackPanel>
@@ -48,15 +54,30 @@
                                         Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding EditedName}" VerticalAlignment="Center" Margin="5" FontSize="20"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Style="{StaticResource EditProcessButton}" x:Name="btn"/>
+                                <TextBox Text="{Binding EditedName}" VerticalAlignment="Center" Margin="5"
+                                     Height="25" FontSize="15" x:Name="tb"
+                                     Visibility="Hidden">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Click, ElementName=btn}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
+                            </StackPanel>
+
+                            <DataTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="tb" Property="Visibility" Value="Visible"/>
+                                </Trigger>
+                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                    <DataGridTemplateColumn.CellEditingTemplate>
-                        <DataTemplate>
-                            <TextBox Text="{Binding EditedName}" VerticalAlignment="Center" Margin="5"
-                                     Height="25" FontSize="18"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
             </DataGrid.Columns>
