@@ -77,6 +77,7 @@ namespace WindowsScreenTime.ViewModels
             _cts = new();
             var token = _cts.Token;
             _processSerchTask = Task.Run(() => PeriodicProcessUpdate(token));
+            SelectedPreset.Content = _iniSetService.GetIni("Preset", "Preset", IniSetService.filePath).ToString();
         }
 
         public void StopTask()
@@ -310,6 +311,7 @@ namespace WindowsScreenTime.ViewModels
             if (SelectedPreset != null)
             {
                 presetIndex = Convert.ToInt32(SelectedPreset.Content);
+                _iniSetService.SetIni("Preset", "Preset", SelectedPreset.Content.ToString(), IniSetService.filePath);
             }
         }
 
@@ -329,12 +331,12 @@ namespace WindowsScreenTime.ViewModels
 
             foreach (string process in ViewProcess)
             {
-                _iniSetService.SetIni(SelectedPreset.ToString(), process, "", IniSetService.filePath);
+                _iniSetService.SetIni(SelectedPreset.Content.ToString(), process, "", IniSetService.filePath);
             }
 
             foreach (ProcessUsage process in ViewList)
             {
-                _iniSetService.SetIni(SelectedPreset.ToString(), process.ProcessName, process.EditedName, IniSetService.filePath);
+                _iniSetService.SetIni(SelectedPreset.Content.ToString(), process.ProcessName, process.EditedName, IniSetService.filePath);
             }
         }
 

@@ -87,54 +87,43 @@
             </Grid>
 
             <Grid Grid.Row="3">
-                <ListView
-                    ItemsSource="{Binding ProcessList}">
-                    <GridView>
-                        <GridView.Columns>
-                            <GridViewColumn Header="Process Name">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding EditedName}" Padding="5 3 0 0"
-                                                   Width="60"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="Process Name">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding UsageTime}" Padding="5 3 0 0"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                        </GridView.Columns>
-                    </GridView>
-
-                    <DataGrid                        
-                        Style="{StaticResource MyFont_Style}"
-                        ItemsSource="{Binding ProcessList, IsAsync=True}"
-                        SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
-                        Margin="10 0 0 0" Width="auto"
-                        VerticalAlignment="Top"
-                        IsReadOnly="True"
-                        CanUserReorderColumns="False"
-                        CanUserResizeColumns="False"
-                        AutoGenerateColumns="False"
-                        RowDetailsVisibilityMode="Collapsed"
-                        AlternationCount="2"
-                        HeadersVisibility="Column"
-                        RowStyle="{StaticResource RowStyle}"
-                        ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
-                        CellStyle="{StaticResource CellStyle}"
-                        RowHeight="18"
-                        EnableRowVirtualization="True"
-                        EnableColumnVirtualization="True"
-                        VirtualizingPanel.IsVirtualizing="True"
-                        VirtualizingPanel.VirtualizationMode="Recycling">
-                        <DataGrid.Columns>
-
-                      
-                        </DataGrid.Columns>
-                    </DataGrid>
+                <ListView ItemsSource="{Binding ProcessList}"
+                          AlternationCount="2">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Margin" Value="0,0,0,10" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListViewItem">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="#DADADA"
+                                                BorderThickness="1"
+                                                CornerRadius="8"
+                                                Padding="10">
+                                            <ContentPresenter />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                    <Setter Property="Background" Value="#FFFFFF" />
+                                </Trigger>
+                                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                    <Setter Property="Background" Value="#F5F5F5" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#D9EDF7" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                   
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding EditedName}" FontSize="14" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
                 </ListView>
             </Grid>
 

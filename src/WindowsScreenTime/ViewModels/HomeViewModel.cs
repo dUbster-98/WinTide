@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Windows.Input;
 using WindowsScreenTime.Views;
+using System.Windows.Controls;
 
 namespace WindowsScreenTime.ViewModels
 {
@@ -32,6 +33,18 @@ namespace WindowsScreenTime.ViewModels
             monitoringTimer = new System.Timers.Timer(1000);
             monitoringTimer.Elapsed += MonitorActiveWindow;
             monitoringTimer.Start();
+
+            List<ProcessUsage> processes = new List<ProcessUsage>
+            {
+                new ProcessUsage { EditedName = "Process1", UsageTime = "00:05:23" },
+                new ProcessUsage { EditedName = "Process2", UsageTime = "00:12:45" }
+            };
+
+            foreach (ProcessUsage process in processes)
+            {
+                ProcessList.Add(process);
+            }
+
         }
 
         [DllImport("user32.dll")]
@@ -57,7 +70,7 @@ namespace WindowsScreenTime.ViewModels
         {
             if (!ProcessList.Any(p => p.ProcessName == processName))
             {
-                ProcessList.Add(new ProcessUsage { ProcessName = processName, UsageTime = 0 });
+                ProcessList.Add(new ProcessUsage { ProcessName = processName, UsageTime = "0" });
             }
         }
         [RelayCommand]

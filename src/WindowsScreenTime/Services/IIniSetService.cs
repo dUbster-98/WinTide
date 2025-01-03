@@ -45,7 +45,7 @@ namespace WindowsScreenTime.Services
         // INI File path
         private static string currentDirectory = Directory.GetCurrentDirectory();
         private static string pathDir = Path.Combine(currentDirectory, "data");
-        public static string filePath = Path.Combine(pathDir, "/data.ini");
+        public static string filePath = pathDir + "/data.ini";
 
         public IniSetService()
         {
