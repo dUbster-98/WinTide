@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace WindowsScreenTime.Services
 {
@@ -12,7 +13,6 @@ namespace WindowsScreenTime.Services
     {
         void SetIni(string Section, string Key, string Value, string path);
         string GetIni(string Section, string Key, string path);
-        void SetPathDir(string name);
     }
         
     public class IniSetService : IIniSetService
@@ -45,11 +45,19 @@ namespace WindowsScreenTime.Services
         // INI File path
         private static string currentDirectory = Directory.GetCurrentDirectory();
         private static string pathDir = Path.Combine(currentDirectory, "data");
-        public static string path = Path.Combine(pathDir, "data.ini");
+        public static string filePath = Path.Combine(pathDir, "/data.ini");
 
         public IniSetService()
         {
-            SetPathDir(path);
+            DirectoryInfo di = new DirectoryInfo(pathDir);
+            if (!di.Exists)
+            {
+                di.Create();
+            }
+            if (!File.Exists(filePath))
+            {
+                File.WriteAllText(filePath, "");
+            }           
         }
 
         /// INI 파일에 쓰기
@@ -64,14 +72,6 @@ namespace WindowsScreenTime.Services
             StringBuilder stringBuilder = new StringBuilder(1024);
             GetPrivateProfileString(Section, Key, null, stringBuilder, 1024, path);
             return stringBuilder.ToString();
-        }
-
-        public void SetPathDir(string name)
-        {
-            if (!File.Exists(name))
-            {
-                File.CreateText(name);
-            }
-        }      
+        } 
     }
 }

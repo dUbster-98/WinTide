@@ -86,24 +86,58 @@
                 </StackPanel>
             </Grid>
 
-            <DataGrid Grid.Row="3"
-                      ItemsSource="{Binding ProcessList}"
-                      AutoGenerateColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Process Name" Binding="{Binding ProcessName}"/>
-                    <DataGridTextColumn Header="Usage Time" Binding="{Binding UsageTime}"/>
-                    <DataGridTemplateColumn Header="Actions">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Content="Remove" 
-                                        Command="{Binding DataContext.RemoveProcessCommand,
-                                                        RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                        CommandParameter="{Binding ProcessName}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>                
-            </DataGrid>
+            <Grid Grid.Row="3">
+                <ListView
+                    ItemsSource="{Binding ProcessList}">
+                    <GridView>
+                        <GridView.Columns>
+                            <GridViewColumn Header="Process Name">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding EditedName}" Padding="5 3 0 0"
+                                                   Width="60"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Process Name">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding UsageTime}" Padding="5 3 0 0"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView.Columns>
+                    </GridView>
+
+                    <DataGrid                        
+                        Style="{StaticResource MyFont_Style}"
+                        ItemsSource="{Binding ProcessList, IsAsync=True}"
+                        SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
+                        Margin="10 0 0 0" Width="auto"
+                        VerticalAlignment="Top"
+                        IsReadOnly="True"
+                        CanUserReorderColumns="False"
+                        CanUserResizeColumns="False"
+                        AutoGenerateColumns="False"
+                        RowDetailsVisibilityMode="Collapsed"
+                        AlternationCount="2"
+                        HeadersVisibility="Column"
+                        RowStyle="{StaticResource RowStyle}"
+                        ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
+                        CellStyle="{StaticResource CellStyle}"
+                        RowHeight="18"
+                        EnableRowVirtualization="True"
+                        EnableColumnVirtualization="True"
+                        VirtualizingPanel.IsVirtualizing="True"
+                        VirtualizingPanel.VirtualizationMode="Recycling">
+                        <DataGrid.Columns>
+
+                      
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </ListView>
+            </Grid>
+
 
             <Grid Grid.Row="4">
                 <bar:MagicBar                    
