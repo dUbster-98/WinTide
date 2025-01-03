@@ -53,9 +53,13 @@ namespace NavigationBar
 
         protected override void OnSelectionChanged(SelectionChangedEventArgs e)
         {
-            base.OnSelectionChanged(e);
-            _vi.To = SelectedIndex * 80;
-            _sb.Begin();
+            try
+            {
+                base.OnSelectionChanged(e);
+                _vi.To = SelectedIndex * 80;
+                _sb.Begin();
+            }
+            catch { }
         }
     }
 }

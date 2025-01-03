@@ -38,8 +38,12 @@ namespace WindowsScreenTime.ViewModels
         [ObservableProperty]
         private ProcessUsage? itemToRemove;
         [ObservableProperty]
-        private ListBoxItem selectedPreset;
+        private string selectedPreset;
+        [ObservableProperty]
+        private ObservableCollection<PresetContent> presetList;
 
+        private PresetItem PresetItem = new();
+                
         private string filterText;
         public string FilterText
         {
@@ -77,7 +81,10 @@ namespace WindowsScreenTime.ViewModels
             _cts = new();
             var token = _cts.Token;
             _processSerchTask = Task.Run(() => PeriodicProcessUpdate(token));
-            SelectedPreset.Content = _iniSetService.GetIni("Preset", "Preset", IniSetService.filePath).ToString();
+
+            PresetList = new ObservableCollection<PresetContent>(PresetItem.PresetItems);
+
+            SelectedPreset = _iniSetService.GetIni("SelectedPreset", "Preset", IniSetService.filePath);
         }
 
         public void StopTask()
@@ -310,8 +317,8 @@ namespace WindowsScreenTime.ViewModels
         {
             if (SelectedPreset != null)
             {
-                presetIndex = Convert.ToInt32(SelectedPreset.Content);
-                _iniSetService.SetIni("Preset", "Preset", SelectedPreset.Content.ToString(), IniSetService.filePath);
+                presetIndex = Convert.ToInt32(SelectedPreset);
+                _iniSetService.SetIni("SelectedPreset", "Preset", SelectedPreset, IniSetService.filePath);
             }
         }
 
@@ -331,12 +338,14 @@ namespace WindowsScreenTime.ViewModels
 
             foreach (string process in ViewProcess)
             {
-                _iniSetService.SetIni(SelectedPreset.Content.ToString(), process, "", IniSetService.filePath);
+                _iniSetService.SetIni(SelectedPreset, process, "", IniSetService.filePath);
             }
 
             foreach (ProcessUsage process in ViewList)
             {
-                _iniSetService.SetIni(SelectedPreset.Content.ToString(), process.ProcessName, process.EditedName, IniSetService.filePath);
+                if (process.EditedName == null)
+                    process.EditedName = process.ProcessName;
+                _iniSetService.SetIni($"Preset:{SelectedPreset}", process.ProcessName, process.EditedName, IniSetService.filePath);
             }
         }
 

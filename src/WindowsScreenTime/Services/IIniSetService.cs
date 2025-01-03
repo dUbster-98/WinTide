@@ -70,7 +70,9 @@ namespace WindowsScreenTime.Services
         public string GetIni(string Section, string Key, string path)
         {
             StringBuilder stringBuilder = new StringBuilder(1024);
-            GetPrivateProfileString(Section, Key, null, stringBuilder, 1024, path);
+            int length = GetPrivateProfileString(Section, Key, null, stringBuilder, 1024, path);
+            if (length == 0)
+                return null;
             return stringBuilder.ToString();
         } 
     }
