@@ -38,12 +38,8 @@ namespace WindowsScreenTime.ViewModels
         [ObservableProperty]
         private ProcessUsage? itemToRemove;
         [ObservableProperty]
-        private string selectedPreset;
-        [ObservableProperty]
-        private ObservableCollection<PresetContent> presetList;
-
-        private PresetItem PresetItem = new();
-                
+        private int selectedPreset;
+                    
         private string filterText;
         public string FilterText
         {
@@ -73,7 +69,6 @@ namespace WindowsScreenTime.ViewModels
             ViewList = new();
             iconCache = new();
             ViewListStr = new();
-
         }
 
         public void Initialize()
@@ -82,9 +77,7 @@ namespace WindowsScreenTime.ViewModels
             var token = _cts.Token;
             _processSerchTask = Task.Run(() => PeriodicProcessUpdate(token));
 
-            PresetList = new ObservableCollection<PresetContent>(PresetItem.PresetItems);
-
-            SelectedPreset = _iniSetService.GetIni("SelectedPreset", "Preset", IniSetService.filePath);
+            SelectedPreset = Convert.ToInt32(_iniSetService.GetIni("SelectedPreset", "Preset", IniSetService.filePath));
         }
 
         public void StopTask()
@@ -318,7 +311,7 @@ namespace WindowsScreenTime.ViewModels
             if (SelectedPreset != null)
             {
                 presetIndex = Convert.ToInt32(SelectedPreset);
-                _iniSetService.SetIni("SelectedPreset", "Preset", SelectedPreset, IniSetService.filePath);
+                _iniSetService.SetIni("SelectedPreset", "Preset", SelectedPreset.ToString(), IniSetService.filePath);
             }
         }
 
@@ -338,7 +331,7 @@ namespace WindowsScreenTime.ViewModels
 
             foreach (string process in ViewProcess)
             {
-                _iniSetService.SetIni(SelectedPreset, process, "", IniSetService.filePath);
+                _iniSetService.SetIni($"Preset:{SelectedPreset}", process, "", IniSetService.filePath);
             }
 
             foreach (ProcessUsage process in ViewList)
