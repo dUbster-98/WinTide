@@ -13,26 +13,34 @@ using System.Diagnostics;
 using System.Windows.Input;
 using WindowsScreenTime.Views;
 using System.Windows.Controls;
+using WindowsScreenTime.Services;
 
 namespace WindowsScreenTime.ViewModels
 {
     public partial class HomeViewModel : ObservableObject
     {
+        private readonly IIniSetService _iniSetService;
         [ObservableProperty]
         private DateTime? startDate;
         [ObservableProperty]
         private DateTime? endDate;
+        [ObservableProperty]
+        private int selectedPreset;
 
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
+
         private System.Timers.Timer monitoringTimer;
         private readonly double totalRam;
 
-        public HomeViewModel() 
+        public HomeViewModel(IIniSetService iniSetService) 
         {
+            _iniSetService = iniSetService;
             ProcessList = new ();
             monitoringTimer = new System.Timers.Timer(1000);
             monitoringTimer.Elapsed += MonitorActiveWindow;
             monitoringTimer.Start();
+
+            SelectedPreset = Convert.ToInt32(_iniSetService.GetIni("SelectedPreset", "Preset", IniSetService.filePath));
 
             List<ProcessUsage> processes = new List<ProcessUsage>
             {
@@ -95,6 +103,14 @@ namespace WindowsScreenTime.ViewModels
         {
             StartDate = DateTime.Now.AddMonths(-1);
             EndDate = DateTime.Now;
+        }
+        [RelayCommand]
+        private void PresetChange()
+        {
+            if (SelectedPreset != null)
+            {
+                _iniSetService.SetIni("SelectedPreset", "Preset", SelectedPreset.ToString(), IniSetService.filePath);
+            }
         }
     }
 }

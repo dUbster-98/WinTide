@@ -14,6 +14,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WindowsScreenTime.ViewModels;
 
+using Color = System.Windows.Media.Color;
+using ColorConverter = System.Windows.Media.ColorConverter;
+
 namespace WindowsScreenTime.Views
 {
     /// <summary>
@@ -26,5 +29,17 @@ namespace WindowsScreenTime.Views
             InitializeComponent();
             DataContext = App.Current.Services.GetService(typeof(SettingsViewModel));
         }
+
+        private void ToggleButton_Checked(object sender, RoutedEventArgs e)
+        {
+            WindowColor.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#393939"));
+            WindowColor.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E0FFFF"));
+        }
+        private void ToggleButton_UnChecked(object sender, RoutedEventArgs e)
+        {
+            WindowColor.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F5F5F5"));
+            WindowColor.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#191919"));
+        }
+
     }
 }

@@ -50,7 +50,6 @@ namespace WindowsScreenTime.ViewModels
                 UpdateProcesses();
             }
         }
-        private int presetIndex { get; set; }
 
         private List<string?> ViewListStr;
         private readonly double totalRam;
@@ -310,7 +309,6 @@ namespace WindowsScreenTime.ViewModels
         {
             if (SelectedPreset != null)
             {
-                presetIndex = Convert.ToInt32(SelectedPreset);
                 _iniSetService.SetIni("SelectedPreset", "Preset", SelectedPreset.ToString(), IniSetService.filePath);
             }
         }

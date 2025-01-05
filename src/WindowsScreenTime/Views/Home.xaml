@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:WindowsScreenTime.Views"
              xmlns:units="clr-namespace:SmartDateControl.UI.Units;assembly=SmartDateControl"
              xmlns:bar="clr-namespace:NavigationBar;assembly=NavigationBar"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:vm="clr-namespace:WindowsScreenTime.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="685" d:DesignWidth="860">
@@ -130,17 +131,24 @@
 
             <Grid Grid.Row="4">
                 <bar:MagicBar                    
-                    x:Name="bar" SelectedItem="{Binding SelectedPreset, Mode=OneWayToSource}"                                       
-                    Margin="0 -10 0 0" Height="70">
+                    x:Name="bar" Margin="0 -10 0 0" Height="70" 
+                    SelectedIndex="{Binding SelectedPreset, Mode=TwoWay}">
                     <ListBoxItem Tag="M10,7V9H12V17H14V7H10M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
                     <ListBoxItem Tag="M9,7V9H13V11H11A2,2 0 0,0 9,13V17H11L15,17V15H11V13H13A2,2 0 0,0 15,11V9A2,2 0 0,0 13,7H9M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
                     <ListBoxItem Tag="M15,15V13.5A1.5,1.5 0 0,0 13.5,12A1.5,1.5 0 0,0 15,10.5V9C15,7.89 14.1,7 13,7H9V9H13V11H11V13H13V15H9V17H13A2,2 0 0,0 15,15M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
                     <ListBoxItem Tag="M9,7V13H13V17H15V7H13V11H11V7H9M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
                     <ListBoxItem Tag="M9,7V13H13V15H9V17H13A2,2 0 0,0 15,15V13A2,2 0 0,0 13,11H11V9H15V7H9M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
+                   
+                    <b:Interaction.Triggers>
+                        <b:EventTrigger EventName="SelectionChanged">
+                            <b:InvokeCommandAction 
+                                Command="{Binding PresetChangeCommand}"
+                                CommandParameter="{Binding SelectedItem, ElementName=bar}"/>
+                        </b:EventTrigger>
+                    </b:Interaction.Triggers>
+
                 </bar:MagicBar>
             </Grid>
-            
         </Grid>
-            
     </Grid>
 </UserControl>

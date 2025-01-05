@@ -6,14 +6,22 @@
              xmlns:local="clr-namespace:WindowsScreenTime.Views"
              xmlns:vm="clr-namespace:WindowsScreenTime.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="685" d:DesignWidth="860"
+             x:Name="WindowColor">
 
 
-    <UserControl.DataContext>
-        <vm:SettingsViewModel/>
-    </UserControl.DataContext>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Views/Units/NightThemeButton.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     
     <Grid>
-            
+        <ToggleButton            
+            DockPanel.Dock="Bottom"
+            Style="{StaticResource ThemeButton}"
+            Checked="ToggleButton_Checked" Unchecked="ToggleButton_UnChecked"/>
     </Grid>
 </UserControl>

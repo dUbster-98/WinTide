@@ -6,99 +6,101 @@
         xmlns:local="clr-namespace:WindowsScreenTime"        
         xmlns:units="clr-namespace:SmartDateControl.UI.Units;assembly=SmartDateControl" 
         xmlns:vm="clr-namespace:WindowsScreenTime.ViewModels"
+        xmlns:unit="clr-namespace:WindowsScreenTime.Views.Units"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1080" MinWidth="600"
+        Title="MainWindow" Height="720" Width="1080" 
+        MinWidth="600" MinHeight="300"
         WindowStartupLocation="CenterOwner"
         WindowStyle="None"    
         AllowsTransparency="True" 
         ResizeMode="CanResizeWithGrip"
-        Background="Transparent"
-        
+        Background="Transparent" 
         SizeChanged="Window_SizeChanged">
 
     <Window.Resources>
-        <Style x:Key="RectStyle" TargetType="Rectangle">
-            <Setter Property="Fill" Value="#EEEEEE"/>
-            <Setter Property="Width" Value="8"/>
-            <Setter Property="Height" Value="25"/>
-            <Setter Property="RadiusX" Value="10"/>
-            <Setter Property="RadiusY" Value="3"/>
-            <Setter Property="VerticalAlignment" Value="Top"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-        </Style>
+        <ResourceDictionary>
+            <Style x:Key="RectStyle" TargetType="Rectangle">
+                <Setter Property="Fill" Value="#EEEEEE"/>
+                <Setter Property="Width" Value="8"/>
+                <Setter Property="Height" Value="25"/>
+                <Setter Property="RadiusX" Value="10"/>
+                <Setter Property="RadiusY" Value="3"/>
+                <Setter Property="VerticalAlignment" Value="Top"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+            </Style>
 
-        <Storyboard x:Key="OpenMenu_sb">
-            <DoubleAnimation Storyboard.TargetName="MenuBorder"
+            <Storyboard x:Key="OpenMenu_sb">
+                <DoubleAnimation Storyboard.TargetName="MenuBorder"
                                   Storyboard.TargetProperty="Width"
                                   To="220" Duration="0:0:0.2"/>
-            <DoubleAnimation Storyboard.TargetName="PART_menuButton"
+                <DoubleAnimation Storyboard.TargetName="PART_menuButton"
                                   Storyboard.TargetProperty="Width"
                                   To="200" Duration="0:0:0.2"/>
-            <DoubleAnimation Storyboard.TargetName="PART_homeButton"
+                <DoubleAnimation Storyboard.TargetName="PART_homeButton"
                                   Storyboard.TargetProperty="Width"
                                   To="200" Duration="0:0:0.2"/>
-            <DoubleAnimation Storyboard.TargetName="PART_editButton"
+                <DoubleAnimation Storyboard.TargetName="PART_editButton"
                                   Storyboard.TargetProperty="Width"
                                   To="200" Duration="0:0:0.2"/>
-            <DoubleAnimation Storyboard.TargetName="PART_settingsButton"
+                <DoubleAnimation Storyboard.TargetName="PART_settingsButton"
                                   Storyboard.TargetProperty="Width"
                                   To="200" Duration="0:0:0.2"/>
-        </Storyboard>
+            </Storyboard>
 
-        <Storyboard x:Key="CloseMenu_sb">
-            <DoubleAnimation Storyboard.TargetName="MenuBorder"
+            <Storyboard x:Key="CloseMenu_sb">
+                <DoubleAnimation Storyboard.TargetName="MenuBorder"
                                      Storyboard.TargetProperty="Width"
                                      To="85" Duration="0:0:0.2"/>
-            <DoubleAnimation Storyboard.TargetName="PART_menuButton"
+                <DoubleAnimation Storyboard.TargetName="PART_menuButton"
                                      Storyboard.TargetProperty="Width"
                                      To="65" Duration="0:0:0.2"/>
-            <DoubleAnimation Storyboard.TargetName="PART_homeButton"
+                <DoubleAnimation Storyboard.TargetName="PART_homeButton"
                                      Storyboard.TargetProperty="Width"
                                      To="65" Duration="0:0:0.2"/>
-            <DoubleAnimation Storyboard.TargetName="PART_editButton"
+                <DoubleAnimation Storyboard.TargetName="PART_editButton"
                                      Storyboard.TargetProperty="Width"
                                      To="65" Duration="0:0:0.2"/>
-            <DoubleAnimation Storyboard.TargetName="PART_settingsButton"
+                <DoubleAnimation Storyboard.TargetName="PART_settingsButton"
                                      Storyboard.TargetProperty="Width"
                                      To="65" Duration="0:0:0.2"/>
-        </Storyboard>
+            </Storyboard>
 
-        <Storyboard x:Key="GoHome_sb">
-            <DoubleAnimation Storyboard.TargetName="PART_rect"
+            <Storyboard x:Key="GoHome_sb">
+                <DoubleAnimation Storyboard.TargetName="PART_rect"
                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
                                         To="0"
                                         Duration="0:0:0.7">
-                <DoubleAnimation.EasingFunction>
-                    <CubicEase EasingMode="EaseInOut"/>
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-        </Storyboard>
-        <Storyboard x:Key="GoEdit_sb">
-            <DoubleAnimation Storyboard.TargetName="PART_rect"
+                    <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseInOut"/>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+            </Storyboard>
+            <Storyboard x:Key="GoEdit_sb">
+                <DoubleAnimation Storyboard.TargetName="PART_rect"
                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
                                         To="55"
                                         Duration="0:0:0.7">
-                <DoubleAnimation.EasingFunction>
-                    <CubicEase EasingMode="EaseInOut"/>
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-        </Storyboard>
-        <Storyboard x:Key="GoSettings_sb">
-            <DoubleAnimation Storyboard.TargetName="PART_rect"
+                    <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseInOut"/>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+            </Storyboard>
+            <Storyboard x:Key="GoSettings_sb">
+                <DoubleAnimation Storyboard.TargetName="PART_rect"
                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
                                         Duration="0:0:0.7">
-                <DoubleAnimation.EasingFunction>
-                    <CubicEase EasingMode="EaseInOut"/>
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-        </Storyboard>
+                    <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseInOut"/>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+            </Storyboard>
 
-        <Style x:Key="MenuBorderStyle" TargetType="Border">
-            <Setter Property="CornerRadius" Value="0 0 0 20"/>
-            <Setter Property="Width" Value="220"/>
-            <Setter Property="Background" Value="#2C2A34"/>
-        </Style>
-            
+            <Style x:Key="MenuBorderStyle" TargetType="Border">
+                <Setter Property="CornerRadius" Value="0 0 0 20"/>
+                <Setter Property="Width" Value="220"/>
+                <Setter Property="Background" Value="#2C2A34"/>
+            </Style>
+        </ResourceDictionary>
     </Window.Resources>
 
     <VisualStateManager.VisualStateGroups>
@@ -138,7 +140,6 @@
                     <Button x:Name="CloseButton"
                             Style="{StaticResource ExitButton}"
                             Click="CloseButton_Click"/>
-
                 </StackPanel>                
             </Border>                  
         </Grid>
@@ -176,10 +177,10 @@
                     </RadioButton>
 
                     <RadioButton x:Name="PART_editButton"
-                                     Width="200"
-                                     Style="{StaticResource EditButton}"
-                                     Command="{Binding EditCommand}"
-                                     DockPanel.Dock="Top">
+                            Width="200"
+                            Style="{StaticResource EditButton}"
+                            Command="{Binding EditCommand}"
+                            DockPanel.Dock="Top">
                         <RadioButton.Triggers>
                             <EventTrigger RoutedEvent="RadioButton.Click">
                                 <EventTrigger.Actions>
@@ -188,13 +189,14 @@
                             </EventTrigger>
                         </RadioButton.Triggers>
                     </RadioButton>
-                    
+
                     <RadioButton x:Name="PART_settingsButton"
-                                     Width="200"
-                                     Style="{StaticResource SettingsButton}"
-                                     Command="{Binding SettingsCommand}"
-                                     Click="PART_settingsButton_Click"
-                                     VerticalAlignment="Bottom">
+                                Width="200"
+                                DockPanel.Dock="Bottom"
+                                Style="{StaticResource SettingsButton}"
+                                Command="{Binding SettingsCommand}"
+                                Click="PART_settingsButton_Click"
+                                VerticalAlignment="Bottom">
                         <RadioButton.Triggers>
                             <EventTrigger RoutedEvent="RadioButton.Click">
                                 <EventTrigger.Actions>
@@ -219,7 +221,8 @@
             <Grid Grid.Column="1">
                 <Border x:Name="ContentBorder"
                         Background="#e3edf7" CornerRadius="0 0 20 0"
-                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                        Margin="0">
                     <ContentControl x:Name="Pages"
                                     Content="{Binding CurrentView}"/>
                 </Border>
