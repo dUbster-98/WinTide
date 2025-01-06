@@ -7,21 +7,49 @@
              xmlns:vm="clr-namespace:WindowsScreenTime.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="685" d:DesignWidth="860"
-             x:Name="WindowColor">
-
+             Loaded="UserControl_Loaded">
 
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Views/Units/NightThemeButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+
+            <Style TargetType="Label">
+                <Setter Property="FontFamily"
+                    Value="/Resources/Fonts/#레시피코리아 Medium"/>
+                <Setter Property="VerticalAlignment"
+                    Value="Center"/>
+                <Setter Property="HorizontalAlignment"
+                    Value="Left"/>
+                <Setter Property="Foreground"
+                    Value="#333333"/>
+                <Setter Property="FontSize"
+                    Value="15"/>
+                <Setter Property="Margin"
+                    Value="10"/>
+                <Setter Property="Opacity"
+                    Value="100"/>
+            </Style>
+        </ResourceDictionary>        
     </UserControl.Resources>
-    
-    <Grid>
-        <ToggleButton            
-            DockPanel.Dock="Bottom"
-            Style="{StaticResource ThemeButton}"
-            Checked="ToggleButton_Checked" Unchecked="ToggleButton_UnChecked"/>
+
+    <Grid x:Name="Part_grid" Background="#e3edf7">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition Width="4*"/>
+        </Grid.ColumnDefinitions>
+        <UniformGrid Rows="6" HorizontalAlignment="Center">
+            <Label Content="윈도우 시작시 자동 실행" VerticalAlignment="Center"/>
+            <Label Content="Settings" VerticalAlignment="Center"/>
+            <Label/>
+            <Label/>
+            <Label/>
+            <ToggleButton            
+                DockPanel.Dock="Bottom"
+                Style="{StaticResource ThemeButton}"
+                Checked="ToggleButton_Checked" Unchecked="ToggleButton_UnChecked"/>
+        </UniformGrid>
+
     </Grid>
 </UserControl>
