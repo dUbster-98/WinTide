@@ -25,6 +25,7 @@ namespace WindowsScreenTime.ViewModels
     public partial class EditViewModel : ObservableObject
     {
         private readonly IIniSetService _iniSetService;
+        private readonly IXmlSetService _xmlSetService;
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
         public ObservableCollection<ProcessUsage> ViewList { get; set; }
 
@@ -56,9 +57,10 @@ namespace WindowsScreenTime.ViewModels
 
         private Task _processSerchTask;
 
-        public EditViewModel(IIniSetService iniSetService)
+        public EditViewModel(IIniSetService iniSetService, IXmlSetService xmlSetService)
         {
             _iniSetService = iniSetService;
+            _xmlSetService = xmlSetService;
 
             WeakReferenceMessenger.Default.Register<TransferViewModelActivation>(this, OnTransferViewModelState);
 
@@ -76,7 +78,7 @@ namespace WindowsScreenTime.ViewModels
             var token = _cts.Token;
             _processSerchTask = Task.Run(() => PeriodicProcessUpdate(token));
 
-            SelectedPreset = Convert.ToInt32(_iniSetService.GetIni("SelectedPreset", "Preset", IniSetService.filePath));
+            SelectedPreset = Convert.ToInt32(_xmlSetService.LoadSelectedPreset());
         }
 
         public void StopTask()
@@ -309,7 +311,7 @@ namespace WindowsScreenTime.ViewModels
         {
             if (SelectedPreset != null)
             {
-                _iniSetService.SetIni("SelectedPreset", "Preset", SelectedPreset.ToString(), IniSetService.filePath);
+                _xmlSetService.SaveSelectedPreset(SelectedPreset.ToString());
             }
         }
 
@@ -325,18 +327,12 @@ namespace WindowsScreenTime.ViewModels
         [RelayCommand]
         private void PresetSave()
         {
-            string[] ViewProcess = ViewList.Select(ProcessUsage => ProcessUsage.ProcessName).ToArray();
-
-            foreach (string process in ViewProcess)
-            {
-                _iniSetService.SetIni($"Preset:{SelectedPreset}", process, "", IniSetService.filePath);
-            }
-
+            // TextBox 바인딩의 UpdateSourceTrigger 기본값이 LostFocus입니다. 입력하는 즉시 값을 반영하려면 PropertyChanged로 설정합니다.
             foreach (ProcessUsage process in ViewList)
             {
                 if (process.EditedName == null)
                     process.EditedName = process.ProcessName;
-                _iniSetService.SetIni($"Preset:{SelectedPreset}", process.ProcessName, process.EditedName, IniSetService.filePath);
+                _xmlSetService.SavePreset(SelectedPreset.ToString(), process.ProcessName, process.EditedName);
             }
         }
 

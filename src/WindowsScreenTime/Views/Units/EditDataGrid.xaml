@@ -54,7 +54,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <TextBox Text="{Binding EditedName}" VerticalAlignment="Center" Margin="5"
+                                <TextBox Text="{Binding EditedName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                         VerticalAlignment="Center" Margin="5"
                                          Height="25" Width="100" FontSize="15" x:Name="tb"
                                          Visibility="Hidden"
                                          Padding="0 3 0 0"/>

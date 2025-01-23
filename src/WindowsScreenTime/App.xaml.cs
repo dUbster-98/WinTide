@@ -36,6 +36,7 @@ namespace WindowsScreenTime
             services.AddSingleton<SettingsViewModel>();
 
             services.AddTransient<IIniSetService, IniSetService>();
+            services.AddTransient<IXmlSetService, XmlSetService>();
 
             return services.BuildServiceProvider();
         }

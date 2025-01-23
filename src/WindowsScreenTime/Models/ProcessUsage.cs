@@ -10,21 +10,15 @@ using System.Windows.Media.Imaging;
 
 namespace WindowsScreenTime.Models
 {
-    public partial class ProcessUsage : ObservableObject
+    public class ProcessUsage : ObservableObject
     {
 
         public BitmapImage? ProcessIcon { get; set; }
-
         public string? ProcessName { get; set; }
-
         public string? EditedName { get; set; }
-
         public string? UsageTime { get; set; }
-
         public double RamUsagePer { get; set; }
-
         public long MemorySize { get; set; }
-
         public string? ExecutablePath { get; set; }
     }
 }
