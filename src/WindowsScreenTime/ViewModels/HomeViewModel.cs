@@ -14,12 +14,16 @@ using System.Windows.Input;
 using WindowsScreenTime.Views;
 using System.Windows.Controls;
 using WindowsScreenTime.Services;
+using System.Windows.Media.Imaging;
 
 namespace WindowsScreenTime.ViewModels
 {
     public partial class HomeViewModel : ObservableObject
     {
         private readonly IIniSetService _iniSetService;
+        private readonly IXmlSetService _xmlSetService;
+        private readonly IProcessContainService _processContainService;
+
         [ObservableProperty]
         private DateTime? startDate;
         [ObservableProperty]
@@ -32,26 +36,27 @@ namespace WindowsScreenTime.ViewModels
         private System.Timers.Timer monitoringTimer;
         private readonly double totalRam;
 
-        public HomeViewModel(IIniSetService iniSetService) 
+        public HomeViewModel(IXmlSetService xmlSetService, IProcessContainService processContainService) 
         {
-            _iniSetService = iniSetService;
+            _xmlSetService = xmlSetService;
+            _processContainService = processContainService;
+
             ProcessList = new ();
             monitoringTimer = new System.Timers.Timer(1000);
             monitoringTimer.Elapsed += MonitorActiveWindow;
             monitoringTimer.Start();
 
-            SelectedPreset = Convert.ToInt32(_iniSetService.GetIni("SelectedPreset", "Preset", IniSetService.filePath));
-
-            List<ProcessUsage> processes = new List<ProcessUsage>
+            if (_xmlSetService.LoadSelectedPreset() == null || _xmlSetService.LoadSelectedPreset() == "")
+                SelectedPreset = 0;
+            else
             {
-                new ProcessUsage { EditedName = "Process1", UsageTime = "00:05:23" },
-                new ProcessUsage { EditedName = "Process2", UsageTime = "00:12:45" }
-            };
+                SelectedPreset = Convert.ToInt32(_xmlSetService.LoadSelectedPreset());
+                PresetChange();
+            }                
+        }
 
-            foreach (ProcessUsage process in processes)
-            {
-                ProcessList.Add(process);
-            }
+        private void Initialize()
+        {
 
         }
 
@@ -109,8 +114,34 @@ namespace WindowsScreenTime.ViewModels
         {
             if (SelectedPreset != null)
             {
-                _iniSetService.SetIni("SelectedPreset", "Preset", SelectedPreset.ToString(), IniSetService.filePath);
+                _xmlSetService.SaveSelectedPreset(SelectedPreset.ToString());
+
+                List<ProcessUsage> processes = new();
+                ProcessList.Clear();
+                processes = _xmlSetService.LoadPresetProcess(SelectedPreset.ToString());
+
+                if (processes != null)
+                {
+                    foreach (ProcessUsage proc in processes)
+                    {
+                        string? processName = proc.ProcessName;
+
+                        if (processName != null)
+                        {
+                            string? path = _processContainService.GetProcessPathByString(processName);
+
+                            if (path != null)
+                            {
+                                BitmapImage? icon = _processContainService.GetProcessIcon(path);
+                                proc.ProcessIcon = icon;
+                            }
+                        }
+                        ProcessList.Add(proc);
+                    }
+                }
             }
         }
     }
 }
+
+            

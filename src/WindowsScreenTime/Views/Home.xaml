@@ -11,7 +11,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="685" d:DesignWidth="860">
 
-    <UserControl.Resources>        
+    <UserControl.Resources>
         <Style TargetType="Path">
             <Setter Property="Data" Value="M5.59,7.41L7,6L13,12L7,18L5.59,16.59L10.17,12L5.59,7.41M11.59,7.41L13,6L19,12L13,18L11.59,16.59L16.17,12L11.59,7.41Z"/>
             <Setter Property="Fill" Value="#6449FC"/>
@@ -83,25 +83,23 @@
                     <Button Content="Add Process" Command="{Binding AddProcessCommand}"
                             CommandParameter="{Binding Text, ElementName=ProcessNametb}"
                             Margin="5"/>
-
                 </StackPanel>
             </Grid>
 
             <Grid Grid.Row="3">
                 <ListView ItemsSource="{Binding ProcessList}"
-                          AlternationCount="2">
+                          AlternationCount="2" Margin="10">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
-                            <Setter Property="Margin" Value="0,0,0,10" />
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ListViewItem">
                                         <Border Background="{TemplateBinding Background}"
                                                 BorderBrush="#DADADA"
-                                                BorderThickness="1"
+                                                BorderThickness="2"
                                                 CornerRadius="8"
-                                                Padding="10">
-                                            <ContentPresenter />
+                                                Padding="5">
+                                            <ContentPresenter/>
                                         </Border>
                                     </ControlTemplate>
                                 </Setter.Value>
@@ -122,7 +120,14 @@
                    
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding EditedName}" FontSize="14" />
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding ProcessIcon}" Width="27" Height="27"/>
+                                <TextBlock x:Name="GradientText" Style="{StaticResource Text_Style}"
+                                               Text="{Binding EditedName}"
+                                               FontSize="20" Margin="10 6 0 0"
+                                               Foreground="{StaticResource GraidentStyle}">
+                                </TextBlock>
+                            </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>

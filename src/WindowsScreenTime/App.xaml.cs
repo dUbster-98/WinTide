@@ -37,6 +37,7 @@ namespace WindowsScreenTime
 
             services.AddTransient<IIniSetService, IniSetService>();
             services.AddTransient<IXmlSetService, XmlSetService>();
+            services.AddTransient<IProcessContainService, ProcessContainService>();
 
             return services.BuildServiceProvider();
         }

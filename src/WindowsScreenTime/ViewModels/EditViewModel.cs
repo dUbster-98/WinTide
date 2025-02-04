@@ -26,6 +26,8 @@ namespace WindowsScreenTime.ViewModels
     {
         private readonly IIniSetService _iniSetService;
         private readonly IXmlSetService _xmlSetService;
+        private readonly IProcessContainService _processContainService;
+
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
         public ObservableCollection<ProcessUsage> ViewList { get; set; }
 
@@ -57,10 +59,10 @@ namespace WindowsScreenTime.ViewModels
 
         private Task _processSerchTask;
 
-        public EditViewModel(IIniSetService iniSetService, IXmlSetService xmlSetService)
+        public EditViewModel(IXmlSetService xmlSetService, IProcessContainService processContainService)
         {
-            _iniSetService = iniSetService;
             _xmlSetService = xmlSetService;
+            _processContainService = processContainService;
 
             WeakReferenceMessenger.Default.Register<TransferViewModelActivation>(this, OnTransferViewModelState);
 
@@ -78,7 +80,13 @@ namespace WindowsScreenTime.ViewModels
             var token = _cts.Token;
             _processSerchTask = Task.Run(() => PeriodicProcessUpdate(token));
 
-            SelectedPreset = Convert.ToInt32(_xmlSetService.LoadSelectedPreset());
+            if (_xmlSetService.LoadSelectedPreset() == null || _xmlSetService.LoadSelectedPreset() == "")
+                SelectedPreset = 0;
+            else
+            {
+                SelectedPreset = Convert.ToInt32(_xmlSetService.LoadSelectedPreset());
+                PresetChange();
+            }
         }
 
         public void StopTask()
@@ -118,7 +126,7 @@ namespace WindowsScreenTime.ViewModels
                         continue;
                     try
                     {
-                        var path = GetProcessPath(process);
+                        var path = _processContainService.GetProcessPath(process);
                         if (path == null) continue;
                   
                         BitmapImage? icon = GetCachedIcon(path);
@@ -201,7 +209,7 @@ namespace WindowsScreenTime.ViewModels
                 iconCache.Remove(path);
             }
 
-            var icon = GetProcessIcon(path);
+            var icon = _processContainService.GetProcessIcon(path);
             if (icon != null)
             {
                 CleanupIconCache();
@@ -223,50 +231,6 @@ namespace WindowsScreenTime.ViewModels
             }
         }
 
-        private BitmapImage GetProcessIcon(string path)
-        {
-            try
-            {
-                Icon? icon = Icon.ExtractAssociatedIcon(path);
-                if (icon == null) return null;
-
-                using (var stream = new MemoryStream())
-                {
-                    icon.ToBitmap().Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                    stream.Seek(0, SeekOrigin.Begin);
-
-                    BitmapImage bitmap = null;
-                    App.Current.Dispatcher.Invoke(() =>
-                    {
-                        bitmap = new BitmapImage();
-                        bitmap.BeginInit();
-                        bitmap.StreamSource = stream;
-                        bitmap.DecodePixelWidth = 32;
-                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                        bitmap.EndInit();
-                        bitmap.Freeze(); // 스레드 안전성을 위해 Freeze 호출
-                    });
-
-                    return bitmap;
-                }
-            }
-            catch
-            {
-                return null; // 아이콘을 가져올 수 없으면 null 반환
-            }
-        }
-
-        private string GetProcessPath(Process process)
-        {
-            try
-            {
-                return process.MainModule.FileName;
-            }
-            catch
-            {
-                return null; // 경로에 접근할 수 없을 경우
-            }
-        }
 
         private double GetTotalRam()
         {
@@ -312,6 +276,30 @@ namespace WindowsScreenTime.ViewModels
             if (SelectedPreset != null)
             {
                 _xmlSetService.SaveSelectedPreset(SelectedPreset.ToString());
+
+                List<ProcessUsage> processes = new();
+                ViewList.Clear();
+                processes = _xmlSetService.LoadPresetProcess(SelectedPreset.ToString());
+
+                if (processes != null)
+                {
+                    foreach (ProcessUsage proc in processes)
+                    {
+                        string? processName = proc.ProcessName;
+
+                        if (processName != null)
+                        {
+                            string? path = _processContainService.GetProcessPathByString(processName); 
+                            // 프로세스 이름을 바탕으로 프로세스 경로를 찾는다
+                            if (path != null)
+                            {
+                                BitmapImage? icon = GetCachedIcon(path);
+                                proc.ProcessIcon = icon;
+                            }
+                        }
+                        ViewList.Add(proc);
+                    }
+                }
             }
         }
 
@@ -329,11 +317,11 @@ namespace WindowsScreenTime.ViewModels
         {
             // TextBox 바인딩의 UpdateSourceTrigger 기본값이 LostFocus입니다. 입력하는 즉시 값을 반영하려면 PropertyChanged로 설정합니다.
             foreach (ProcessUsage process in ViewList)
-            {
+            {             
                 if (process.EditedName == null)
                     process.EditedName = process.ProcessName;
-                _xmlSetService.SavePreset(SelectedPreset.ToString(), process.ProcessName, process.EditedName);
             }
+            _xmlSetService.SavePreset(SelectedPreset.ToString(), ViewList);
         }
 
         private void OnTransferViewModelState(object recipient, TransferViewModelActivation message)

@@ -5,22 +5,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Collections.ObjectModel;
+using WindowsScreenTime.Models;
 
 namespace WindowsScreenTime.Services
 {
     public interface IXmlSetService
     {
-        void SavePreset(string presetName, string processName, string editedName);
+        void SavePreset(string presetName, ObservableCollection<ProcessUsage> viewList);
         void SaveSelectedPreset(string selectedPreset);
         string LoadSelectedPreset();
+        List<ProcessUsage> LoadPresetProcess(string presetName);
     }
-    public class  XmlSetService : IXmlSetService
+    public class XmlSetService : IXmlSetService
     {
         private static string currentDirectory = Directory.GetCurrentDirectory();
         private static string pathDir = Path.Combine(currentDirectory, "data");
         public static string _filePath = pathDir + "/data.xml";
 
-        public void SavePreset(string presetName, string processName, string editedName)
+        public void SavePreset(string presetName, ObservableCollection<ProcessUsage> viewList)
         {
             XDocument doc;
 
@@ -47,15 +50,23 @@ namespace WindowsScreenTime.Services
             XElement presetElement = new XElement("Preset", new XAttribute("Name", presetName));
 
             // 새로운 Process 추가
-            XElement processElement = new XElement("Process", new XAttribute("Name", processName));
-            processElement.Add(new XElement("EditedName", editedName));
-            presetElement.Add(processElement);
+            foreach (ProcessUsage process in viewList)
+            {
+                XElement processElement = new XElement("Process",
+                    new XAttribute("Name", process.ProcessName), new XAttribute("EditedName", process.EditedName));
+                presetElement.Add(processElement);
+            }
 
             // 새로 추가된 Preset을 XML에 추가
             doc.Root.Add(presetElement);
 
             // 변경된 내용을 파일에 저장
             doc.Save(_filePath);
+        }
+
+        public void AddProcess(XElement precessElement)
+        {
+
         }
 
         // SelectedPreset을 저장하는 개별적인 메서드
@@ -87,30 +98,6 @@ namespace WindowsScreenTime.Services
             doc.Save(_filePath);
         }
 
-        public (string ProcessName, string EditedName)? LoadPreset(string presetName)
-        {
-            if (!System.IO.File.Exists(_filePath))
-                return null;
-
-            XDocument doc = XDocument.Load(_filePath);
-            XElement presetElement = doc.Root.Elements("Preset")
-                .FirstOrDefault(e => e.Attribute("name")?.Value == presetName);
-
-            if (presetElement != null)
-            {
-                // 첫 번째 Process 정보를 읽음
-                XElement processElement = presetElement.Element("Process");
-                if (processElement != null)
-                {
-                    string processName = processElement.Attribute("name")?.Value ?? string.Empty;
-                    string editedName = processElement.Element("EditedName")?.Value ?? string.Empty;
-                    return (processName, editedName);
-                }
-            }
-
-            return null;  // Preset 또는 Process가 없으면 null 반환
-        }
-
         // SelectedPreset을 불러오는 메서드
         public string LoadSelectedPreset()
         {
@@ -123,5 +110,29 @@ namespace WindowsScreenTime.Services
             return selectedPresetElement?.Value ?? "0";  // 값이 없으면 빈 문자열 반환
         }
 
+        public List<ProcessUsage> LoadPresetProcess(string presetName)
+        {
+            List<ProcessUsage> processes = new();
+
+            if (!File.Exists(_filePath))
+                return null;
+            XDocument doc = XDocument.Load(_filePath);
+            XElement presetElement = doc.Root.Elements("Preset")
+                .FirstOrDefault(e => e.Attribute("Name")?.Value == presetName);
+
+            if (presetElement != null)
+            {
+                var processElement = presetElement.Elements("Process");
+                foreach (var e in processElement)
+                {
+                    ProcessUsage process = new();
+                    process.ProcessName = e.Attribute("Name")?.Value ?? string.Empty;
+                    process.EditedName = e.Attribute("EditedName")?.Value ?? string.Empty;
+                    processes.Add(process);
+                }
+            }
+
+            return processes;
+        }
     }
 }
