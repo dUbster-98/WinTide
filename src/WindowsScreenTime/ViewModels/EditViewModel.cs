@@ -26,8 +26,7 @@ namespace WindowsScreenTime.ViewModels
     {
         private readonly IIniSetService _iniSetService;
         private readonly IXmlSetService _xmlSetService;
-        private readonly IProcessContainService _processContainService;
-
+        
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
         public ObservableCollection<ProcessUsage> ViewList { get; set; }
 
