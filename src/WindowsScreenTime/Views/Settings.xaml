@@ -27,28 +27,38 @@
                 <Setter Property="FontSize"
                     Value="15"/>
                 <Setter Property="Margin"
-                    Value="10"/>
+                    Value="0"/>
                 <Setter Property="Opacity"
                     Value="100"/>
+                <Setter Property="VerticalAlignment"
+                        Value="Center"/>
+                <Setter Property="HorizontalAlignment"
+                        Value="Center"/>
             </Style>
-        </ResourceDictionary>        
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid x:Name="Part_grid" Background="#e3edf7">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="8*"/>
-            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="0.5*"/>
         </Grid.ColumnDefinitions>
-        <UniformGrid Rows="6" HorizontalAlignment="Center">
-            <Label Content="윈도우 시작시 자동 실행" VerticalAlignment="Center"/>
-            <Label Content="Settings" VerticalAlignment="Center"/>
+        <UniformGrid Grid.Column="1" Rows="10" HorizontalAlignment="Center">
+            <Label/>
+            <Label Content="도움말 보기"/>
+            <Label Content="윈도우 시작시 자동 실행"/>
+            <Label Content="백그라운드 모드"/>
+            <Label Content="데이터 초기화"/>
             <Label/>
             <Label/>
             <Label/>
-            <ToggleButton            
+            <Label Content="야간 모드"/>
+            <ToggleButton
                 DockPanel.Dock="Bottom"
                 Style="{StaticResource ThemeButton}"
                 Checked="ToggleButton_Checked" Unchecked="ToggleButton_UnChecked"/>
+            
         </UniformGrid>
 
     </Grid>

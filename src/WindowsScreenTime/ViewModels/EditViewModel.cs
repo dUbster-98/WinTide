@@ -19,6 +19,7 @@ using System.Collections.Concurrent;
 using Prism.Regions;
 using WindowsScreenTime.Services;
 using CommunityToolkit.Mvvm.Messaging;
+using System.DirectoryServices.ActiveDirectory;
 
 namespace WindowsScreenTime.ViewModels
 {
@@ -26,6 +27,7 @@ namespace WindowsScreenTime.ViewModels
     {
         private readonly IIniSetService _iniSetService;
         private readonly IXmlSetService _xmlSetService;
+        private readonly IProcessContainService _processContainService;
         
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
         public ObservableCollection<ProcessUsage> ViewList { get; set; }
@@ -58,6 +60,8 @@ namespace WindowsScreenTime.ViewModels
 
         private Task _processSerchTask;
 
+        private static string ResourcePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources/Icons");
+
         public EditViewModel(IXmlSetService xmlSetService, IProcessContainService processContainService)
         {
             _xmlSetService = xmlSetService;
@@ -71,6 +75,9 @@ namespace WindowsScreenTime.ViewModels
             ViewList = new();
             iconCache = new();
             ViewListStr = new();
+
+            if (!Directory.Exists(ResourcePath))
+                Directory.CreateDirectory(ResourcePath);
         }
 
         public void Initialize()
@@ -311,14 +318,33 @@ namespace WindowsScreenTime.ViewModels
             }
         }
 
+        private void SaveBitmapImage(BitmapImage bitmapImage, string filePath)
+        {
+            BitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bitmapImage));
+
+            if (File.Exists(filePath))
+                return;
+            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                encoder.Save(fileStream);
+            }
+        }
+
         [RelayCommand]
         private void PresetSave()
         {
-            // TextBox 바인딩의 UpdateSourceTrigger 기본값이 LostFocus입니다. 입력하는 즉시 값을 반영하려면 PropertyChanged로 설정합니다.
             foreach (ProcessUsage process in ViewList)
-            {             
+            {
                 if (process.EditedName == null)
                     process.EditedName = process.ProcessName;
+
+                string iconPath = Path.Combine(ResourcePath, process.ProcessName + ".png");
+
+                if (process.ProcessIcon != null)
+                {
+                    SaveBitmapImage(process.ProcessIcon, iconPath);
+                }
             }
             _xmlSetService.SavePreset(SelectedPreset.ToString(), ViewList);
         }

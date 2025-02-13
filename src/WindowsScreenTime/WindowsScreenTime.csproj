@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\Fonts\Recipekorea 레코체 FONT.ttf" />
+    <None Remove="Resources\Fonts\Recipekorea FONT.ttf" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,7 +56,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\Fonts\Recipekorea 레코체 FONT.ttf" />
+    <Resource Include="Resources\Fonts\Recipekorea FONT.ttf" />
   </ItemGroup>
 
 </Project>

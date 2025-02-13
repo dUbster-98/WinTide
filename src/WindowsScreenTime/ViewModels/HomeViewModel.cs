@@ -10,19 +10,22 @@ using System.Threading.Tasks;
 using WindowsScreenTime.Models;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.IO;
 using System.Windows.Input;
 using WindowsScreenTime.Views;
 using System.Windows.Controls;
 using WindowsScreenTime.Services;
 using System.Windows.Media.Imaging;
+using YamlDotNet.Core.Tokens;
+using System.Drawing.Text;
 
 namespace WindowsScreenTime.ViewModels
 {
     public partial class HomeViewModel : ObservableObject
     {
-        private readonly IIniSetService _iniSetService;
         private readonly IXmlSetService _xmlSetService;
         private readonly IProcessContainService _processContainService;
+        private readonly IDatabaseService _databaseService;
 
         [ObservableProperty]
         private DateTime? startDate;
@@ -33,18 +36,17 @@ namespace WindowsScreenTime.ViewModels
 
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
 
-        private System.Timers.Timer monitoringTimer;
         private readonly double totalRam;
 
-        public HomeViewModel(IXmlSetService xmlSetService, IProcessContainService processContainService) 
+        private static string ResourcePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources/Icons");
+
+        public HomeViewModel(IXmlSetService xmlSetService, IProcessContainService processContainService, IDatabaseService databaseService) 
         {
             _xmlSetService = xmlSetService;
             _processContainService = processContainService;
+            _databaseService = databaseService;
 
             ProcessList = new ();
-            monitoringTimer = new System.Timers.Timer(1000);
-            monitoringTimer.Elapsed += MonitorActiveWindow;
-            monitoringTimer.Start();
 
             if (_xmlSetService.LoadSelectedPreset() == null || _xmlSetService.LoadSelectedPreset() == "")
                 SelectedPreset = 0;
@@ -52,11 +54,15 @@ namespace WindowsScreenTime.ViewModels
             {
                 SelectedPreset = Convert.ToInt32(_xmlSetService.LoadSelectedPreset());
                 PresetChange();
-            }                
+            }
+
+            Initialize();
         }
 
         private void Initialize()
         {
+            Task _processMonitoringTask = Task.Run(() => MonitorActiveWindow());
+            Task _autoSaveTask = Task.Run(() => AutoSave());
 
         }
 
@@ -66,7 +72,7 @@ namespace WindowsScreenTime.ViewModels
         [DllImport("user32.dll", SetLastError = true)]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
-        private void MonitorActiveWindow(object? sender, ElapsedEventArgs e)
+        private async void MonitorActiveWindow()
         {
             IntPtr hWnd = GetForegroundWindow();
             GetWindowThreadProcessId(hWnd, out uint processId);
@@ -77,7 +83,18 @@ namespace WindowsScreenTime.ViewModels
             {
                 target.UsageTime += 1;
             }
+
+            await Task.Delay(1000);
         }
+        private async void AutoSave()
+        {
+            while (true)
+            {
+                await Task.Delay(60000);
+                //_databaseService.UpdateDataToDB("test", "1", DateTime.Now.ToString("yyyy-MM-dd"));
+            }
+        }
+
         [RelayCommand]
         public void AddProcess(string processName)
         {
@@ -125,15 +142,17 @@ namespace WindowsScreenTime.ViewModels
                     foreach (ProcessUsage proc in processes)
                     {
                         string? processName = proc.ProcessName;
-
                         if (processName != null)
                         {
-                            string? path = _processContainService.GetProcessPathByString(processName);
-
-                            if (path != null)
+                            if (proc.EditedName == null)
+                                proc.EditedName = processName;
+                           
+                            string iconPath = Path.Combine(ResourcePath, processName + ".png");
+                            if (!File.Exists(iconPath))
+                                continue;
+                            else
                             {
-                                BitmapImage? icon = _processContainService.GetProcessIcon(path);
-                                proc.ProcessIcon = icon;
+                                proc.ProcessIcon = new BitmapImage(new Uri(iconPath));
                             }
                         }
                         ProcessList.Add(proc);

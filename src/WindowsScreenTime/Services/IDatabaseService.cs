@@ -13,11 +13,12 @@ namespace WindowsScreenTime.Services
     public interface IDatabaseService
     {
         void InitializeDataBase();
-        void WriteDataToDB();
-        void QueryDataToDB();
+        void WriteDataToDB(string name, string time, string day);
+        void UpdateDataToDB(string name, string time, string today);
+        void QueryDataToDB(string name, string startDate, string endDate);
     }
 
-    public class DataBaseService : IDatabaseService
+    public class DatabaseService : IDatabaseService
     {
         static string CreateTableQuery = "CREATE TABLE IF NOT EXISTS \"AppTimer\" (\r\n\t\"key\"\tINTEGER NOT NULL,\r\n\t\"name\"\tTEXT NOT NULL,\r\n\t\"time\"\tINTEGER NOT NULL,\r\n\t\"day\"\tTEXT NOT NULL,\r\n\tPRIMARY KEY(\"key\" AUTOINCREMENT)\r\n);";
         private static string currentDirectory = Directory.GetCurrentDirectory();
@@ -38,34 +39,52 @@ namespace WindowsScreenTime.Services
             }
         }
 
-        public void WriteDataToDB()
+        public void WriteDataToDB(string name, string time, string today)
         {
             using (var conn = new SqliteConnection(ConnectionString))
             {
-                string insertQuery = "INSERT INTO Users (Name, Age, Email) VALUES (@Name, @Age, @Email);";
+                string insertQuery = "INSERT INTO AppTimer (name, time, day) VALUES (@name, @time, @day);";
                 using (var insertCmd = new SqliteCommand(insertQuery, conn))
                 {
-                    insertCmd.Parameters.AddWithValue("@Name", "Bob");
-                    insertCmd.Parameters.AddWithValue("@Age", 25);
-                    insertCmd.Parameters.AddWithValue("@Email", "bob@example.com");
+                    insertCmd.Parameters.AddWithValue("@name", name);
+                    insertCmd.Parameters.AddWithValue("@time", time);
+                    insertCmd.Parameters.AddWithValue("@day", today);
                     insertCmd.ExecuteNonQuery();
-                    Console.WriteLine("✅ 데이터가 삽입되었습니다.");
                 }
             }
         }
 
-        public void QueryDataToDB()
+        public void UpdateDataToDB(string name, string time, string today)
         {
             using (var conn = new SqliteConnection(ConnectionString))
             {
-                string selectQuery = "SELECT * FROM Users;";
-                using (var selectCmd = new SqliteCommand(selectQuery, conn))
-                using (var reader = selectCmd.ExecuteReader())
+                string insertQuery = "UPDATE AppTimer SET time=@time WHERE name=@name;";
+                using (var updateCmd = new SqliteCommand(insertQuery, conn))
                 {
-                    Console.WriteLine("📊 데이터 목록:");
-                    while (reader.Read())
+                    updateCmd.Parameters.AddWithValue("@name", name);
+                    updateCmd.Parameters.AddWithValue("@time", time);
+                    updateCmd.Parameters.AddWithValue("@day", today);
+                    updateCmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void QueryDataToDB(string name, string startDay, string endDay)
+        {
+            using (var conn = new SqliteConnection(ConnectionString))
+            {
+                string selectQuery = "SELECT * FROM AppTimer WHERE day BETWEEN @startDay AND @endDay;";
+                using (var selectCmd = new SqliteCommand(selectQuery, conn))
+                {
+                    selectCmd.Parameters.AddWithValue("@startDay", startDay);
+                    selectCmd.Parameters.AddWithValue("@endDay", endDay);
+                    conn.Open();
+                    using (var reader = selectCmd.ExecuteReader())
                     {
-                        Console.WriteLine($"ID: {reader.GetInt32(0)}, Name: {reader.GetString(1)}, Age: {reader.GetInt32(2)}, Email: {reader.GetString(3)}");
+                        while (reader.Read())
+                        {
+                            Console.WriteLine($"Name: {reader.GetString(1)}, Time: {reader.GetString(2)}");
+                        }
                     }
                 }
             }
