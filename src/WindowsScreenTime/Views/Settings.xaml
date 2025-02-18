@@ -7,7 +7,8 @@
              xmlns:vm="clr-namespace:WindowsScreenTime.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="685" d:DesignWidth="860"
-             Loaded="UserControl_Loaded">
+             Loaded="UserControl_Loaded"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -45,19 +46,37 @@
             <ColumnDefinition Width="0.5*"/>
         </Grid.ColumnDefinitions>
         <UniformGrid Grid.Column="1" Rows="10" HorizontalAlignment="Center">
-            <Label/>
+            
             <Label Content="도움말 보기"/>
             <Label Content="윈도우 시작시 자동 실행"/>
             <Label Content="백그라운드 모드"/>
             <Label Content="데이터 초기화"/>
-            <Label/>
-            <Label/>
-            <Label/>
+            <ToggleButton
+                IsChecked="False"
+                Style="{StaticResource MaterialDesignSwitchDarkToggleButton}"
+                ToolTip="MaterialDesignSwitchDarkToggleButton" />
+
             <Label Content="야간 모드"/>
             <ToggleButton
                 DockPanel.Dock="Bottom"
                 Style="{StaticResource ThemeButton}"
                 Checked="ToggleButton_Checked" Unchecked="ToggleButton_UnChecked"/>
+            <Button
+                Style="{StaticResource MaterialDesignFloatingActionDarkButton}"
+                ToolTip="MaterialDesignFloatingActionDarkButton">
+                <materialDesign:PackIcon
+                    Kind="Alarm" Cursor="" Width="30" Height="30"/>
+            </Button>
+            <ToggleButton
+                Width="40" Height="40"
+              materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=CarryOnBagCheck}"
+              Content="{materialDesign:PackIcon Kind=AddAlarm, Size=30}"
+              Style="{StaticResource MaterialDesignActionToggleButton}"
+              ToolTip="MaterialDesignActionLightToggleButton"/>
+
+
+            
+            
             
         </UniformGrid>
 

@@ -25,7 +25,6 @@ namespace WindowsScreenTime.ViewModels
 {
     public partial class EditViewModel : ObservableObject
     {
-        private readonly IIniSetService _iniSetService;
         private readonly IXmlSetService _xmlSetService;
         private readonly IProcessContainService _processContainService;
         
@@ -42,10 +41,10 @@ namespace WindowsScreenTime.ViewModels
         [ObservableProperty]
         private ProcessUsage? itemToRemove;
         [ObservableProperty]
-        private int selectedPreset;
+        private int? selectedPreset;
                     
-        private string filterText;
-        public string FilterText
+        private string? filterText;
+        public string? FilterText
         {
             get => filterText;
             set
@@ -281,11 +280,11 @@ namespace WindowsScreenTime.ViewModels
         {
             if (SelectedPreset != null)
             {
-                _xmlSetService.SaveSelectedPreset(SelectedPreset.ToString());
+                _xmlSetService.SaveSelectedPreset(SelectedPreset.ToString()!);
 
                 List<ProcessUsage> processes = new();
                 ViewList.Clear();
-                processes = _xmlSetService.LoadPresetProcess(SelectedPreset.ToString());
+                processes = _xmlSetService.LoadPresetProcess(SelectedPreset.ToString()!);
 
                 if (processes != null)
                 {
@@ -334,19 +333,22 @@ namespace WindowsScreenTime.ViewModels
         [RelayCommand]
         private void PresetSave()
         {
-            foreach (ProcessUsage process in ViewList)
+            if (SelectedPreset != null)
             {
-                if (process.EditedName == null)
-                    process.EditedName = process.ProcessName;
-
-                string iconPath = Path.Combine(ResourcePath, process.ProcessName + ".png");
-
-                if (process.ProcessIcon != null)
+                foreach (ProcessUsage process in ViewList)
                 {
-                    SaveBitmapImage(process.ProcessIcon, iconPath);
+                    if (process.EditedName == null)
+                        process.EditedName = process.ProcessName;
+
+                    string iconPath = Path.Combine(ResourcePath, process.ProcessName + ".png");
+
+                    if (process.ProcessIcon != null)
+                    {
+                        SaveBitmapImage(process.ProcessIcon, iconPath);
+                    }
                 }
+                _xmlSetService.SavePreset(SelectedPreset.ToString()!, ViewList);
             }
-            _xmlSetService.SavePreset(SelectedPreset.ToString(), ViewList);
         }
 
         private void OnTransferViewModelState(object recipient, TransferViewModelActivation message)

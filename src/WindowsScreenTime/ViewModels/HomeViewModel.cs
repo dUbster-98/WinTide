@@ -32,11 +32,9 @@ namespace WindowsScreenTime.ViewModels
         [ObservableProperty]
         private DateTime? endDate;
         [ObservableProperty]
-        private int selectedPreset;
+        private int? selectedPreset;
 
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
-
-        private readonly double totalRam;
 
         private static string ResourcePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources/Icons");
 
@@ -131,11 +129,11 @@ namespace WindowsScreenTime.ViewModels
         {
             if (SelectedPreset != null)
             {
-                _xmlSetService.SaveSelectedPreset(SelectedPreset.ToString());
+                _xmlSetService.SaveSelectedPreset(SelectedPreset.ToString()!);
 
                 List<ProcessUsage> processes = new();
                 ProcessList.Clear();
-                processes = _xmlSetService.LoadPresetProcess(SelectedPreset.ToString());
+                processes = _xmlSetService.LoadPresetProcess(SelectedPreset.ToString()!);
 
                 if (processes != null)
                 {
@@ -159,6 +157,11 @@ namespace WindowsScreenTime.ViewModels
                     }
                 }
             }
+        }
+        [RelayCommand]
+        private void TimerSet()
+        {
+
         }
     }
 }

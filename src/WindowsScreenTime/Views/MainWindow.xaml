@@ -15,7 +15,8 @@
         AllowsTransparency="True" 
         ResizeMode="CanResizeWithGrip"
         Background="Transparent" 
-        SizeChanged="Window_SizeChanged">
+        SizeChanged="Window_SizeChanged"
+        Style="{StaticResource MaterialDesignWindow}">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -156,11 +157,13 @@
                 <DockPanel  Margin="10">
                     <ToggleButton x:Name="PART_menuButton"
                                 Width="200"
-                                Style="{StaticResource MenuStyle}"
+                                Style="{StaticResource MaterialDesignHamburgerToggleButton}"
+                                 
                                 Command="{Binding MenuCommand}"
                                 Click="PART_menuButton_Click"
                                 DockPanel.Dock="Top">
                     </ToggleButton>
+                    
 
                     <RadioButton x:Name="PART_homeButton"
                                      Width="200"
