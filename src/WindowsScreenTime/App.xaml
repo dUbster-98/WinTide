@@ -11,7 +11,12 @@
         <ResourceDictionary>
             
             <cvts:BytesToMBConverter x:Key="BytesToMBConverter"/>
-            
+            <cvts:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <cvts:BoolToVisibilityConverter
+                                            x:Key="BoolToVisibilityReverseConverter"        
+                                            FalseValue="Visible"
+                                            TrueValue="Collapsed" />
+
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />

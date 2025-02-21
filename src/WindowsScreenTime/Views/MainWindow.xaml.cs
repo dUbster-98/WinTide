@@ -47,8 +47,8 @@ namespace WindowsScreenTime
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
-
+            //this.Close();
+            this.Hide();       // 창 숨김
         }
 
         private void MaximizeButton_Click(object sender, RoutedEventArgs e)
@@ -131,6 +131,16 @@ namespace WindowsScreenTime
                 Storyboard storyboard = (Storyboard)FindResource("CloseMenu_sb");
                 storyboard.Begin(this);
             }
+        }
+
+        private void MenuItem_Open_Click(object sender, RoutedEventArgs e)
+        {
+            this.Show();
+        }
+
+        private void MenuItem_Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

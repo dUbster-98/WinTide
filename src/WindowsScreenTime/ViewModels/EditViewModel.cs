@@ -42,7 +42,9 @@ namespace WindowsScreenTime.ViewModels
         private ProcessUsage? itemToRemove;
         [ObservableProperty]
         private int? selectedPreset;
-                    
+        [ObservableProperty]
+        private bool isLoading;
+
         private string? filterText;
         public string? FilterText
         {
@@ -56,8 +58,32 @@ namespace WindowsScreenTime.ViewModels
 
         private List<string?> ViewListStr;
         private readonly double totalRam;
-
         private Task _processSerchTask;
+
+        private bool _isActive;
+        public bool IsActive
+        {
+            get => _isActive;
+            set
+            {
+                if (_isActive != value)
+                {
+                    _isActive = value;
+                    OnPropertyChanged(nameof(IsActive));
+
+                    if (_isActive) // true가 되면 2초 후에 다시 false로 변경
+                    {
+                        ResetAfterDelay();
+                    }
+                }
+            }
+        }
+
+        private async void ResetAfterDelay()
+        {
+            await Task.Delay(2000); // 2초 대기
+            IsActive = false; // 다시 false로 변경
+        }
 
         private static string ResourcePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources/Icons");
 
@@ -127,7 +153,6 @@ namespace WindowsScreenTime.ViewModels
                     if (string.Equals(process.ProcessName, "Idle", StringComparison.OrdinalIgnoreCase) ||
                         string.Equals(process.ProcessName, "System", StringComparison.OrdinalIgnoreCase) ||
                         string.Equals(process.ProcessName, "WindowsScreenTime", StringComparison.OrdinalIgnoreCase))
-
                         continue;
                     try
                     {
@@ -190,6 +215,8 @@ namespace WindowsScreenTime.ViewModels
                     }
                 }
             });
+
+            IsLoading = false;
         }
 
 
@@ -349,12 +376,14 @@ namespace WindowsScreenTime.ViewModels
                 }
                 _xmlSetService.SavePreset(SelectedPreset.ToString()!, ViewList);
             }
+            IsActive = true;
         }
 
         private void OnTransferViewModelState(object recipient, TransferViewModelActivation message)
         {
             if (message.isActivated == true)
             {
+                IsLoading = true;
                 Initialize();
             }
             else
