@@ -49,6 +49,30 @@ namespace WindowsScreenTime.ViewModels
 
         private readonly Random _r = new();
         private ProcessChartInfo[] _data;
+        [ObservableProperty]
+        private Axis[] xAxes = [new Axis { SeparatorsPaint = new SolidColorPaint(new SKColor(220, 220, 220)) }];
+        [ObservableProperty]
+        private Axis[] yAxes = [new Axis { IsVisible = false }];
+        [ObservableProperty]
+        private ISeries[] _series;
+
+        public bool IsReading { get; set; } = true;
+        private ProcessChartInfo[] SortData() => [.. _data.OrderBy(x => x.Value)];
+
+        public class ProcessChartInfo : ObservableValue
+        {
+            public ProcessChartInfo(string name, int value, SolidColorPaint paint)
+            {
+                Name = name;
+                Paint = paint;
+
+                // the ObservableValue.Value property is used by the chart
+                Value = value;
+            }
+
+            public string Name { get; set; }
+            public SolidColorPaint Paint { get; set; }
+        }
 
         public HomeViewModel(IXmlSetService xmlSetService, IProcessContainService processContainService, IDatabaseService databaseService) 
         {
@@ -82,27 +106,27 @@ namespace WindowsScreenTime.ViewModels
             .Select(i => new SolidColorPaint(ColorPalletes.MaterialDesign500[i].AsSKColor()))
             .ToArray();
 
-            // generate some data for each pilot:
             _data =
             [
                 new("Tsunoda",   500,  paints[0]),
-            new("Sainz",     450,  paints[1]),
-            new("Riccardo",  520,  paints[2]),
-            new("Bottas",    550,  paints[3]),
-            new("Perez",     660,  paints[4]),
-            new("Verstapen", 920,  paints[5]),
-            new("Hamilton",  1000, paints[6])
+                new("Sainz",     450,  paints[1]),
+                new("Riccardo",  520,  paints[2]),
+                new("Bottas",    550,  paints[3]),
+                new("Perez",     660,  paints[4]),
+                new("Verstapen", 920,  paints[5]),
+                new("Hamilton",  1000, paints[6])
             ];
 
             var rowSeries = new RowSeries<ProcessChartInfo>
             {
                 Values = SortData(),
                 DataLabelsPaint = new SolidColorPaint(new SKColor(245, 245, 245)),
-                DataLabelsPosition = DataLabelsPosition.End,
+                DataLabelsPosition = DataLabelsPosition.Right,
                 DataLabelsTranslate = new(-1, 0),
                 DataLabelsFormatter = point => $"{point.Model!.Name} {point.Coordinate.PrimaryValue}",
                 MaxBarWidth = 50,
                 Padding = 10,
+                Name= "F1 Drivers"
             }
             .OnPointMeasured(point =>
             {
@@ -111,38 +135,22 @@ namespace WindowsScreenTime.ViewModels
                 point.Visual.Fill = point.Model!.Paint;
             });
 
-            series = [rowSeries];
+            _series = [rowSeries];
 
             _ = StartRace();
         }
-
-        [ObservableProperty]
-        private ISeries[] series;
-        [ObservableProperty]
-        private Axis[] xAxes = [new Axis { SeparatorsPaint = new SolidColorPaint(new SKColor(220, 220, 220)) }];
-        [ObservableProperty]
-        private Axis[] yAxes = [new Axis { IsVisible = false }];
-        public bool IsReading { get; set; } = true;
 
         public async Task StartRace()
         {
             await Task.Delay(1000);
 
-            // to keep this sample simple, we run the next infinite loop
-            // in a real application you should stop the loop/task when the view is disposed
-
             while (IsReading)
             {
-                // do a random change to the data
-                foreach (var item in _data)
-                    item.Value += _r.Next(0, 100);
-
                 Series[0].Values = SortData();
 
-                await Task.Delay(100);
+                await Task.Delay(1000);
             }
         }
-        private ProcessChartInfo[] SortData() => [.. _data.OrderBy(x => x.Value)];
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();

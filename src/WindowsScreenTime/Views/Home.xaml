@@ -200,12 +200,12 @@
                 </StackPanel>
             </Grid>
 
-            <ScrollViewer Grid.Row="3">
+            <ScrollViewer Grid.Row="3" Margin="10">
                 <lvc:CartesianChart
-                    Series="{Binding Series1}"
+                    Series="{Binding Series}"
                     XAxes="{Binding XAxes}"
                     YAxes="{Binding YAxes}"
-                    TooltipPosition="Auto">
+                    TooltipPosition="Center">
                 </lvc:CartesianChart>
 
                 <!--<ListView ItemsSource="{Binding ProcessList}"
