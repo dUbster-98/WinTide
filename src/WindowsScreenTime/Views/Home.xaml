@@ -205,7 +205,7 @@
                     Series="{Binding Series}"
                     XAxes="{Binding XAxes}"
                     YAxes="{Binding YAxes}"
-                    TooltipPosition="Center">
+                    TooltipPosition="Hidden">
                 </lvc:CartesianChart>
 
                 <!--<ListView ItemsSource="{Binding ProcessList}"

@@ -71,6 +71,7 @@ namespace WindowsScreenTime.ViewModels
         {
             
         }
+
         private void GoHome()
         {
             CurrentView = App.Current.Services.GetService(typeof(HomeViewModel));

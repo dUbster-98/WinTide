@@ -27,6 +27,7 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.Themes;
 using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
+using System.Drawing;
 
 namespace WindowsScreenTime.ViewModels
 {
@@ -47,8 +48,7 @@ namespace WindowsScreenTime.ViewModels
 
         private static string ResourcePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources/Icons");
 
-        private readonly Random _r = new();
-        private ProcessChartInfo[] _data;
+        private List<ProcessChartInfo> _data;
         [ObservableProperty]
         private Axis[] xAxes = [new Axis { SeparatorsPaint = new SolidColorPaint(new SKColor(220, 220, 220)) }];
         [ObservableProperty]
@@ -58,20 +58,23 @@ namespace WindowsScreenTime.ViewModels
 
         public bool IsReading { get; set; } = true;
         private ProcessChartInfo[] SortData() => [.. _data.OrderBy(x => x.Value)];
+        // ..(spread 연산자)는 컬렉션의 모든 요소를 새 배열로 복사하는 역할
 
         public class ProcessChartInfo : ObservableValue
         {
-            public ProcessChartInfo(string name, int value, SolidColorPaint paint)
+            public ProcessChartInfo(string name, int value, SolidColorPaint paint, string iconPath)
             {
+                
                 Name = name;
                 Paint = paint;
-
+                IconPath = iconPath;
                 // the ObservableValue.Value property is used by the chart
                 Value = value;
             }
 
             public string Name { get; set; }
             public SolidColorPaint Paint { get; set; }
+            public string? IconPath { get; set; } 
         }
 
         public HomeViewModel(IXmlSetService xmlSetService, IProcessContainService processContainService, IDatabaseService databaseService) 
@@ -91,52 +94,65 @@ namespace WindowsScreenTime.ViewModels
             }
 
             Initialize();
-            BeginChartRace();
+            UpdateProcessList();
+            BeginChartRace();           
         }
 
         private void Initialize()
         {
             Task _processMonitoringTask = Task.Run(() => MonitorActiveWindow());
-            Task _autoSaveTask = Task.Run(() => AutoSave());
+            Task _autoSaveTask = Task.Run(() => AutoSave());     
         }
 
-        private void BeginChartRace()
+        private void UpdateProcessList()
         {
             var paints = Enumerable.Range(0, 7)
-            .Select(i => new SolidColorPaint(ColorPalletes.MaterialDesign500[i].AsSKColor()))
-            .ToArray();
+                                   .Select(i => new SolidColorPaint(ColorPalletes.MaterialDesign500[i].AsSKColor()))
+                                   .ToArray();
 
-            _data =
-            [
-                new("Tsunoda",   500,  paints[0]),
-                new("Sainz",     450,  paints[1]),
-                new("Riccardo",  520,  paints[2]),
-                new("Bottas",    550,  paints[3]),
-                new("Perez",     660,  paints[4]),
-                new("Verstapen", 920,  paints[5]),
-                new("Hamilton",  1000, paints[6])
-            ];
+            _data = new List<ProcessChartInfo>();
 
-            var rowSeries = new RowSeries<ProcessChartInfo>
+            int i = 0;
+            foreach (var proc in ProcessList)
+            {
+                _data.Add(new(proc.EditedName, proc.UsageTime, paints[i], proc.IconPath));
+
+                ++i;
+                if (i == ProcessList.Count())
+                    i = 0;
+            }
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var projectRoot = Directory.GetParent(baseDirectory)?.Parent?.Parent?.Parent?.FullName;
+
+            var fontPath = Path.Combine(projectRoot, "Resources/Fonts/Recipekorea FONT.ttf");
+            var koreanTypeface = SKTypeface.FromFile(fontPath);
+            var rowSeries = new RowSeries<ProcessChartInfo, MyBarGeometry>
             {
                 Values = SortData(),
-                DataLabelsPaint = new SolidColorPaint(new SKColor(245, 245, 245)),
-                DataLabelsPosition = DataLabelsPosition.Right,
+                DataLabelsPaint = new SolidColorPaint(new SKColor(245, 245, 245))
+                {
+                    SKTypeface = koreanTypeface // 한글 폰트 적용
+                },
+                DataLabelsPosition = DataLabelsPosition.End,
                 DataLabelsTranslate = new(-1, 0),
                 DataLabelsFormatter = point => $"{point.Model!.Name} {point.Coordinate.PrimaryValue}",
-                MaxBarWidth = 50,
+                MaxBarWidth = 100,
                 Padding = 10,
-                Name= "F1 Drivers"
             }
             .OnPointMeasured(point =>
             {
                 // assign a different color to each point
                 if (point.Visual is null) return;
                 point.Visual.Fill = point.Model!.Paint;
+                point.Visual.UpdateData(point.Model!);
+
             });
 
             _series = [rowSeries];
+        }
 
+        private void BeginChartRace()
+        {
             _ = StartRace();
         }
 
@@ -186,7 +202,7 @@ namespace WindowsScreenTime.ViewModels
         {
             if (!ProcessList.Any(p => p.ProcessName == processName))
             {
-                ProcessList.Add(new ProcessUsage { ProcessName = processName, UsageTime = "0" });
+                ProcessList.Add(new ProcessUsage { ProcessName = processName, UsageTime = 0 });
             }
         }
         [RelayCommand]
@@ -228,24 +244,29 @@ namespace WindowsScreenTime.ViewModels
                     foreach (ProcessUsage proc in processes)
                     {
                         string? processName = proc.ProcessName;
+                        proc.UsageTime = 100;
                         if (processName != null)
                         {
                             if (proc.EditedName == null)
                                 proc.EditedName = processName;
-                           
+
                             string iconPath = Path.Combine(ResourcePath, processName + ".png");
-                            if (!File.Exists(iconPath))
-                                continue;
-                            else
-                            {
-                                proc.ProcessIcon = new BitmapImage(new Uri(iconPath));
-                            }
+                            proc.IconPath = iconPath;
+                            //if (!File.Exists(iconPath))
+                            //    continue;
+                            //else
+                            //{
+                            //    proc.ProcessIcon = new BitmapImage(new Uri(iconPath));
+                            //}
                         }
                         ProcessList.Add(proc);
                     }
                 }
             }
+
+            UpdateProcessList();
         }
+
         [RelayCommand]
         private void TimerSet()
         {
