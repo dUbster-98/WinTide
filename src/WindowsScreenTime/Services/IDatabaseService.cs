@@ -20,7 +20,7 @@ namespace WindowsScreenTime.Services
 
     public class DatabaseService : IDatabaseService
     {
-        static string CreateTableQuery = "CREATE TABLE IF NOT EXISTS \"AppTimer\" (\r\n\t\"key\"\tINTEGER NOT NULL,\r\n\t\"name\"\tTEXT NOT NULL,\r\n\t\"time\"\tINTEGER NOT NULL,\r\n\t\"day\"\tTEXT NOT NULL,\r\n\tPRIMARY KEY(\"key\" AUTOINCREMENT)\r\n);";
+        static string CreateTableQuery = "CREATE TABLE IF NOT EXISTS AppTimer (key INTEGER NOT NULL, name TEXT NOT NULL, time INTEGER, day TEXT, PRIMARY KEY(key AUTOINCREMENT))";
         private static string currentDirectory = Directory.GetCurrentDirectory();
         private static string pathDir = Path.Combine(currentDirectory, "data");
         public static string _filePath = pathDir + "/wst.db";
@@ -58,7 +58,21 @@ namespace WindowsScreenTime.Services
         {
             using (var conn = new SqliteConnection(ConnectionString))
             {
-                string insertQuery = "UPDATE AppTimer SET time=@time WHERE name=@name;";
+                //conn.Open();
+                string searchQuery = "SELECT * FROM AppTimer WHERE name=@name AND day=@day;";
+                using (var selectCmd = new SqliteCommand(searchQuery, conn))
+                {
+                    selectCmd.Parameters.AddWithValue("@day", today);
+                    using (var reader = selectCmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Console.WriteLine($"Name: {reader.GetString(1)}, Time: {reader.GetString(2)}");
+                        }
+                    }
+                }
+
+                string insertQuery = "UPDATE AppTimer SET time=@time WHERE name=@name AND day=@day;";
                 using (var updateCmd = new SqliteCommand(insertQuery, conn))
                 {
                     updateCmd.Parameters.AddWithValue("@name", name);

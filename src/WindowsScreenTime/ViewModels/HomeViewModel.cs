@@ -93,9 +93,10 @@ namespace WindowsScreenTime.ViewModels
                 PresetChange();
             }
 
+            
             Initialize();
-            UpdateProcessList();
-            BeginChartRace();           
+            PresetChange();
+            _ = StartRace();           
         }
 
         private void Initialize()
@@ -148,12 +149,7 @@ namespace WindowsScreenTime.ViewModels
 
             });
 
-            _series = [rowSeries];
-        }
-
-        private void BeginChartRace()
-        {
-            _ = StartRace();
+            Series = [rowSeries];
         }
 
         public async Task StartRace()
@@ -168,32 +164,54 @@ namespace WindowsScreenTime.ViewModels
             }
         }
 
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetForegroundWindow();
+        private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll")]
+        private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowTextLength(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool IsWindowVisible(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
         private async void MonitorActiveWindow()
         {
-            IntPtr hWnd = GetForegroundWindow();
-            GetWindowThreadProcessId(hWnd, out uint processId);
+            List<string> procInWindows = new();
 
-            Process activeProcess = Process.GetProcessById((int)processId);
-            var target = ProcessList.FirstOrDefault(p => p.ProcessName == activeProcess.ProcessName);
-            if (target != null)
+            EnumWindows((hWnd, lParam) =>
             {
-                target.UsageTime += 1;
-            }
+                if (!IsWindowVisible(hWnd)) return true; // 보이지 않는 창은 무시
 
-            await Task.Delay(1000);
+                GetWindowThreadProcessId(hWnd, out uint processId);
+                Process process = Process.GetProcessById((int)processId);
+
+                procInWindows.Add(process.ProcessName);
+
+                var target = ProcessList.FirstOrDefault(p => p.ProcessName == process.ProcessName);
+                if (target != null)
+                {
+                    target.UsageTime += 1;
+                }
+
+                return true; // 다음 창도 계속 탐색
+            }, IntPtr.Zero);
+
+            await Task.Delay(60000);
         }
+
         private async void AutoSave()
         {
             while (true)
             {
                 await Task.Delay(60000);
-                //_databaseService.UpdateDataToDB("test", "1", DateTime.Now.ToString("yyyy-MM-dd"));
+                _databaseService.UpdateDataToDB("test", "1", DateTime.Now.ToString("yyyy-MM-dd"));
             }
         }
 
