@@ -191,12 +191,51 @@
             </Grid>
 
             <Grid Grid.Row="2">
-                <StackPanel Orientation="Horizontal" Margin="5">
-                    <TextBox x:Name="ProcessNametb" Width="200" Margin="5"/>
-                    <Button Content="Add Process" Command="{Binding AddProcessCommand}"
-                            CommandParameter="{Binding Text, ElementName=ProcessNametb}"
-                            Margin="5"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
+                <Button Width="100" Content="BACK" HorizontalAlignment="Left"/>
+
+                <StackPanel Grid.Column="1" Margin="4" Orientation="Horizontal">
+                    <RadioButton
+                        Margin="4"
+                        IsChecked="True"
+                        Style="{StaticResource MaterialDesignTabRadioButton}">      
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Kind="Star"/>
+                            <TextBlock
+                                Margin="4,0,0,0"
+                                Text="SECONDS"/> 
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton
+                        Margin="4"
+                        IsChecked="False"
+                        Style="{StaticResource MaterialDesignTabRadioButton}">  
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Kind="Heart"/>
+                            <TextBlock
+                                Margin="4,0,0,0"
+                                Text="MINUTES" />    
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton
+                        Margin="4"
+                        IsEnabled="False"
+                        Style="{StaticResource MaterialDesignTabRadioButton}">
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Kind="Smiley"/>
+                            <TextBlock
+                                Margin="4,0,0,0"
+                                Text="HOURS" /> 
+                        </StackPanel>
+                    </RadioButton>
                 </StackPanel>
             </Grid>
 

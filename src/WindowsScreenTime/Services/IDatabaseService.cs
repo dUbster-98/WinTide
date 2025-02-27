@@ -13,8 +13,8 @@ namespace WindowsScreenTime.Services
     public interface IDatabaseService
     {
         void InitializeDataBase();
-        void WriteDataToDB(string name, string time, string day);
-        void UpdateDataToDB(string name, string time, string today);
+        void WriteDataToDB(string name, string day);
+        void UpdateDataToDB(string name, int time, string today);
         void QueryDataToDB(string name, string startDate, string endDate);
     }
 
@@ -39,39 +39,46 @@ namespace WindowsScreenTime.Services
             }
         }
 
-        public void WriteDataToDB(string name, string time, string today)
+        public void WriteDataToDB(string name, string today)
         {
             using (var conn = new SqliteConnection(ConnectionString))
             {
-                string insertQuery = "INSERT INTO AppTimer (name, time, day) VALUES (@name, @time, @day);";
-                using (var insertCmd = new SqliteCommand(insertQuery, conn))
-                {
-                    insertCmd.Parameters.AddWithValue("@name", name);
-                    insertCmd.Parameters.AddWithValue("@time", time);
-                    insertCmd.Parameters.AddWithValue("@day", today);
-                    insertCmd.ExecuteNonQuery();
-                }
-            }
-        }
+                conn.Open();
 
-        public void UpdateDataToDB(string name, string time, string today)
-        {
-            using (var conn = new SqliteConnection(ConnectionString))
-            {
-                //conn.Open();
+                bool isExist = false;
                 string searchQuery = "SELECT * FROM AppTimer WHERE name=@name AND day=@day;";
                 using (var selectCmd = new SqliteCommand(searchQuery, conn))
                 {
+                    selectCmd.Parameters.AddWithValue("@name", name);
                     selectCmd.Parameters.AddWithValue("@day", today);
                     using (var reader = selectCmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            Console.WriteLine($"Name: {reader.GetString(1)}, Time: {reader.GetString(2)}");
+                            isExist = true;
                         }
                     }
                 }
 
+                if (!isExist)
+                {
+                    string insertQuery = "INSERT INTO AppTimer (name, day) VALUES (@name, @day);";
+                    using (var insertCmd = new SqliteCommand(insertQuery, conn))
+                    {
+                        insertCmd.Parameters.AddWithValue("@name", name);
+                        insertCmd.Parameters.AddWithValue("@day", today);
+                        insertCmd.ExecuteNonQuery();
+                    }
+                }
+                conn.Close();
+            }
+        }
+
+        public void UpdateDataToDB(string name, int time, string today)
+        {
+            using (var conn = new SqliteConnection(ConnectionString))
+            {
+                conn.Open();
                 string insertQuery = "UPDATE AppTimer SET time=@time WHERE name=@name AND day=@day;";
                 using (var updateCmd = new SqliteCommand(insertQuery, conn))
                 {
@@ -87,12 +94,13 @@ namespace WindowsScreenTime.Services
         {
             using (var conn = new SqliteConnection(ConnectionString))
             {
+                conn.Open();
                 string selectQuery = "SELECT * FROM AppTimer WHERE day BETWEEN @startDay AND @endDay;";
                 using (var selectCmd = new SqliteCommand(selectQuery, conn))
                 {
                     selectCmd.Parameters.AddWithValue("@startDay", startDay);
                     selectCmd.Parameters.AddWithValue("@endDay", endDay);
-                    conn.Open();
+
                     using (var reader = selectCmd.ExecuteReader())
                     {
                         while (reader.Read())

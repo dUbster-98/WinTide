@@ -28,6 +28,7 @@ using LiveChartsCore.Themes;
 using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
 using System.Drawing;
+using System.Windows;
 
 namespace WindowsScreenTime.ViewModels
 {
@@ -55,6 +56,7 @@ namespace WindowsScreenTime.ViewModels
         private Axis[] yAxes = [new Axis { IsVisible = false }];
         [ObservableProperty]
         private ISeries[] _series;
+        private readonly Random _r = new();
 
         public bool IsReading { get; set; } = true;
         private ProcessChartInfo[] SortData() => [.. _data.OrderBy(x => x.Value)];
@@ -93,16 +95,13 @@ namespace WindowsScreenTime.ViewModels
                 PresetChange();
             }
 
-            
-            Initialize();
             PresetChange();
-            _ = StartRace();           
+            Initialize();   
         }
 
         private void Initialize()
         {
-            Task _processMonitoringTask = Task.Run(() => MonitorActiveWindow());
-            Task _autoSaveTask = Task.Run(() => AutoSave());     
+            Task _processMonitoringTask = Task.Run(() => MonitorActiveWindow());  
         }
 
         private void UpdateProcessList()
@@ -112,6 +111,7 @@ namespace WindowsScreenTime.ViewModels
                                    .ToArray();
 
             _data = new List<ProcessChartInfo>();
+            IsReading = false;
 
             int i = 0;
             foreach (var proc in ProcessList)
@@ -138,6 +138,7 @@ namespace WindowsScreenTime.ViewModels
                 DataLabelsTranslate = new(-1, 0),
                 DataLabelsFormatter = point => $"{point.Model!.Name} {point.Coordinate.PrimaryValue}",
                 MaxBarWidth = 100,
+                MiniatureShapeSize = 20,
                 Padding = 10,
             }
             .OnPointMeasured(point =>
@@ -152,16 +153,15 @@ namespace WindowsScreenTime.ViewModels
             Series = [rowSeries];
         }
 
-        public async Task StartRace()
+        public async Task SetProcessRanking()
         {
-            await Task.Delay(1000);
-
-            while (IsReading)
+            foreach (var proc in ProcessList)
             {
-                Series[0].Values = SortData();
-
-                await Task.Delay(1000);
+                var item = _data.FirstOrDefault(p => p.Name == proc.EditedName);
+                if (item != null)
+                    item.Value = proc.UsageTime;
             }
+            Series[0].Values = SortData();      
         }
 
         private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
@@ -181,37 +181,56 @@ namespace WindowsScreenTime.ViewModels
         [DllImport("user32.dll")]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
+        [DllImport("user32.dll")]
+        private static extern bool IsIconic(IntPtr hWnd); // 창이 최소화되었는지 확인
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        private const int GWL_STYLE = -16;
+        private const int GWL_EXSTYLE = -20;
+        private const int WS_VISIBLE = 0x10000000;
+        private const int WS_EX_TOOLWINDOW = 0x00000080;
+        private const int WS_EX_APPWINDOW = 0x00040000;
+
         private async void MonitorActiveWindow()
-        {
-            List<string> procInWindows = new();
-
-            EnumWindows((hWnd, lParam) =>
-            {
-                if (!IsWindowVisible(hWnd)) return true; // 보이지 않는 창은 무시
-
-                GetWindowThreadProcessId(hWnd, out uint processId);
-                Process process = Process.GetProcessById((int)processId);
-
-                procInWindows.Add(process.ProcessName);
-
-                var target = ProcessList.FirstOrDefault(p => p.ProcessName == process.ProcessName);
-                if (target != null)
-                {
-                    target.UsageTime += 1;
-                }
-
-                return true; // 다음 창도 계속 탐색
-            }, IntPtr.Zero);
-
-            await Task.Delay(60000);
-        }
-
-        private async void AutoSave()
         {
             while (true)
             {
-                await Task.Delay(60000);
-                _databaseService.UpdateDataToDB("test", "1", DateTime.Now.ToString("yyyy-MM-dd"));
+                await Task.Delay(1000);
+
+                EnumWindows((hWnd, lParam) =>
+                {
+                    if (!IsWindowVisible(hWnd)) return true; // 보이지 않는 창은 무시
+                    int length = GetWindowTextLength(hWnd);
+                    if (length == 0) return true; // 창 제목이 없는 경우 무시
+                    if (IsIconic(hWnd)) return true; // 최소화된 창 무시
+
+                    int style = GetWindowLong(hWnd, GWL_STYLE);
+                    int exStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
+
+                    // 툴 윈도우는 제외 (작업 표시줄 아이콘이 없는 창)
+                    if ((exStyle & WS_EX_TOOLWINDOW) != 0)
+                    {
+                        return true;
+                    }
+
+                    GetWindowThreadProcessId(hWnd, out uint processId);
+                    Process process = Process.GetProcessById((int)processId);
+
+                    var target = ProcessList.FirstOrDefault(p => p.ProcessName == process.ProcessName);
+                    if (target != null)
+                    {
+                        target.UsageTime += 1;
+
+                        //AutoSave
+                        _databaseService.UpdateDataToDB(target.ProcessName, target.UsageTime, DateTime.Now.ToString("yyyy-MM-dd"));
+                    }
+
+                    return true; // 다음 창도 계속 탐색
+                }, IntPtr.Zero);
+
+                _ = SetProcessRanking();
             }
         }
 
@@ -278,6 +297,7 @@ namespace WindowsScreenTime.ViewModels
                             //}
                         }
                         ProcessList.Add(proc);
+                        _databaseService.WriteDataToDB(proc.ProcessName, DateTime.Now.ToString("yyyy-MM-dd"));
                     }
                 }
             }

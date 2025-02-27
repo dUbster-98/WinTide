@@ -27,7 +27,9 @@ namespace WindowsScreenTime.ViewModels
     {
         private readonly IXmlSetService _xmlSetService;
         private readonly IProcessContainService _processContainService;
-        
+        private readonly IDatabaseService _databaseService;
+
+
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
         public ObservableCollection<ProcessUsage> ViewList { get; set; }
 
@@ -87,10 +89,11 @@ namespace WindowsScreenTime.ViewModels
 
         private static string ResourcePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources/Icons");
 
-        public EditViewModel(IXmlSetService xmlSetService, IProcessContainService processContainService)
+        public EditViewModel(IXmlSetService xmlSetService, IProcessContainService processContainService, IDatabaseService databaseService)
         {
             _xmlSetService = xmlSetService;
             _processContainService = processContainService;
+            _databaseService = databaseService;
 
             WeakReferenceMessenger.Default.Register<TransferViewModelActivation>(this, OnTransferViewModelState);
 
@@ -374,7 +377,7 @@ namespace WindowsScreenTime.ViewModels
                         SaveBitmapImage(process.ProcessIcon, iconPath);
                     }
                 }
-                _xmlSetService.SavePreset(SelectedPreset.ToString()!, ViewList);
+                _xmlSetService.SavePreset(SelectedPreset.ToString()!, ViewList);                
             }
             IsActive = true;
         }
