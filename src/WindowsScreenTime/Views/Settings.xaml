@@ -44,40 +44,51 @@
             <ColumnDefinition Width="0.5*"/>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition Width="0.5*"/>
         </Grid.ColumnDefinitions>
+        
         <UniformGrid Grid.Column="1" Rows="10" HorizontalAlignment="Center">
-            
-            <Label Content="도움말 보기"/>
+            <Label/>
             <Label Content="윈도우 시작시 자동 실행"/>
             <Label Content="백그라운드 모드"/>
+            <Label Content="야간 모드"/>
+            <Label/>
+            <Label/>
+            <Label/>
+            <Label/>
             <Label Content="데이터 초기화"/>
+
+        </UniformGrid>
+
+        <UniformGrid Grid.Column="2" Rows="10" HorizontalAlignment="Center">
+            <Label/>
+            <ToggleButton
+                IsChecked="False"
+                Style="{StaticResource MaterialDesignSwitchDarkToggleButton}"
+                ToolTip="MaterialDesignSwitchDarkToggleButton" />
             <ToggleButton
                 IsChecked="False"
                 Style="{StaticResource MaterialDesignSwitchDarkToggleButton}"
                 ToolTip="MaterialDesignSwitchDarkToggleButton" />
 
-            <Label Content="야간 모드"/>
             <ToggleButton
                 DockPanel.Dock="Bottom"
                 Style="{StaticResource ThemeButton}"
                 Checked="ToggleButton_Checked" Unchecked="ToggleButton_UnChecked"/>
+            <Label/>
+            <Label/>
+            <Label/>
+            <Label/>
             <Button
-                Style="{StaticResource MaterialDesignFloatingActionDarkButton}"
-                ToolTip="MaterialDesignFloatingActionDarkButton">
-                <materialDesign:PackIcon
-                    Kind="Alarm" Cursor="" Width="30" Height="30"/>
+                Width="100"
+                materialDesign:ButtonAssist.CornerRadius="10">
+                <TextBlock Text="EXECUTE" 
+                           Style="{StaticResource Text_Style}"
+                           FontSize="12"
+                           Padding="0"
+                           Margin="0 3 0 0"
+                           Foreground="White"/>
             </Button>
-            <ToggleButton
-                Width="40" Height="40"
-              materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=CarryOnBagCheck}"
-              Content="{materialDesign:PackIcon Kind=AddAlarm, Size=30}"
-              Style="{StaticResource MaterialDesignActionToggleButton}"
-              ToolTip="MaterialDesignActionLightToggleButton"/>
-
-
-            
-            
-            
         </UniformGrid>
 
     </Grid>
