@@ -58,9 +58,6 @@ namespace WindowsScreenTime.ViewModels
         private ISeries[] _series;
         private readonly Random _r = new();
 
-        private int counter = 60000;
-        private CancellationTokenSource cts = new();
-
         public bool IsReading { get; set; } = true;
         private ProcessChartInfo[] SortData() => [.. _data.OrderBy(x => x.Value)];
         // ..(spread 연산자)는 컬렉션의 모든 요소를 새 배열로 복사하는 역할
@@ -88,9 +85,6 @@ namespace WindowsScreenTime.ViewModels
             _processContainService = processContainService;
             _databaseService = databaseService;
 
-            startDate = DateTime.Today.AddDays(-7);
-            endDate = DateTime.Today;
-
             ProcessList = new ();
 
             if (_xmlSetService.LoadSelectedPreset() == null || _xmlSetService.LoadSelectedPreset() == "")
@@ -101,6 +95,7 @@ namespace WindowsScreenTime.ViewModels
                 PresetChange();
             }
 
+            PresetChange();
             Initialize();   
         }
 
@@ -199,20 +194,11 @@ namespace WindowsScreenTime.ViewModels
         private const int WS_EX_TOOLWINDOW = 0x00000080;
         private const int WS_EX_APPWINDOW = 0x00040000;
 
-        private async Task MonitorActiveWindow()
+        private async void MonitorActiveWindow()
         {
             while (true)
             {
-                var token = cts.Token;
-                try
-                {
-                    await Task.Delay(counter, token);
-                }
-                catch (TaskCanceledException)
-                {
-                    _ = MonitorActiveWindow();
-                    break;
-                }
+                await Task.Delay(1000);
 
                 EnumWindows((hWnd, lParam) =>
                 {
@@ -283,40 +269,38 @@ namespace WindowsScreenTime.ViewModels
         [RelayCommand]
         private void PresetChange()
         {
-            _xmlSetService.SaveSelectedPreset(SelectedPreset.ToString()!);
-
-            List<ProcessUsage> processes = new();
-            ProcessList.Clear();
-            processes = _xmlSetService.LoadPresetProcess(SelectedPreset.ToString()!);
-
-            if (processes != null)
+            if (SelectedPreset != null)
             {
-                foreach (ProcessUsage proc in processes)
+                _xmlSetService.SaveSelectedPreset(SelectedPreset.ToString()!);
+
+                List<ProcessUsage> processes = new();
+                ProcessList.Clear();
+                processes = _xmlSetService.LoadPresetProcess(SelectedPreset.ToString()!);
+
+                if (processes != null)
                 {
-                    string? processName = proc.ProcessName;
-                    proc.UsageTime = 100;
-                    if (processName != null)
+                    foreach (ProcessUsage proc in processes)
                     {
-                        if (proc.EditedName == null)
-                            proc.EditedName = processName;
+                        string? processName = proc.ProcessName;
+                        proc.UsageTime = 100;
+                        if (processName != null)
+                        {
+                            if (proc.EditedName == null)
+                                proc.EditedName = processName;
 
-                        string iconPath = Path.Combine(ResourcePath, processName + ".png");
-                        proc.IconPath = iconPath;
-                        //if (!File.Exists(iconPath))
-                        //    continue;
-                        //else
-                        //{
-                        //    proc.ProcessIcon = new BitmapImage(new Uri(iconPath));
-                        //}
+                            string iconPath = Path.Combine(ResourcePath, processName + ".png");
+                            proc.IconPath = iconPath;
+                            //if (!File.Exists(iconPath))
+                            //    continue;
+                            //else
+                            //{
+                            //    proc.ProcessIcon = new BitmapImage(new Uri(iconPath));
+                            //}
+                        }
+                        ProcessList.Add(proc);
+                        _databaseService.WriteDataToDB(proc.ProcessName, DateTime.Now.ToString("yyyy-MM-dd"));
                     }
-                    ProcessList.Add(proc);
-                    _databaseService.WriteDataToDB(proc.ProcessName, DateTime.Now.ToString("yyyy-MM-dd"));
                 }
-            }
-            
-            foreach (var proc in ProcessList)
-            {
-                proc.UsageTime = _databaseService.QueryDataToDB(proc.ProcessName, StartDate.ToString(), EndDate.ToString());
             }
 
             UpdateProcessList();
@@ -326,27 +310,6 @@ namespace WindowsScreenTime.ViewModels
         private void TimerSet()
         {
 
-        }
-        [RelayCommand]
-        private void SetSecond()
-        {
-            counter = 1000;
-            cts.Cancel();
-            cts = new CancellationTokenSource();
-        }
-        [RelayCommand]
-        private void SetMinute()
-        {
-            counter = 60000;
-            cts.Cancel();
-            cts = new CancellationTokenSource();
-        }
-        [RelayCommand]
-        private void SetHour()
-        {
-            counter = 3600000;
-            cts.Cancel();
-            cts = new CancellationTokenSource();
         }
     }
 }

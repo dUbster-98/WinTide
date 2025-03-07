@@ -15,7 +15,7 @@ namespace WindowsScreenTime.Services
         void InitializeDataBase();
         void WriteDataToDB(string name, string day);
         void UpdateDataToDB(string name, int time, string today);
-        int QueryDataToDB(string name, string startDate, string endDate);
+        void QueryDataToDB(string name, string startDate, string endDate);
     }
 
     public class DatabaseService : IDatabaseService
@@ -36,7 +36,6 @@ namespace WindowsScreenTime.Services
                 {
                     cmd.ExecuteNonQuery();
                 }
-                conn.Close();
             }
         }
 
@@ -88,21 +87,17 @@ namespace WindowsScreenTime.Services
                     updateCmd.Parameters.AddWithValue("@day", today);
                     updateCmd.ExecuteNonQuery();
                 }
-                conn.Close();
             }
         }
 
-        public int QueryDataToDB(string name, string startDay, string endDay)
+        public void QueryDataToDB(string name, string startDay, string endDay)
         {
-            List<int> timeList = new List<int>();
-
             using (var conn = new SqliteConnection(ConnectionString))
             {
                 conn.Open();
-                string selectQuery = "SELECT * FROM AppTimer WHERE name=@name AND day BETWEEN @startDay AND @endDay;";
+                string selectQuery = "SELECT * FROM AppTimer WHERE day BETWEEN @startDay AND @endDay;";
                 using (var selectCmd = new SqliteCommand(selectQuery, conn))
                 {
-                    selectCmd.Parameters.AddWithValue("@name", name);
                     selectCmd.Parameters.AddWithValue("@startDay", startDay);
                     selectCmd.Parameters.AddWithValue("@endDay", endDay);
 
@@ -110,17 +105,11 @@ namespace WindowsScreenTime.Services
                     {
                         while (reader.Read())
                         {
-                            if (!reader.IsDBNull(2))
-                            {
-                                timeList.Add(reader.GetInt32(2));
-                            }
+                            Console.WriteLine($"Name: {reader.GetString(1)}, Time: {reader.GetString(2)}");
                         }
                     }
                 }
-                conn.Close();
             }
-
-            return timeList.Sum();
         }
     }
 }

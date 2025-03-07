@@ -29,7 +29,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"/>
                 <RowDefinition Height="50"/>
-                <RowDefinition Height="45"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
@@ -45,7 +45,7 @@
                             Command="{Binding SetPeriodMonthCommand}"/>
                 </UniformGrid>
             </Grid>
-
+            
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.6*"/>
@@ -53,7 +53,7 @@
                     <ColumnDefinition Width="0.4*"/>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="0.5*"/>
-
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
                             HorizontalAlignment="Right"
@@ -77,61 +77,6 @@
                     HorizontalAlignment="Stretch"
                     TextBlock.FontSize="15"
                     SelectedDate="{Binding EndDate, Mode=TwoWay}"/>
-            </Grid>
-
-            <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="130"/>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="130"/>
-                </Grid.ColumnDefinitions>
-
-                <Button Width="100" Content="BACK" HorizontalAlignment="Left"
-                        Margin="30 0 0 0" FontFamily="/Resources/Fonts/#레시피코리아 Medium"
-                        VerticalContentAlignment="Bottom" Foreground="AliceBlue"/>
-
-
-                <StackPanel Grid.Column="1" Margin="4" Orientation="Horizontal"
-                            HorizontalAlignment="Center">
-                    <RadioButton
-                        Margin="4"
-                        IsChecked="False"
-                        Style="{StaticResource MaterialDesignTabRadioButton}"
-                        Command="{Binding SetSecondCommand}">
-                        <TextBlock
-                            Margin="4,0,0,0"
-                            Text="SECONDS"
-                            FontWeight="Bold"
-                            FontSize="13"
-                            FontFamily="/Resources/Fonts/#레시피코리아 Medium"/>
-
-                    </RadioButton>
-                    <RadioButton
-                        Margin="4"
-                        IsChecked="True"
-                        Style="{StaticResource MaterialDesignTabRadioButton}"
-                        Command="{Binding SetMinuteCommand}">
-                        <TextBlock
-                            Margin="4,0,0,0"
-                            Text="MINUTES" 
-                            FontWeight="Bold"
-                            FontSize="13"
-                            FontFamily="/Resources/Fonts/#레시피코리아 Medium"/>
-
-                    </RadioButton>
-                    <RadioButton
-                        Margin="4"
-                        IsChecked="False"
-                        Style="{StaticResource MaterialDesignTabRadioButton}"
-                        Command="{Binding SetHourCommand}">
-                        <TextBlock
-                            Margin="4,0,0,0"
-                            Text="HOURS"
-                            FontWeight="Bold"
-                            FontSize="13"
-                            FontFamily="/Resources/Fonts/#레시피코리아 Medium"/>
-                    </RadioButton>
-                </StackPanel>
 
                 <materialDesign:PopupBox 
                     Grid.Column="4"
@@ -139,7 +84,7 @@
                     PlacementMode="BottomAndAlignRightEdges"
                     StaysOpen="True"
                     IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
-                    Margin="0 0 40 0">
+                    Margin="0 0 20 0">
                     <materialDesign:PopupBox.ToggleContent>
                         <materialDesign:PackIcon
                                 Width="35"
@@ -243,6 +188,55 @@
                         </StackPanel>
                     </Grid>
                 </materialDesign:PopupBox>
+            </Grid>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Width="100" Content="BACK" HorizontalAlignment="Left"/>
+
+                <StackPanel Grid.Column="1" Margin="4" Orientation="Horizontal">
+                    <RadioButton
+                        Margin="4"
+                        IsChecked="True"
+                        Style="{StaticResource MaterialDesignTabRadioButton}">      
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Kind="Star"/>
+                            <TextBlock
+                                Margin="4,0,0,0"
+                                Text="SECONDS"/> 
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton
+                        Margin="4"
+                        IsChecked="False"
+                        Style="{StaticResource MaterialDesignTabRadioButton}">  
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Kind="Heart"/>
+                            <TextBlock
+                                Margin="4,0,0,0"
+                                Text="MINUTES" />    
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton
+                        Margin="4"
+                        IsEnabled="False"
+                        Style="{StaticResource MaterialDesignTabRadioButton}">
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Kind="Smiley"/>
+                            <TextBlock
+                                Margin="4,0,0,0"
+                                Text="HOURS" /> 
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
             </Grid>
 
             <ScrollViewer Grid.Row="3" Margin="10">
