@@ -203,7 +203,7 @@ namespace WindowsScreenTime.ViewModels
         {
             while (true)
             {
-                var token = cts.Token;
+                var token = cts.Token; ;
                 try
                 {
                     await Task.Delay(counter, token);
