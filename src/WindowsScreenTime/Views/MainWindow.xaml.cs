@@ -142,5 +142,10 @@ namespace WindowsScreenTime
         {
             this.Close();
         }
+
+        private void myNotifyIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            this.Show();
+        }
     }
 }

@@ -127,18 +127,19 @@
             <RowDefinition Height="35"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
+
         <tb:TaskbarIcon x:Name="myNotifyIcon"
-                    Visibility="Visible"
-                    ToolTipText="Windows ScreenTime"
-                    IconSource="/icon.ico"
-                    MenuActivation="RightClick"
-                    PopupActivation="DoubleClick">
+                        Visibility="Visible"
+                        ToolTipText="Windows ScreenTime"
+                        IconSource="/icon.ico"
+                        MenuActivation="RightClick"
+                        TrayMouseDoubleClick="myNotifyIcon_TrayMouseDoubleClick">
 
             <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu FontSize="12" Margin="-10 -20 -10 -20">
-                    <MenuItem Header="열기" Click="MenuItem_Open_Click"/>
-                    <Separator/>
+                <ContextMenu FontSize="12" Background="White" Padding="0"
+                             Margin="0" Width="100">
+                    <MenuItem Header="열기" Click="MenuItem_Open_Click" />
+                    <Separator Height="1" Margin="2"/>
                     <MenuItem Header="종료" Click="MenuItem_Close_Click"/>
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
