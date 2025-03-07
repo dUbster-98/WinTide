@@ -146,6 +146,7 @@ namespace WindowsScreenTime.ViewModels
                 // assign a different color to each point
                 if (point.Visual is null) return;
                 point.Visual.Fill = point.Model!.Paint;
+
                 point.Visual.UpdateData(point.Model!);
 
             });
