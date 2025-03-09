@@ -1,4 +1,4 @@
-# WindowsScreenTime
+# WinTide
  Windows Screen Time App
 
 ## Reference
