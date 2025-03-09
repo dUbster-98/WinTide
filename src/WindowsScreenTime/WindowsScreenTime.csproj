@@ -12,16 +12,23 @@
   <ItemGroup>
     <Compile Remove="Properties\**" />
     <Compile Remove="Themes\**" />
+    <Compile Remove="Views\Resources\**" />
     <EmbeddedResource Remove="Properties\**" />
     <EmbeddedResource Remove="Themes\**" />
+    <EmbeddedResource Remove="Views\Resources\**" />
     <None Remove="Properties\**" />
     <None Remove="Themes\**" />
+    <None Remove="Views\Resources\**" />
     <Page Remove="Properties\**" />
     <Page Remove="Themes\**" />
+    <Page Remove="Views\Resources\**" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Resources\Fonts\Recipekorea FONT.ttf" />
+    <None Remove="Resources\icon.ico" />
+    <None Remove="Resources\icon.png" />
+    <None Remove="Views\icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="icon.ico" />
+    <Resource Include="icon.ico" />
   </ItemGroup>
 
   <ItemGroup>

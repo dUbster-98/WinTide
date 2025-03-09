@@ -29,7 +29,7 @@ namespace WindowsScreenTime.Views
             // 막대 그리기
             if (paint != null)
             {
-                canvas.DrawRoundRect(X, Y, Width, Height, 10, 10, paint);
+                canvas.DrawRoundRect(X, Y, Width, Height, 15, 15, paint);
             }
 
             if (!string.IsNullOrEmpty(IconPath))
@@ -46,8 +46,8 @@ namespace WindowsScreenTime.Views
                     float iconHeight = 32;
 
                     // 아이콘의 위치 계산 (막대 위)
-                    float iconX = Width + 90;
-                    float iconY = Y + iconHeight - 4; // 막대 상단 위에 배치
+                    float iconX = Width + iconWidth;
+                    float iconY = Y - Height/2 + iconHeight; // 막대 상단 위에 배치
 
                     var destRect = new SKRect(iconX, iconY, iconX + iconWidth, iconY + iconHeight);
                     canvas.DrawImage(image, destRect, paintImage);

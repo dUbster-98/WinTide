@@ -22,6 +22,14 @@ namespace WindowsScreenTime.Services
         private static string currentDirectory = Directory.GetCurrentDirectory();
         private static string pathDir = Path.Combine(currentDirectory, "data");
         public static string _filePath = pathDir + "/data.xml";
+        
+        public XmlSetService()
+        {
+            if (!Directory.Exists(pathDir))
+            {
+                Directory.CreateDirectory(pathDir);
+            }
+        }
 
         public void SavePreset(string presetName, ObservableCollection<ProcessUsage> viewList)
         {

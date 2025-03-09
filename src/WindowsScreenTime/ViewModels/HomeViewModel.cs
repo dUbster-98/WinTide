@@ -29,6 +29,7 @@ using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
 using System.Drawing;
 using System.Windows;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace WindowsScreenTime.ViewModels
 {
@@ -68,8 +69,7 @@ namespace WindowsScreenTime.ViewModels
         public class ProcessChartInfo : ObservableValue
         {
             public ProcessChartInfo(string name, int value, SolidColorPaint paint, string iconPath)
-            {
-                
+            {                
                 Name = name;
                 Paint = paint;
                 IconPath = iconPath;
@@ -91,7 +91,10 @@ namespace WindowsScreenTime.ViewModels
             startDate = DateTime.Today.AddDays(-7);
             endDate = DateTime.Today;
 
+            WeakReferenceMessenger.Default.Register<TransferViewModelActivation>(this, OnTransferViewModelState);
+
             ProcessList = new ();
+            _databaseService.InitializeDataBase();
 
             if (_xmlSetService.LoadSelectedPreset() == null || _xmlSetService.LoadSelectedPreset() == "")
                 SelectedPreset = 0;
@@ -108,6 +111,16 @@ namespace WindowsScreenTime.ViewModels
         {
             Task _processMonitoringTask = Task.Run(() => MonitorActiveWindow());  
         }
+        private void OnTransferViewModelState(object recipient, TransferViewModelActivation message)
+        {
+            if (_xmlSetService.LoadSelectedPreset() == null || _xmlSetService.LoadSelectedPreset() == "")
+                SelectedPreset = 0;
+            else
+            {
+                SelectedPreset = Convert.ToInt32(_xmlSetService.LoadSelectedPreset());
+                PresetChange();
+            }
+        }
 
         private void UpdateProcessList()
         {
@@ -121,7 +134,7 @@ namespace WindowsScreenTime.ViewModels
             int i = 0;
             foreach (var proc in ProcessList)
             {
-                _data.Add(new(proc.EditedName, proc.UsageTime, paints[i], proc.IconPath));
+                _data.Add(new(proc.EditedName, proc.PastUsage + proc.TodayUsage, paints[i], proc.IconPath));
 
                 ++i;
                 if (i == ProcessList.Count())
@@ -165,7 +178,7 @@ namespace WindowsScreenTime.ViewModels
             {
                 var item = _data.FirstOrDefault(p => p.Name == proc.EditedName);
                 if (item != null)
-                    item.Value = proc.UsageTime;
+                    item.Value = proc.PastUsage + proc.TodayUsage;
             }
             Series[0].Values = SortData();      
         }
@@ -236,10 +249,10 @@ namespace WindowsScreenTime.ViewModels
                     var target = ProcessList.FirstOrDefault(p => p.ProcessName == process.ProcessName);
                     if (target != null)
                     {
-                        target.UsageTime += 1;
+                        target.TodayUsage += 1;
 
                         //AutoSave
-                        _databaseService.UpdateDataToDB(target.ProcessName, target.UsageTime, DateTime.Now.ToString("yyyy-MM-dd"));
+                        _databaseService.UpdateDataToDB(target.ProcessName, target.TodayUsage, DateTime.Now.ToString("yyyy-MM-dd"));
                     }
 
                     return true; // 다음 창도 계속 탐색
@@ -254,7 +267,7 @@ namespace WindowsScreenTime.ViewModels
         {
             if (!ProcessList.Any(p => p.ProcessName == processName))
             {
-                ProcessList.Add(new ProcessUsage { ProcessName = processName, UsageTime = 0 });
+                ProcessList.Add(new ProcessUsage { ProcessName = processName, TodayUsage = 0 });
             }
         }
         [RelayCommand]
@@ -294,7 +307,6 @@ namespace WindowsScreenTime.ViewModels
                 foreach (ProcessUsage proc in processes)
                 {
                     string? processName = proc.ProcessName;
-                    proc.UsageTime = 100;
                     if (processName != null)
                     {
                         if (proc.EditedName == null)
@@ -310,13 +322,15 @@ namespace WindowsScreenTime.ViewModels
                         //}
                     }
                     ProcessList.Add(proc);
-                    _databaseService.WriteDataToDB(proc.ProcessName, DateTime.Now.ToString("yyyy-MM-dd"));
+                    _databaseService.WriteDataToDB(proc.ProcessName, DateTime.Today.ToString("yyyy-MM-dd"));
                 }
             }
-            
+
+            DateTime yesterDay = EndDate.Value.AddDays(-1);
             foreach (var proc in ProcessList)
             {
-                proc.UsageTime = _databaseService.QueryDataToDB(proc.ProcessName, StartDate.ToString(), EndDate.ToString());
+                proc.PastUsage = _databaseService.QueryPastUsageTime(proc.ProcessName, StartDate.ToString(), yesterDay.ToString());
+                proc.TodayUsage = _databaseService.QueryTodayUsageTime(proc.ProcessName, DateTime.Today.ToString("yyyy-MM-dd"));
             }
 
             UpdateProcessList();

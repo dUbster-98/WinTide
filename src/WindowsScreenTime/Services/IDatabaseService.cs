@@ -15,7 +15,8 @@ namespace WindowsScreenTime.Services
         void InitializeDataBase();
         void WriteDataToDB(string name, string day);
         void UpdateDataToDB(string name, int time, string today);
-        int QueryDataToDB(string name, string startDate, string endDate);
+        int QueryPastUsageTime(string name, string startDate, string endDate);
+        int QueryTodayUsageTime(string name, string today);
     }
 
     public class DatabaseService : IDatabaseService
@@ -92,7 +93,7 @@ namespace WindowsScreenTime.Services
             }
         }
 
-        public int QueryDataToDB(string name, string startDay, string endDay)
+        public int QueryPastUsageTime(string name, string startDay, string endDay)
         {
             List<int> timeList = new List<int>();
 
@@ -105,6 +106,36 @@ namespace WindowsScreenTime.Services
                     selectCmd.Parameters.AddWithValue("@name", name);
                     selectCmd.Parameters.AddWithValue("@startDay", startDay);
                     selectCmd.Parameters.AddWithValue("@endDay", endDay);
+
+                    using (var reader = selectCmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (!reader.IsDBNull(2))
+                            {
+                                timeList.Add(reader.GetInt32(2));
+                            }
+                        }
+                    }
+                }
+                conn.Close();
+            }
+
+            return timeList.Sum();
+        }
+
+        public int QueryTodayUsageTime(string name, string today)
+        {
+            List<int> timeList = new List<int>();
+
+            using (var conn = new SqliteConnection(ConnectionString))
+            {
+                conn.Open();
+                string selectQuery = "SELECT * FROM AppTimer WHERE name=@name AND day=@today;";
+                using (var selectCmd = new SqliteCommand(selectQuery, conn))
+                {
+                    selectCmd.Parameters.AddWithValue("@name", name);
+                    selectCmd.Parameters.AddWithValue("@today", today);
 
                     using (var reader = selectCmd.ExecuteReader())
                     {

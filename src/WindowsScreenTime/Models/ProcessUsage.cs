@@ -17,7 +17,8 @@ namespace WindowsScreenTime.Models
         public string? IconPath { get; set; } 
         public string? ProcessName { get; set; }
         public string? EditedName { get; set; }
-        public int UsageTime { get; set; }
+        public int PastUsage { get; set; }
+        public int TodayUsage { get; set; }
         public double RamUsagePer { get; set; }
         public long MemorySize { get; set; }
         public string? ExecutablePath { get; set; }
