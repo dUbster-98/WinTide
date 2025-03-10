@@ -188,11 +188,16 @@
                             Foreground="Black"
                             FontSize="20"
                             Text="알람 설정"/>
-                        <TextBox
+                        <materialDesign:NumericUpDown 
                             Grid.Row="1"
                             Grid.Column="0"
-                            Text="1"/>
+                            Width="0"
+                            FontWeight="Bold"
+                            Padding="0 0 0 3" Margin="8 8 0 8"
+                            Value="{Binding AlarmHours}"
+                            Style="{StaticResource MaterialDesignNumericUpDown}"/>
                         <TextBlock
+                            x:Name="PART_hours"
                             Grid.Row="1"
                             Grid.Column="1"
                             FontWeight="Bold"
@@ -210,8 +215,9 @@
                             Grid.Row="2"
                             Grid.Column="0"
                             Margin="8"
+                            FontWeight="Bold"
                             materialDesign:HintAssist.IsFloating="True"
-                            SelectedIndex="0"
+                            SelectedItem="{Binding AlarmMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             MaxDropDownHeight="200">
                             <ComboBoxItem Content="00" />
                             <ComboBoxItem Content="10" />

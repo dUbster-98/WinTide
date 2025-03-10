@@ -44,6 +44,10 @@ namespace WindowsScreenTime.ViewModels
         [ObservableProperty]
         private DateTime? endDate;
         [ObservableProperty]
+        private string? alarmHours;
+        [ObservableProperty]
+        private string? alarmMinutes;
+        [ObservableProperty]
         private int? selectedPreset;
 
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
@@ -90,6 +94,8 @@ namespace WindowsScreenTime.ViewModels
 
             startDate = DateTime.Today.AddDays(-7);
             endDate = DateTime.Today;
+            AlarmHours = "1";
+            AlarmMinutes = "00";
 
             WeakReferenceMessenger.Default.Register<TransferViewModelActivation>(this, OnTransferViewModelState);
 
