@@ -88,8 +88,8 @@
 
                 <Button Width="100" Content="BACK" HorizontalAlignment="Left"
                         Margin="30 0 0 0" FontFamily="/Resources/Fonts/#레시피코리아 Medium"
-                        VerticalContentAlignment="Bottom" Foreground="AliceBlue"/>
-
+                        VerticalContentAlignment="Bottom" Foreground="AliceBlue"
+                        Command="{Binding BackCommand}"/>
 
                 <StackPanel Grid.Column="1" Margin="4" Orientation="Horizontal"
                             HorizontalAlignment="Center">
@@ -154,6 +154,7 @@
                     </materialDesign:PopupBox.ToggleCheckedContent>
                     <Grid
                         Width="150"
+                        Height="auto"
                         Margin="8,8,8,0">
                         <Grid.Resources>
                             <Style
@@ -179,13 +180,14 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="*" />
                             <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <TextBlock
                             Grid.Row="0"
                             Grid.Column="0"
                             Margin="8,8,8,16"
                             Style="{StaticResource Text_Style}"
-                            Foreground="Black"
+                            Foreground="#CC0493A7"
                             FontSize="20"
                             Text="알람 설정"/>
                         <materialDesign:NumericUpDown 
@@ -193,8 +195,9 @@
                             Grid.Column="0"
                             Width="0"
                             FontWeight="Bold"
+                            Focusable="False"
                             Padding="0 0 0 3" Margin="8 8 0 8"
-                            Value="{Binding AlarmHours}"
+                            Value="{Binding AlarmHours, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             Style="{StaticResource MaterialDesignNumericUpDown}"/>
                         <TextBlock
                             x:Name="PART_hours"
@@ -217,25 +220,32 @@
                             Margin="8"
                             FontWeight="Bold"
                             materialDesign:HintAssist.IsFloating="True"
-                            SelectedItem="{Binding AlarmMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            ItemsSource="{Binding MinList}"
+                            SelectedValue="{Binding AlarmMinutes, Mode=TwoWay}"
                             MaxDropDownHeight="200">
-                            <ComboBoxItem Content="00" />
-                            <ComboBoxItem Content="10" />
-                            <ComboBoxItem Content="20" />
-                            <ComboBoxItem Content="30" />
-                            <ComboBoxItem Content="40" />
-                            <ComboBoxItem Content="50" />
                         </ComboBox>
-                        <StackPanel Grid.Row="3" Orientation="Horizontal">
-                            <TextBlock Text="남은 시간"
+                        <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal">
+                            <TextBlock Text="남은 시간" FontSize="15"
+                                       Foreground="#CC555555"
                                        Style="{StaticResource Text_Style}"
                                        Margin="8 16 8 8"/>
-                            <TextBlock Text="{Binding TimerLeftTime}"
-                                       Margin="8 16 8 8"/>
+                            <TextBlock Text="{Binding RemainingTime}"
+                                       Width="auto"
+                                       FontSize="15"
+                                       Margin="5 16 0 8"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal">
+                            <TextBlock Text="시스템종료" FontSize="14"
+                                       Foreground="#CC555555"
+                                       Style="{StaticResource Text_Style}"
+                                       Margin="8 11 8 8"/>
+                            <CheckBox Style="{StaticResource MaterialDesignCheckBox}"
+                                      Margin="0 0 0 0"
+                                      IsChecked="{Binding IsSystemOff}"/>
                         </StackPanel>
                         <StackPanel
-                            Grid.Row="4"
-                            Grid.ColumnSpan="3"
+                            Grid.Row="5"
+                            Grid.ColumnSpan="2"
                             HorizontalAlignment="Right"
                             Orientation="Horizontal">
                             <Button

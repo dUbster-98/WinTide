@@ -30,6 +30,8 @@ using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
 using System.Drawing;
 using System.Windows;
 using CommunityToolkit.Mvvm.Messaging;
+using System.Windows.Threading;
+using System.Windows.Media.Animation;
 
 namespace WindowsScreenTime.ViewModels
 {
@@ -41,17 +43,79 @@ namespace WindowsScreenTime.ViewModels
 
         [ObservableProperty]
         private DateTime? startDate;
+        partial void OnStartDateChanged(DateTime? value)
+        {
+            if (startDate != null && endDate != null)
+            {
+                PresetChange();
+            }
+        }
         [ObservableProperty]
         private DateTime? endDate;
+        partial void OnEndDateChanged(DateTime? value)
+        {
+            if (endDate != null && endDate != null)
+            {
+                PresetChange();
+            }
+        }
+
+        public List<string> MinList { get; } = new List<string> { "00", "10", "20", "30", "40", "50" };
+
         [ObservableProperty]
-        private string? alarmHours;
+        private string alarmHours;
+        partial void OnAlarmHoursChanged(string value)
+        {
+            if (int.TryParse(value, out int hours))
+            {
+                if (hours < 0)
+                    alarmHours = "0";
+
+                else
+                    alarmHours = value;
+            }
+            else
+                alarmHours = "1"; // 잘못된 입력이 들어오면 기본값 설정
+        }
+
         [ObservableProperty]
-        private string? alarmMinutes;
+        private string alarmMinutes;
+        [ObservableProperty]
+        private string remainingTime = "00:00:00";
+        private int remainingSeconds;
+        private DispatcherTimer timer;
+        private void StartTimer()
+        {
+            if (timer == null)
+            {
+                timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+                timer.Tick += Timer_Tick;
+            }
+            timer.Start();
+        }
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (remainingSeconds > 0)
+            {
+                remainingSeconds--;
+                UpdateRemainingTime();
+            }
+            else
+            {
+                timer.Stop();
+            }
+        }
+        private void UpdateRemainingTime()
+        {
+            TimeSpan time = TimeSpan.FromSeconds(remainingSeconds);
+            RemainingTime = $"{time.Hours:D2}:{time.Minutes:D2}:{time.Seconds:D2}";
+        }
+        [ObservableProperty]
+        private bool isSystemOff = false;
+
         [ObservableProperty]
         private int? selectedPreset;
-
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
-
         private static string ResourcePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources/Icons");
 
         private List<ProcessChartInfo> _data;
@@ -73,7 +137,7 @@ namespace WindowsScreenTime.ViewModels
         public class ProcessChartInfo : ObservableValue
         {
             public ProcessChartInfo(string name, int value, SolidColorPaint paint, string iconPath)
-            {                
+            {
                 Name = name;
                 Paint = paint;
                 IconPath = iconPath;
@@ -83,10 +147,10 @@ namespace WindowsScreenTime.ViewModels
 
             public string Name { get; set; }
             public SolidColorPaint Paint { get; set; }
-            public string? IconPath { get; set; } 
+            public string? IconPath { get; set; }
         }
 
-        public HomeViewModel(IXmlSetService xmlSetService, IProcessContainService processContainService, IDatabaseService databaseService) 
+        public HomeViewModel(IXmlSetService xmlSetService, IProcessContainService processContainService, IDatabaseService databaseService)
         {
             _xmlSetService = xmlSetService;
             _processContainService = processContainService;
@@ -99,7 +163,7 @@ namespace WindowsScreenTime.ViewModels
 
             WeakReferenceMessenger.Default.Register<TransferViewModelActivation>(this, OnTransferViewModelState);
 
-            ProcessList = new ();
+            ProcessList = new();
             _databaseService.InitializeDataBase();
 
             if (_xmlSetService.LoadSelectedPreset() == null || _xmlSetService.LoadSelectedPreset() == "")
@@ -110,12 +174,12 @@ namespace WindowsScreenTime.ViewModels
                 PresetChange();
             }
 
-            Initialize();   
+            Initialize();
         }
 
         private void Initialize()
         {
-            Task _processMonitoringTask = Task.Run(() => MonitorActiveWindow());  
+            Task _processMonitoringTask = Task.Run(() => MonitorActiveWindow());
         }
         private void OnTransferViewModelState(object recipient, TransferViewModelActivation message)
         {
@@ -140,7 +204,14 @@ namespace WindowsScreenTime.ViewModels
             int i = 0;
             foreach (var proc in ProcessList)
             {
-                _data.Add(new(proc.EditedName, proc.PastUsage + proc.TodayUsage, paints[i], proc.IconPath));
+                if (EndDate?.ToString() == DateTime.Today.ToString())
+                {
+                    _data.Add(new(proc.EditedName, proc.PastUsage + proc.TodayUsage, paints[i], proc.IconPath));
+                }
+                else
+                {
+                    _data.Add(new(proc.EditedName, proc.PastUsage, paints[i], proc.IconPath));
+                }
 
                 ++i;
                 if (i == ProcessList.Count())
@@ -184,9 +255,9 @@ namespace WindowsScreenTime.ViewModels
             {
                 var item = _data.FirstOrDefault(p => p.Name == proc.EditedName);
                 if (item != null)
-                    item.Value = proc.PastUsage + proc.TodayUsage;
+                    item.Value = proc.PastUsage;
             }
-            Series[0].Values = SortData();      
+            Series[0].Values = SortData();
         }
 
         private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
@@ -333,9 +404,14 @@ namespace WindowsScreenTime.ViewModels
             }
 
             DateTime yesterDay = EndDate.Value.AddDays(-1);
+
             foreach (var proc in ProcessList)
             {
-                proc.PastUsage = _databaseService.QueryPastUsageTime(proc.ProcessName, StartDate.ToString(), yesterDay.ToString());
+                if (EndDate.Value == DateTime.Today)
+                    proc.PastUsage = _databaseService.QueryPastUsageTime(proc.ProcessName, StartDate.ToString(), yesterDay.ToString());
+                else
+                    proc.PastUsage = _databaseService.QueryPastUsageTime(proc.ProcessName, StartDate.ToString(), EndDate.ToString());
+
                 proc.TodayUsage = _databaseService.QueryTodayUsageTime(proc.ProcessName, DateTime.Today.ToString("yyyy-MM-dd"));
             }
 
@@ -345,7 +421,37 @@ namespace WindowsScreenTime.ViewModels
         [RelayCommand]
         private void TimerSet()
         {
+            if (int.TryParse(AlarmHours, out int hours) && int.TryParse(AlarmMinutes, out int minutes))
+            {
+                int hoursToseconds = hours * 3600; // 시간을 초 단위로 변환
+                int minutesToSeconds = minutes * 60; // 분을 초 단위로 변환
+                remainingSeconds = hoursToseconds + minutesToSeconds;
+                StartTimer();
 
+                if (IsSystemOff)
+                {
+                    string shutdownCmd = $"/C shutdown -s -t {remainingSeconds}";
+                    Process.Start(new ProcessStartInfo("cmd.exe", shutdownCmd)
+                    {
+                        CreateNoWindow = true,
+                        UseShellExecute = false
+                    });
+                }
+            }
+        }
+        [RelayCommand]
+        private void TimerUnset()
+        {
+            remainingSeconds = 0;
+
+            if (IsSystemOff)
+            {
+                Process.Start(new ProcessStartInfo("cmd.exe", "/C shutdown -a")
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false
+                });
+            }
         }
         [RelayCommand]
         private void SetSecond()
@@ -367,6 +473,12 @@ namespace WindowsScreenTime.ViewModels
             counter = 3600000;
             cts.Cancel();
             cts = new CancellationTokenSource();
+        }
+        [RelayCommand]
+        private void Back()
+        {
+            AlarmPopup alarmPopup = new();
+            alarmPopup.ShowDialog();
         }
     }
 }
