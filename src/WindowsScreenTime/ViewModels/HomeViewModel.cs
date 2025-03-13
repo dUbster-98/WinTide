@@ -83,6 +83,7 @@ namespace WindowsScreenTime.ViewModels
         [ObservableProperty]
         private string remainingTime = "00:00:00";
         private int remainingSeconds;
+        private string AlarmMessage;
         private DispatcherTimer timer;
         private void StartTimer()
         {
@@ -103,6 +104,13 @@ namespace WindowsScreenTime.ViewModels
             else
             {
                 timer.Stop();
+
+                AlarmPopup alarmPopup = new();
+
+                var message = new TransferAlarmMessage { Message = AlarmMessage };
+                WeakReferenceMessenger.Default.Send(message);
+
+                alarmPopup.Show();
             }
         }
         private void UpdateRemainingTime()
@@ -426,6 +434,7 @@ namespace WindowsScreenTime.ViewModels
                 int hoursToseconds = hours * 3600; // 시간을 초 단위로 변환
                 int minutesToSeconds = minutes * 60; // 분을 초 단위로 변환
                 remainingSeconds = hoursToseconds + minutesToSeconds;
+                AlarmMessage = $"{hours:D2}시간 {minutes:D2}분 지났습니다.";
                 StartTimer();
 
                 if (IsSystemOff)
@@ -477,8 +486,7 @@ namespace WindowsScreenTime.ViewModels
         [RelayCommand]
         private void Back()
         {
-            AlarmPopup alarmPopup = new();
-            alarmPopup.ShowDialog();
+
         }
     }
 }

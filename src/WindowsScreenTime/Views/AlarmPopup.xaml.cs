@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WindowsScreenTime.ViewModels;
 
 namespace WindowsScreenTime.Views
 {
@@ -22,6 +23,12 @@ namespace WindowsScreenTime.Views
         public AlarmPopup()
         {
             InitializeComponent();
+            DataContext = App.Current.Services.GetService(typeof(AlarmPopupViewModel));
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

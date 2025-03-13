@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using WindowsScreenTime.Services;
 using WindowsScreenTime.ViewModels;
+using WindowsScreenTime.Views;
 
 namespace WindowsScreenTime
 {
@@ -34,6 +35,7 @@ namespace WindowsScreenTime
             services.AddSingleton<HomeViewModel>();
             services.AddSingleton<EditViewModel>();
             services.AddSingleton<SettingsViewModel>();
+            services.AddTransient<AlarmPopupViewModel>();
 
             services.AddTransient<IIniSetService, IniSetService>();
             services.AddTransient<IXmlSetService, XmlSetService>();

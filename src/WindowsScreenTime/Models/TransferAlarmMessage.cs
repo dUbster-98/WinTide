@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace WindowsScreenTime.Models
 {
-    public class TransferViewModelActivation
+    public class TransferAlarmMessage
     {
-        public bool isActivated { get; set; }
+        public string? Message { get; set; }
     }
 }
