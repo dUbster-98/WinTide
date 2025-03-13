@@ -261,9 +261,18 @@ namespace WindowsScreenTime.ViewModels
         {
             foreach (var proc in ProcessList)
             {
-                var item = _data.FirstOrDefault(p => p.Name == proc.EditedName);
-                if (item != null)
-                    item.Value = proc.PastUsage;
+                if (EndDate.Value == DateTime.Today)
+                {
+                    var item = _data.FirstOrDefault(p => p.Name == proc.EditedName);
+                    if (item != null)
+                        item.Value = proc.PastUsage + proc.TodayUsage;
+                }
+                else
+                {
+                    var item = _data.FirstOrDefault(p => p.Name == proc.EditedName);
+                    if (item != null)
+                        item.Value = proc.PastUsage;
+                }
             }
             Series[0].Values = SortData();
         }

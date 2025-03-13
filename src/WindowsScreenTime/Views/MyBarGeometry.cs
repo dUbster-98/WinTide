@@ -47,7 +47,8 @@ namespace WindowsScreenTime.Views
 
                     // 아이콘의 위치 계산 (막대 위)
                     float iconX = Width + iconWidth;
-                    float iconY = Y - Height/2 + iconHeight; // 막대 상단 위에 배치
+                    float iconY = Y - 5 + iconHeight; // 막대 상단 위에 배치
+                    //float iconY = Y - Height / 2 + iconHeight; // 막대 상단 위에 배치
 
                     var destRect = new SKRect(iconX, iconY, iconX + iconWidth, iconY + iconHeight);
                     canvas.DrawImage(image, destRect, paintImage);
