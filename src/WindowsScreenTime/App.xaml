@@ -11,6 +11,7 @@
         <ResourceDictionary>
             
             <cvts:BytesToMBConverter x:Key="BytesToMBConverter"/>
+            <cvts:TimeViewConverter x:Key="TimeViewConverter"/>
             <cvts:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <cvts:BoolToVisibilityConverter
                                             x:Key="BoolToVisibilityReverseConverter"        

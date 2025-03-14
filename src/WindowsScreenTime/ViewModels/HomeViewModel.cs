@@ -32,6 +32,10 @@ using System.Windows;
 using CommunityToolkit.Mvvm.Messaging;
 using System.Windows.Threading;
 using System.Windows.Media.Animation;
+using Newtonsoft.Json.Linq;
+using Hardcodet.Wpf.TaskbarNotification.Interop;
+using LiveCharts;
+using LiveChartsCore.Kernel;
 
 namespace WindowsScreenTime.ViewModels
 {
@@ -210,21 +214,41 @@ namespace WindowsScreenTime.ViewModels
             IsReading = false;
 
             int i = 0;
+            var value = 0;
             foreach (var proc in ProcessList)
             {
                 if (EndDate?.ToString() == DateTime.Today.ToString())
                 {
-                    _data.Add(new(proc.EditedName, proc.PastUsage + proc.TodayUsage, paints[i], proc.IconPath));
+                    value = proc.PastUsage + proc.TodayUsage;
                 }
                 else
                 {
-                    _data.Add(new(proc.EditedName, proc.PastUsage, paints[i], proc.IconPath));
+                    value = proc.PastUsage;
                 }
+
+                switch (counter)
+                {
+                    case 1:
+                        value = value * 5;
+                        break;
+                    case 12:
+                        value = value / 12;
+                        break;
+                    case 720:
+                        value = value / 720;
+                        break;
+                    default:
+                        value = value / 12; 
+                        break;
+                }
+
+                _data.Add(new(proc.EditedName, value, paints[i], proc.IconPath));
 
                 ++i;
                 if (i == ProcessList.Count())
                     i = 0;
             }
+
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var projectRoot = Directory.GetParent(baseDirectory)?.Parent?.Parent?.Parent?.FullName;
 
@@ -257,22 +281,76 @@ namespace WindowsScreenTime.ViewModels
             Series = [rowSeries];
         }
 
+        public async Task GetWindowProcess()
+        {
+            EnumWindows((hWnd, lParam) =>
+            {
+                if (!IsWindowVisible(hWnd)) return true; // 보이지 않는 창은 무시
+                int length = GetWindowTextLength(hWnd);
+                if (length == 0) return true; // 창 제목이 없는 경우 무시
+                if (IsIconic(hWnd)) return true; // 최소화된 창 무시
+
+                int style = GetWindowLong(hWnd, GWL_STYLE);
+                int exStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
+
+                // 툴 윈도우는 제외 (작업 표시줄 아이콘이 없는 창)
+                if ((exStyle & WS_EX_TOOLWINDOW) != 0)
+                {
+                    return true;
+                }
+
+                GetWindowThreadProcessId(hWnd, out uint processId);
+                Process process = Process.GetProcessById((int)processId);
+
+                var target = ProcessList.FirstOrDefault(p => p.ProcessName == process.ProcessName);
+                if (target != null)
+                {
+                    target.TodayUsage += 1;
+
+                    //AutoSave
+                    _databaseService.UpdateDataToDB(target.ProcessName, target.TodayUsage, DateTime.Now.ToString("yyyy-MM-dd"));
+                }
+
+                return true; // 다음 창도 계속 탐색
+            }, IntPtr.Zero);
+        }
+
         public async Task SetProcessRanking()
         {
             foreach (var proc in ProcessList)
             {
-                if (EndDate.Value == DateTime.Today)
+                var value = 0;
+
+                var item = _data.FirstOrDefault(p => p.Name == proc.EditedName);
+                if (item != null)
                 {
-                    var item = _data.FirstOrDefault(p => p.Name == proc.EditedName);
-                    if (item != null)
-                        item.Value = proc.PastUsage + proc.TodayUsage;
-                }
-                else
-                {
-                    var item = _data.FirstOrDefault(p => p.Name == proc.EditedName);
-                    if (item != null)
-                        item.Value = proc.PastUsage;
-                }
+                    if (EndDate.Value == DateTime.Today)
+                    {
+                        value = proc.PastUsage + proc.TodayUsage;
+                    }
+                    else
+                    {
+                        value = proc.PastUsage;
+                    }
+
+                    switch (counter)
+                    {
+                        case 1:
+                            value = value * 5;
+                            break;
+                        case 12:
+                            value = value / 12;
+                            break;
+                        case 720:
+                            value = value / 720;
+                            break;
+                        default:
+                            value = value / 12;
+                            break;
+                    }
+
+                    item.Value = value;
+                }            
             }
             Series[0].Values = SortData();
         }
@@ -308,49 +386,22 @@ namespace WindowsScreenTime.ViewModels
 
         private async Task MonitorActiveWindow()
         {
-            while (true)
+            using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+
+            while (await timer.WaitForNextTickAsync()) // 5초마다 실행
             {
-                var token = cts.Token; ;
-                try
-                {
-                    await Task.Delay(counter, token);
-                }
-                catch (TaskCanceledException)
-                {
-                    _ = MonitorActiveWindow();
-                    break;
-                }
+                //var token = cts.Token;
+                //try
+                //{
+                //    await Task.Delay(5000, token);
+                //}
+                //catch (TaskCanceledException)
+                //{
+                //    _ = MonitorActiveWindow();
+                //    break;
+                //}
 
-                EnumWindows((hWnd, lParam) =>
-                {
-                    if (!IsWindowVisible(hWnd)) return true; // 보이지 않는 창은 무시
-                    int length = GetWindowTextLength(hWnd);
-                    if (length == 0) return true; // 창 제목이 없는 경우 무시
-                    if (IsIconic(hWnd)) return true; // 최소화된 창 무시
-
-                    int style = GetWindowLong(hWnd, GWL_STYLE);
-                    int exStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
-
-                    // 툴 윈도우는 제외 (작업 표시줄 아이콘이 없는 창)
-                    if ((exStyle & WS_EX_TOOLWINDOW) != 0)
-                    {
-                        return true;
-                    }
-
-                    GetWindowThreadProcessId(hWnd, out uint processId);
-                    Process process = Process.GetProcessById((int)processId);
-
-                    var target = ProcessList.FirstOrDefault(p => p.ProcessName == process.ProcessName);
-                    if (target != null)
-                    {
-                        target.TodayUsage += 1;
-
-                        //AutoSave
-                        _databaseService.UpdateDataToDB(target.ProcessName, target.TodayUsage, DateTime.Now.ToString("yyyy-MM-dd"));
-                    }
-
-                    return true; // 다음 창도 계속 탐색
-                }, IntPtr.Zero);
+                _ = GetWindowProcess();
 
                 _ = SetProcessRanking();
             }
@@ -421,14 +472,9 @@ namespace WindowsScreenTime.ViewModels
             }
 
             DateTime yesterDay = EndDate.Value.AddDays(-1);
-
             foreach (var proc in ProcessList)
             {
-                if (EndDate.Value == DateTime.Today)
-                    proc.PastUsage = _databaseService.QueryPastUsageTime(proc.ProcessName, StartDate.ToString(), yesterDay.ToString());
-                else
-                    proc.PastUsage = _databaseService.QueryPastUsageTime(proc.ProcessName, StartDate.ToString(), EndDate.ToString());
-
+                proc.PastUsage = _databaseService.QueryPastUsageTime(proc.ProcessName, StartDate.ToString(), yesterDay.ToString());
                 proc.TodayUsage = _databaseService.QueryTodayUsageTime(proc.ProcessName, DateTime.Today.ToString("yyyy-MM-dd"));
             }
 
@@ -471,26 +517,35 @@ namespace WindowsScreenTime.ViewModels
                 });
             }
         }
+
         [RelayCommand]
         private void SetSecond()
         {
-            counter = 1000;
-            cts.Cancel();
-            cts = new CancellationTokenSource();
+            //cts.Cancel();
+            //cts = new CancellationTokenSource();
+            counter = 1;
+            UpdateProcessList();
         }
         [RelayCommand]
         private void SetMinute()
         {
-            counter = 60000;
-            cts.Cancel();
-            cts = new CancellationTokenSource();
+            counter = 12;
+            UpdateProcessList();
         }
         [RelayCommand]
         private void SetHour()
         {
-            counter = 3600000;
-            cts.Cancel();
-            cts = new CancellationTokenSource();
+            counter = 720;
+            UpdateProcessList();
+        }
+        [RelayCommand]
+        private void BarClick(LiveChartsCore.Kernel.Events.VisualElementsEventArgs args)
+        {
+            if (args == null) return;
+
+            // VisualElementsEventArgs에서 필요한 정보 추출
+            var chartPoint = args.PointerLocation; // ChartPoint 정보가 이 안에 있을 수 있음
+            var chart = args.Chart;
         }
         [RelayCommand]
         private void Back()

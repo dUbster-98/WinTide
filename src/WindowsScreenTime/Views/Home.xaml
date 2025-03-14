@@ -56,10 +56,10 @@
 
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
-                            HorizontalAlignment="Right"
+                            HorizontalAlignment="Center"
                             Text="기간별 보기" Style="{StaticResource Text_Style}"
                             Foreground="Black"
-                            Margin="0 5 30 0"/>
+                            Margin="0 5 0 0"/>
                 <units:SmartDate 
                     Grid.Column="1"
                     Width="auto"
@@ -81,13 +81,14 @@
 
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="130"/>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2.5*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Width="100" Content="BACK" HorizontalAlignment="Left"
-                        Margin="30 0 0 0" FontFamily="/Resources/Fonts/#레시피코리아 Medium"
+                <Button Width="100" Content="BACK"
+                        Margin="0 0 0 0" HorizontalAlignment="Center"
+                        FontFamily="/Resources/Fonts/#레시피코리아 Medium"
                         VerticalContentAlignment="Bottom" Foreground="AliceBlue"
                         Command="{Binding BackCommand}"/>
 
@@ -138,7 +139,7 @@
                     HorizontalAlignment="Right"
                     PlacementMode="BottomAndAlignRightEdges"
                     StaysOpen="True"
-                    Margin="0 0 40 0">
+                    Margin="0 0 50 0">
                     <materialDesign:PopupBox.ToggleContent>
                         <materialDesign:PackIcon
                                 Width="35"
@@ -265,7 +266,8 @@
                     Series="{Binding Series}"
                     XAxes="{Binding XAxes}"
                     YAxes="{Binding YAxes}"
-                    TooltipPosition="Hidden">
+                    TooltipPosition="Hidden"
+                    VisualElementsPointerDownCommand="{Binding BarClickCommand}">
                 </lvc:CartesianChart>
 
                 <!--<ListView ItemsSource="{Binding ProcessList}"
