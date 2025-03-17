@@ -166,10 +166,14 @@ namespace WindowsScreenTime.ViewModels
 
                         if (!processUsageMap.TryGetValue(process.ProcessName, out var existingUsage))
                         {
+                            string processDescription = process.MainModule.FileVersionInfo.FileDescription; // 작업 관리자 이름 = 파일 설명
+                            string displayName = string.IsNullOrEmpty(processDescription) ? process.ProcessName : processDescription;
+                            // 파일 설명이 없는 경우 기본 ProcessName 사용
+
                             processUsageMap[process.ProcessName] = new ProcessUsage
                             {
                                 ProcessIcon = icon,
-                                ProcessName = process.ProcessName,
+                                ProcessName = displayName,
                                 MemorySize = process.WorkingSet64,
                                 RamUsagePer = (double)process.WorkingSet64 / totalRam * 100,
                                 ExecutablePath = path

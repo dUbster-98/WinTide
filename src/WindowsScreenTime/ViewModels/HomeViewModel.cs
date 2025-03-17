@@ -36,6 +36,7 @@ using Newtonsoft.Json.Linq;
 using Hardcodet.Wpf.TaskbarNotification.Interop;
 using LiveCharts;
 using LiveChartsCore.Kernel;
+using OpenTK.Platform;
 
 namespace WindowsScreenTime.ViewModels
 {
@@ -281,8 +282,78 @@ namespace WindowsScreenTime.ViewModels
             Series = [rowSeries];
         }
 
+        private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowTextLength(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool IsWindowVisible(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        [DllImport("user32.dll")]
+        private static extern bool IsIconic(IntPtr hWnd); // 창이 최소화되었는지 확인
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr WindowFromPoint(POINT point);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT
+        {
+            public int X;
+            public int Y;
+
+            public POINT(int x, int y)
+            {
+                X = x;
+                Y = y;
+            }
+        }
+
+        private const int GWL_STYLE = -16;
+        private const int GWL_EXSTYLE = -20;
+        private const int WS_VISIBLE = 0x10000000;
+        private const int WS_EX_TOOLWINDOW = 0x00000080;
+        private const int WS_EX_APPWINDOW = 0x00040000;
+
+        public class WindowInfo
+        {
+            public IntPtr Handle { get; set; }
+            public string Title { get; set; }
+            public RECT Rect { get; set; }
+            public POINT CenterPoint { get; set; }
+            public bool IsActuallyVisible { get; set; }
+        }
+
+        private List<WindowInfo> allVisibleWindows = new List<WindowInfo>();
+
         public async Task GetWindowProcess()
         {
+            allVisibleWindows.Clear();
             EnumWindows((hWnd, lParam) =>
             {
                 if (!IsWindowVisible(hWnd)) return true; // 보이지 않는 창은 무시
@@ -292,27 +363,59 @@ namespace WindowsScreenTime.ViewModels
 
                 int style = GetWindowLong(hWnd, GWL_STYLE);
                 int exStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
-
                 // 툴 윈도우는 제외 (작업 표시줄 아이콘이 없는 창)
-                if ((exStyle & WS_EX_TOOLWINDOW) != 0)
-                {
-                    return true;
-                }
+                if ((exStyle & WS_EX_TOOLWINDOW) != 0) return true;
 
                 GetWindowThreadProcessId(hWnd, out uint processId);
                 Process process = Process.GetProcessById((int)processId);
+                string processDescription = process.MainModule.FileVersionInfo.FileDescription; // 작업 관리자 설명
+                string displayName = string.IsNullOrEmpty(processDescription) ? process.ProcessName : processDescription;
+                // 파일 설명이 없는 경우 기본 ProcessName 사용
 
-                var target = ProcessList.FirstOrDefault(p => p.ProcessName == process.ProcessName);
+                RECT rect;
+                if (GetWindowRect(hWnd, out rect))
+                {
+                    var title = displayName;
+                    // Calculate center point
+                    POINT centerPoint = new POINT(
+                        (rect.Left + rect.Right) / 2,
+                        (rect.Top + rect.Bottom) / 2
+                    );
+
+                    allVisibleWindows.Add(new WindowInfo
+                    {
+                        Handle = hWnd,
+                        Title = title,
+                        Rect = rect,
+                        CenterPoint = centerPoint,
+                        IsActuallyVisible = false // Will determine this in the second pass
+                    });
+                }
+
+                return true; // 다음 창도 계속 탐색
+            }, IntPtr.Zero);
+
+            foreach (var window in allVisibleWindows)
+            {
+                // Check if window's center point is visible (not covered by another window)
+                IntPtr windowAtPoint = WindowFromPoint(window.CenterPoint);
+
+                // If the window at center point is the same as our window, it's visible
+                window.IsActuallyVisible = (windowAtPoint == window.Handle);
+            }
+
+            foreach (WindowInfo windowInfo in allVisibleWindows)
+            { 
+                var target = ProcessList.FirstOrDefault(p => p.ProcessName == windowInfo.Title);
                 if (target != null)
                 {
                     target.TodayUsage += 1;
 
                     //AutoSave
                     _databaseService.UpdateDataToDB(target.ProcessName, target.TodayUsage, DateTime.Now.ToString("yyyy-MM-dd"));
-                }
+                } 
+            }
 
-                return true; // 다음 창도 계속 탐색
-            }, IntPtr.Zero);
         }
 
         public async Task SetProcessRanking()
@@ -354,35 +457,6 @@ namespace WindowsScreenTime.ViewModels
             }
             Series[0].Values = SortData();
         }
-
-        private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
-
-        [DllImport("user32.dll")]
-        private static extern int GetWindowTextLength(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        private static extern bool IsWindowVisible(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
-
-        [DllImport("user32.dll")]
-        private static extern bool IsIconic(IntPtr hWnd); // 창이 최소화되었는지 확인
-
-        [DllImport("user32.dll")]
-        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-        private const int GWL_STYLE = -16;
-        private const int GWL_EXSTYLE = -20;
-        private const int WS_VISIBLE = 0x10000000;
-        private const int WS_EX_TOOLWINDOW = 0x00000080;
-        private const int WS_EX_APPWINDOW = 0x00040000;
 
         private async Task MonitorActiveWindow()
         {
