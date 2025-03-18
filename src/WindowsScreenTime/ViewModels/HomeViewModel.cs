@@ -415,7 +415,6 @@ namespace WindowsScreenTime.ViewModels
                     _databaseService.UpdateDataToDB(target.ProcessName, target.TodayUsage, DateTime.Now.ToString("yyyy-MM-dd"));
                 } 
             }
-
         }
 
         public async Task SetProcessRanking()
@@ -458,6 +457,20 @@ namespace WindowsScreenTime.ViewModels
             Series[0].Values = SortData();
         }
 
+        public void DateChangeEvent()
+        {
+            if (EndDate.Value != DateTime.Today)
+            {
+                EndDate = DateTime.Today;
+
+                foreach (var proc in ProcessList)
+                {
+                    proc.PastUsage += proc.TodayUsage;
+                    proc.TodayUsage = 0;
+                }
+            }
+        }
+
         private async Task MonitorActiveWindow()
         {
             using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
@@ -478,6 +491,8 @@ namespace WindowsScreenTime.ViewModels
                 _ = GetWindowProcess();
 
                 _ = SetProcessRanking();
+
+                DateChangeEvent();
             }
         }
 
