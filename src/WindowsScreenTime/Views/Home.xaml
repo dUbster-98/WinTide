@@ -96,7 +96,7 @@
                             HorizontalAlignment="Center">
                     <RadioButton
                         Margin="4"
-                        IsChecked="False"
+                        IsChecked="{Binding SecChecked}"
                         Style="{StaticResource MaterialDesignTabRadioButton}"
                         Command="{Binding SetSecondCommand}">
                         <TextBlock
@@ -109,7 +109,7 @@
                     </RadioButton>
                     <RadioButton
                         Margin="4"
-                        IsChecked="True"
+                        IsChecked="{Binding MinChecked}"
                         Style="{StaticResource MaterialDesignTabRadioButton}"
                         Command="{Binding SetMinuteCommand}">
                         <TextBlock
@@ -122,7 +122,7 @@
                     </RadioButton>
                     <RadioButton
                         Margin="4"
-                        IsChecked="False"
+                        IsChecked="{Binding HourChecked}"
                         Style="{StaticResource MaterialDesignTabRadioButton}"
                         Command="{Binding SetHourCommand}">
                         <TextBlock
@@ -267,7 +267,8 @@
                     XAxes="{Binding XAxes}"
                     YAxes="{Binding YAxes}"
                     TooltipPosition="Hidden"
-                    VisualElementsPointerDownCommand="{Binding BarClickCommand}">
+                    FindingStrategy="{Binding Strategy}"
+                    PointerPressedCommand="{Binding BarClickCommand}">
                 </lvc:CartesianChart>
 
                 <!--<ListView ItemsSource="{Binding ProcessList}"

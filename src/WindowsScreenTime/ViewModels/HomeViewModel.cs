@@ -37,6 +37,10 @@ using Hardcodet.Wpf.TaskbarNotification.Interop;
 using LiveCharts;
 using LiveChartsCore.Kernel;
 using OpenTK.Platform;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using LiveChartsCore.Kernel.Sketches;
+using LiveChartsCore.SkiaSharpView.WPF;
+using LiveChartsCore.Drawing;
 
 namespace WindowsScreenTime.ViewModels
 {
@@ -64,6 +68,12 @@ namespace WindowsScreenTime.ViewModels
                 PresetChange();
             }
         }
+        [ObservableProperty]
+        private bool secChecked = false;
+        [ObservableProperty]
+        private bool minChecked = true;
+        [ObservableProperty]
+        private bool hourChecked = false;
 
         public List<string> MinList { get; } = new List<string> { "00", "10", "20", "30", "40", "50" };
 
@@ -138,6 +148,10 @@ namespace WindowsScreenTime.ViewModels
         private Axis[] yAxes = [new Axis { IsVisible = false }];
         [ObservableProperty]
         private ISeries[] _series;
+
+        private readonly HashSet<LiveChartsCore.Kernel.ChartPoint> _activePoints = [];
+        public FindingStrategy Strategy { get; } = FindingStrategy.ExactMatch;
+
         private readonly Random _r = new();
 
         private int counter = 60000;
@@ -187,13 +201,9 @@ namespace WindowsScreenTime.ViewModels
                 PresetChange();
             }
 
-            Initialize();
+            _ = MonitorActiveWindow();
         }
 
-        private void Initialize()
-        {
-            Task _processMonitoringTask = Task.Run(() => MonitorActiveWindow());
-        }
         private void OnTransferViewModelState(object recipient, TransferViewModelActivation message)
         {
             if (_xmlSetService.LoadSelectedPreset() == null || _xmlSetService.LoadSelectedPreset() == "")
@@ -271,12 +281,10 @@ namespace WindowsScreenTime.ViewModels
             }
             .OnPointMeasured(point =>
             {
-                // assign a different color to each point
                 if (point.Visual is null) return;
                 point.Visual.Fill = point.Model!.Paint;
 
                 point.Visual.UpdateData(point.Model!);
-
             });
 
             Series = [rowSeries];
@@ -306,11 +314,23 @@ namespace WindowsScreenTime.ViewModels
         private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
         [DllImport("user32.dll")]
+        static extern IntPtr GetAncestor(IntPtr hWnd, uint gaFlags);
+
+        [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
         [DllImport("user32.dll")]
         private static extern IntPtr WindowFromPoint(POINT point);
+
+        [DllImport("user32.dll")]
+        static extern IntPtr ChildWindowFromPointEx(IntPtr hwndParent, POINT Point, uint uFlags);
+
+        const uint CWP_SKIPINVISIBLE = 0x0001; // 보이지 않는 창 무시
+        const uint CWP_SKIPTRANSPARENT = 0x0002; // 투명 창 무시
+        const uint CWP_SKIPDISABLED = 0x0004; // 비활성 창 무시
+        const uint GA_ROOTOWNER = 3;
+
 
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
@@ -340,20 +360,8 @@ namespace WindowsScreenTime.ViewModels
         private const int WS_EX_TOOLWINDOW = 0x00000080;
         private const int WS_EX_APPWINDOW = 0x00040000;
 
-        public class WindowInfo
-        {
-            public IntPtr Handle { get; set; }
-            public string Title { get; set; }
-            public RECT Rect { get; set; }
-            public POINT CenterPoint { get; set; }
-            public bool IsActuallyVisible { get; set; }
-        }
-
-        private List<WindowInfo> allVisibleWindows = new List<WindowInfo>();
-
         public async Task GetWindowProcess()
         {
-            allVisibleWindows.Clear();
             EnumWindows((hWnd, lParam) =>
             {
                 if (!IsWindowVisible(hWnd)) return true; // 보이지 않는 창은 무시
@@ -367,54 +375,47 @@ namespace WindowsScreenTime.ViewModels
                 if ((exStyle & WS_EX_TOOLWINDOW) != 0) return true;
 
                 GetWindowThreadProcessId(hWnd, out uint processId);
-                Process process = Process.GetProcessById((int)processId);
-                string processDescription = process.MainModule.FileVersionInfo.FileDescription; // 작업 관리자 설명
-                string displayName = string.IsNullOrEmpty(processDescription) ? process.ProcessName : processDescription;
-                // 파일 설명이 없는 경우 기본 ProcessName 사용
-
-                RECT rect;
-                if (GetWindowRect(hWnd, out rect))
+                Process process;
+                try
                 {
-                    var title = displayName;
-                    // Calculate center point
+                    process = Process.GetProcessById((int)processId);
+                }
+                catch
+                {
+                    return true; // 프로세스가 종료된 경우 예외 방지
+                }
+
+                if (GetWindowRect(hWnd, out RECT rect))
+                {
                     POINT centerPoint = new POINT(
                         (rect.Left + rect.Right) / 2,
                         (rect.Top + rect.Bottom) / 2
                     );
 
-                    allVisibleWindows.Add(new WindowInfo
+                    // 윈도우의 중심점이 가려져 있는지 확인
+                    IntPtr windowAtPoint = WindowFromPoint(centerPoint);
+                    IntPtr childWindow = ChildWindowFromPointEx(windowAtPoint, centerPoint,
+                        CWP_SKIPINVISIBLE | CWP_SKIPTRANSPARENT | CWP_SKIPDISABLED);
+                    IntPtr topLevelWindow = GetAncestor(windowAtPoint, GA_ROOTOWNER);
+
+                    bool isVisible = (topLevelWindow == hWnd || windowAtPoint == hWnd || childWindow == hWnd);
+
+                    // 윈도우의 중심이 현재 화면의 중심과 같다면 보이는것
+                    if (isVisible)
                     {
-                        Handle = hWnd,
-                        Title = title,
-                        Rect = rect,
-                        CenterPoint = centerPoint,
-                        IsActuallyVisible = false // Will determine this in the second pass
-                    });
+                        var target = ProcessList.FirstOrDefault(p => p.ProcessName == process.ProcessName);
+                        if (target != null)
+                        {
+                            target.TodayUsage += 1;
+
+                            //AutoSave
+                            _databaseService.UpdateDataToDB(target.ProcessName, target.TodayUsage, DateTime.Now.ToString("yyyy-MM-dd"));
+                        }
+                    }
                 }
 
                 return true; // 다음 창도 계속 탐색
             }, IntPtr.Zero);
-
-            foreach (var window in allVisibleWindows)
-            {
-                // Check if window's center point is visible (not covered by another window)
-                IntPtr windowAtPoint = WindowFromPoint(window.CenterPoint);
-
-                // If the window at center point is the same as our window, it's visible
-                window.IsActuallyVisible = (windowAtPoint == window.Handle);
-            }
-
-            foreach (WindowInfo windowInfo in allVisibleWindows)
-            { 
-                var target = ProcessList.FirstOrDefault(p => p.ProcessName == windowInfo.Title);
-                if (target != null)
-                {
-                    target.TodayUsage += 1;
-
-                    //AutoSave
-                    _databaseService.UpdateDataToDB(target.ProcessName, target.TodayUsage, DateTime.Now.ToString("yyyy-MM-dd"));
-                } 
-            }
         }
 
         public async Task SetProcessRanking()
@@ -474,26 +475,24 @@ namespace WindowsScreenTime.ViewModels
         private async Task MonitorActiveWindow()
         {
             using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+            cts = new CancellationTokenSource();
+            var token = cts.Token;
 
-            while (await timer.WaitForNextTickAsync()) // 5초마다 실행
+            try
             {
-                //var token = cts.Token;
-                //try
-                //{
-                //    await Task.Delay(5000, token);
-                //}
-                //catch (TaskCanceledException)
-                //{
-                //    _ = MonitorActiveWindow();
-                //    break;
-                //}
+                while (await timer.WaitForNextTickAsync(token)) // 5초마다 실행
+                {
+                    _ = GetWindowProcess();
 
-                _ = GetWindowProcess();
+                    _ = SetProcessRanking();
 
-                _ = SetProcessRanking();
-
-                DateChangeEvent();
+                    DateChangeEvent();
+                }
             }
+            catch (OperationCanceledException)
+            {
+
+            }           
         }
 
         [RelayCommand]
@@ -610,31 +609,54 @@ namespace WindowsScreenTime.ViewModels
         [RelayCommand]
         private void SetSecond()
         {
-            //cts.Cancel();
-            //cts = new CancellationTokenSource();
+            SecChecked = true;
             counter = 1;
             UpdateProcessList();
         }
         [RelayCommand]
         private void SetMinute()
         {
+            MinChecked = true;
             counter = 12;
             UpdateProcessList();
         }
         [RelayCommand]
         private void SetHour()
         {
+            HourChecked = true;
             counter = 720;
             UpdateProcessList();
         }
         [RelayCommand]
-        private void BarClick(LiveChartsCore.Kernel.Events.VisualElementsEventArgs args)
+        private void BarClick(PointerCommandArgs args)
         {
-            if (args == null) return;
+            var foundPoints = args.Chart.GetPointsAt(args.PointerPosition);
 
-            // VisualElementsEventArgs에서 필요한 정보 추출
-            var chartPoint = args.PointerLocation; // ChartPoint 정보가 이 안에 있을 수 있음
-            var chart = args.Chart;
+            foreach (var point in foundPoints)
+            {
+                var geometry = (DrawnGeometry)point.Context.Visual!;
+
+                if (!_activePoints.Contains(point))
+                {
+                    //geometry.Fill = new SolidColorPaint { Color = SKColors.Yellow };
+                    _activePoints.Add(point);
+                }
+                else
+                {
+                    // clear the fill to the default value
+                    //geometry.Fill = null;
+                    _activePoints.Remove(point);
+                }
+
+                Trace.WriteLine($"found {point.Context.DataSource}");
+
+                if (point.Context.DataSource is ProcessChartInfo data)
+                {
+                    Debug.WriteLine($"클릭한 시리즈: {data?.Name}");
+
+                    _databaseService.QueryPastUsageTime(data?.Name, StartDate.ToString(), EndDate.ToString());
+                }
+            }
         }
         [RelayCommand]
         private void Back()
