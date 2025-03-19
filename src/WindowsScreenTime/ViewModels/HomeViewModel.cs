@@ -90,6 +90,7 @@ namespace WindowsScreenTime.ViewModels
         private int remainingSeconds;
         private string AlarmMessage;
         private DispatcherTimer timer;
+        private DateTime pgOnDate;
         private void StartTimer()
         {
             if (timer == null)
@@ -173,6 +174,7 @@ namespace WindowsScreenTime.ViewModels
             endDate = DateTime.Today;
             AlarmHours = "1";
             AlarmMinutes = "00";
+            pgOnDate = DateTime.Today;
 
             WeakReferenceMessenger.Default.Register<TransferViewModelActivation>(this, OnTransferViewModelState);
 
@@ -459,13 +461,12 @@ namespace WindowsScreenTime.ViewModels
 
         public void DateChangeEvent()
         {
-            if (EndDate.Value != DateTime.Today)
+            if (pgOnDate != DateTime.Today)
             {
-                EndDate = DateTime.Today;
+                pgOnDate = DateTime.Today;
 
                 foreach (var proc in ProcessList)
                 {
-                    proc.PastUsage += proc.TodayUsage;
                     proc.TodayUsage = 0;
                 }
             }
