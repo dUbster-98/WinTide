@@ -173,7 +173,7 @@ namespace WindowsScreenTime.ViewModels
                             processUsageMap[process.ProcessName] = new ProcessUsage
                             {
                                 ProcessIcon = icon,
-                                ProcessName = displayName,
+                                ProcessName = process.ProcessName,
                                 MemorySize = process.WorkingSet64,
                                 RamUsagePer = (double)process.WorkingSet64 / totalRam * 100,
                                 ExecutablePath = path
