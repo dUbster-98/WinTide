@@ -104,6 +104,7 @@
                             Text="SECONDS"
                             FontWeight="Bold"
                             FontSize="13"
+                            IsEnabled="{Binding TimeEnable}"
                             FontFamily="/Resources/Fonts/#레시피코리아 Medium"/>
 
                     </RadioButton>
@@ -117,6 +118,7 @@
                             Text="MINUTES" 
                             FontWeight="Bold"
                             FontSize="13"
+                            IsEnabled="{Binding TimeEnable}"
                             FontFamily="/Resources/Fonts/#레시피코리아 Medium"/>
 
                     </RadioButton>
@@ -130,6 +132,7 @@
                             Text="HOURS"
                             FontWeight="Bold"
                             FontSize="13"
+                            IsEnabled="{Binding TimeEnable}"
                             FontFamily="/Resources/Fonts/#레시피코리아 Medium"/>
                     </RadioButton>
                 </StackPanel>

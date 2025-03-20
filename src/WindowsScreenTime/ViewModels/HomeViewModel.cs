@@ -74,6 +74,8 @@ namespace WindowsScreenTime.ViewModels
         private bool minChecked = true;
         [ObservableProperty]
         private bool hourChecked = false;
+        [ObservableProperty]
+        private bool timeEnable = true;
 
         public List<string> MinList { get; } = new List<string> { "00", "10", "20", "30", "40", "50" };
 
@@ -164,9 +166,10 @@ namespace WindowsScreenTime.ViewModels
 
         public class ProcessChartInfo : ObservableValue
         {
-            public ProcessChartInfo(string name, int value, SolidColorPaint paint, string iconPath)
+            public ProcessChartInfo(string name, string editedName, int value, SolidColorPaint paint, string iconPath)
             {
                 Name = name;
+                EditedName = editedName;
                 Paint = paint;
                 IconPath = iconPath;
                 // the ObservableValue.Value property is used by the chart
@@ -174,6 +177,7 @@ namespace WindowsScreenTime.ViewModels
             }
 
             public string Name { get; set; }
+            public string EditedName { get; set; }
             public SolidColorPaint Paint { get; set; }
             public string? IconPath { get; set; }
         }
@@ -255,7 +259,7 @@ namespace WindowsScreenTime.ViewModels
                         break;
                 }
 
-                _data.Add(new(proc.EditedName, value, paints[i], proc.IconPath));
+                _data.Add(new(proc.ProcessName, proc.EditedName, value, paints[i], proc.IconPath));
 
                 ++i;
                 if (i == ProcessList.Count())
@@ -276,7 +280,7 @@ namespace WindowsScreenTime.ViewModels
                 },
                 DataLabelsPosition = DataLabelsPosition.End,
                 DataLabelsTranslate = new(-1, 0),
-                DataLabelsFormatter = point => $"{point.Model!.Name} {point.Coordinate.PrimaryValue}",
+                DataLabelsFormatter = point => $"{point.Model!.EditedName} {point.Coordinate.PrimaryValue}",
                 MaxBarWidth = 100,
                 MiniatureShapeSize = 20,
                 Padding = 10,
@@ -426,7 +430,7 @@ namespace WindowsScreenTime.ViewModels
             {
                 var value = 0;
 
-                var item = _data.FirstOrDefault(p => p.Name == proc.EditedName);
+                var item = _data.FirstOrDefault(p => p.EditedName == proc.EditedName);
                 if (item != null)
                 {
                     if (EndDate.Value == DateTime.Today)
@@ -631,6 +635,8 @@ namespace WindowsScreenTime.ViewModels
         [RelayCommand]
         private void BarClick(PointerCommandArgs args)
         {
+            TimeEnable = false;
+
             var foundPoints = args.Chart.GetPointsAt(args.PointerPosition);
 
             foreach (var point in foundPoints)
@@ -653,16 +659,14 @@ namespace WindowsScreenTime.ViewModels
 
                 if (point.Context.DataSource is ProcessChartInfo data)
                 {
-                    Debug.WriteLine($"클릭한 시리즈: {data?.Name}");
-
-                    _databaseService.QueryPastUsageTime(data?.Name, StartDate.ToString(), EndDate.ToString());
+                    _databaseService.QueryDayTimeData(data?.Name, StartDate.ToString(), EndDate.ToString());
                 }
             }
         }
         [RelayCommand]
         private void Back()
         {
-
+            TimeEnable = true;
         }
     }
 }

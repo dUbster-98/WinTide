@@ -17,6 +17,7 @@ namespace WindowsScreenTime.Services
         void UpdateDataToDB(string name, int time, string today);
         int QueryPastUsageTime(string name, string startDate, string endDate);
         int QueryTodayUsageTime(string name, string today);
+        List<string>QueryDayTimeData(string name, string startDate, string endDate);
     }
 
     public class DatabaseService : IDatabaseService
@@ -152,6 +153,34 @@ namespace WindowsScreenTime.Services
             }
 
             return timeList.Sum();
+        }
+
+        public List<string> QueryDayTimeData(string name, string startDate, string endDate)
+        {
+            List<string> timeList = new List<string>();
+            using (var conn = new SqliteConnection(ConnectionString))
+            {
+                conn.Open();
+                string selectQuery = "SELECT * FROM AppTimer WHERE name=@name AND day BETWEEN @startDate AND @endDate;";
+                using (var selectCmd = new SqliteCommand(selectQuery, conn))
+                {
+                    selectCmd.Parameters.AddWithValue("@name", name);
+                    selectCmd.Parameters.AddWithValue("@startDate", startDate);
+                    selectCmd.Parameters.AddWithValue("@endDate", endDate);
+                    using (var reader = selectCmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (!reader.IsDBNull(2))
+                            {
+                                timeList.Add(reader.GetString(3));
+                            }
+                        }
+                    }
+                }
+                conn.Close();
+            }
+            return timeList;
         }
     }
 }
