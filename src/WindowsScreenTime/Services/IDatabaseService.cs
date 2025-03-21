@@ -7,6 +7,7 @@ using System.Windows;
 using System.IO;
 using System.Data.SqlClient;
 using Microsoft.Data.Sqlite;
+using YamlDotNet.Core.Tokens;
 
 namespace WindowsScreenTime.Services
 {
@@ -17,7 +18,7 @@ namespace WindowsScreenTime.Services
         void UpdateDataToDB(string name, int time, string today);
         int QueryPastUsageTime(string name, string startDate, string endDate);
         int QueryTodayUsageTime(string name, string today);
-        List<string>QueryDayTimeData(string name, string startDate, string endDate);
+        List<(int, string)>QueryDayTimeData(string name, string startDate, string endDate);
     }
 
     public class DatabaseService : IDatabaseService
@@ -155,9 +156,9 @@ namespace WindowsScreenTime.Services
             return timeList.Sum();
         }
 
-        public List<string> QueryDayTimeData(string name, string startDate, string endDate)
+        public List<(int, string)> QueryDayTimeData(string name, string startDate, string endDate)
         {
-            List<string> timeList = new List<string>();
+            List<(int, string)> timeList = new();
             using (var conn = new SqliteConnection(ConnectionString))
             {
                 conn.Open();
@@ -173,7 +174,15 @@ namespace WindowsScreenTime.Services
                         {
                             if (!reader.IsDBNull(2))
                             {
-                                timeList.Add(reader.GetString(3));
+                                if (int.TryParse(reader.GetString(2), out int time))
+                                {
+                                    timeList.Add((time, reader.GetString(3)));
+                                }
+                            }
+                            else
+                            if (!reader.IsDBNull(2))
+                            {
+                                timeList.Add((0, reader.GetString(3)));
                             }
                         }
                     }

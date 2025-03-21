@@ -96,43 +96,43 @@
                             HorizontalAlignment="Center">
                     <RadioButton
                         Margin="4"
-                        IsChecked="{Binding SecChecked}"
+                        IsChecked="{Binding SecChecked, Mode=TwoWay}"
                         Style="{StaticResource MaterialDesignTabRadioButton}"
-                        Command="{Binding SetSecondCommand}">
+                        Command="{Binding SetSecondCommand}"                            
+                        IsEnabled="{Binding TimeEnable}">
                         <TextBlock
                             Margin="4,0,0,0"
                             Text="SECONDS"
                             FontWeight="Bold"
                             FontSize="13"
-                            IsEnabled="{Binding TimeEnable}"
                             FontFamily="/Resources/Fonts/#레시피코리아 Medium"/>
 
                     </RadioButton>
                     <RadioButton
                         Margin="4"
-                        IsChecked="{Binding MinChecked}"
+                        IsChecked="{Binding MinChecked, Mode=TwoWay}"
                         Style="{StaticResource MaterialDesignTabRadioButton}"
-                        Command="{Binding SetMinuteCommand}">
+                        Command="{Binding SetMinuteCommand}"                            
+                        IsEnabled="{Binding TimeEnable}">
                         <TextBlock
                             Margin="4,0,0,0"
                             Text="MINUTES" 
                             FontWeight="Bold"
                             FontSize="13"
-                            IsEnabled="{Binding TimeEnable}"
                             FontFamily="/Resources/Fonts/#레시피코리아 Medium"/>
 
                     </RadioButton>
                     <RadioButton
                         Margin="4"
-                        IsChecked="{Binding HourChecked}"
+                        IsChecked="{Binding HourChecked, Mode=TwoWay}"
                         Style="{StaticResource MaterialDesignTabRadioButton}"
-                        Command="{Binding SetHourCommand}">
+                        Command="{Binding SetHourCommand}"
+                        IsEnabled="{Binding TimeEnable}">
                         <TextBlock
                             Margin="4,0,0,0"
                             Text="HOURS"
                             FontWeight="Bold"
                             FontSize="13"
-                            IsEnabled="{Binding TimeEnable}"
                             FontFamily="/Resources/Fonts/#레시피코리아 Medium"/>
                     </RadioButton>
                 </StackPanel>
@@ -264,15 +264,22 @@
                 </materialDesign:PopupBox>
             </Grid>
 
-            <ScrollViewer Grid.Row="3" Margin="10">
+            <Grid Grid.Row="3" Margin="10">
                 <lvc:CartesianChart
                     Series="{Binding Series}"
                     XAxes="{Binding XAxes}"
                     YAxes="{Binding YAxes}"
                     TooltipPosition="Hidden"
                     FindingStrategy="{Binding Strategy}"
-                    PointerPressedCommand="{Binding BarClickCommand}">
+                    PointerPressedCommand="{Binding BarClickCommand}"
+                    Visibility="{Binding IsChart1Visible, Converter={StaticResource BoolToVisibilityConverter}, Mode=TwoWay}">
                 </lvc:CartesianChart>
+
+                <lvc:CartesianChart 
+                    Series="{Binding Series2}"
+                    Visibility="{Binding IsChart2Visible, Converter={StaticResource BoolToVisibilityConverter}, Mode=TwoWay}">
+                </lvc:CartesianChart>
+
 
                 <!--<ListView ItemsSource="{Binding ProcessList}"
                           AlternationCount="2" Margin="10">
@@ -318,7 +325,7 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>-->
-            </ScrollViewer>
+            </Grid>
 
 
             <Grid Grid.Row="4">
