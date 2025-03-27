@@ -76,6 +76,8 @@ namespace WindowsScreenTime.ViewModels
         private bool hourChecked = false;
         [ObservableProperty]
         private bool timeEnable = true;
+        [ObservableProperty]
+        private bool presetEnable = true;
 
         public List<string> MinList { get; } = new List<string> { "00", "10", "20", "30", "40", "50" };
 
@@ -151,9 +153,11 @@ namespace WindowsScreenTime.ViewModels
         private Axis[] yAxes = [new Axis { IsVisible = false }];
         [ObservableProperty]
         private ISeries[] _series;
-        public ObservableCollection<ISeries> Series2 { get; set; }
-        public ObservableCollection<ObservableValue> ObservableValues { get; set; }
-
+        [ObservableProperty]
+        private Axis[] xAxes2 = [new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString("MM-dd"))];
+  
+        [ObservableProperty]
+        private ISeries[] _series2;
 
         [ObservableProperty]
         private bool isChart1Visible = true;
@@ -508,50 +512,6 @@ namespace WindowsScreenTime.ViewModels
             }           
         }
 
-
-
-        private void OnPointMeasured(ChartPoint<float, RoundedRectangleGeometry, LabelGeometry> point)
-        {
-            var perPointDelay = 100; // in milliseconds
-            var delay = point.Context.Entity.MetaData!.EntityIndex * perPointDelay;
-            var speed = (float)point.Context.Chart.AnimationsSpeed.TotalMilliseconds + delay;
-
-            // the animation takes a function, that represents the progress of the animation
-            // the parameter is the progress of the animation, it goes from 0 to 1
-            // the function must return a value from 0 to 1, where 0 is the initial state
-            // and 1 is the end state
-
-            point.Visual?.SetTransition(
-                new Animation(progress =>
-                {
-                    var d = delay / speed;
-
-                    return progress <= d
-                        ? 0
-                        : EasingFunctions.BuildCustomElasticOut(1.5f, 0.60f)((progress - d) / (1 - d));
-                },
-                TimeSpan.FromMilliseconds(speed)));
-        }
-
-        private static List<float> FetchVales(float offset)
-        {
-            var values = new List<float>();
-
-            // the EasingFunctions.BounceInOut, is just
-            // a function that takes a double and returns a double
-
-            var fx = EasingFunctions.BounceInOut;
-            var x = 0f;
-
-            while (x <= 1)
-            {
-                values.Add(fx(x + offset));
-                x += 0.025f;
-            }
-
-            return values;
-        }
-
         [RelayCommand]
         public void AddProcess(string processName)
         {
@@ -688,7 +648,12 @@ namespace WindowsScreenTime.ViewModels
         private void BarClick(PointerCommandArgs args)
         {
             TimeEnable = false;
+            PresetEnable = false;
+            IsChart1Visible = false;
+            IsChart2Visible = true;
             List<(int,string)> dayTimeData = new();
+            List<DateTimePoint> dayTimePoint = new();
+            SolidColorPaint chartColor = new SolidColorPaint { Color = SKColors.Yellow };
 
             var foundPoints = args.Chart.GetPointsAt(args.PointerPosition);
 
@@ -712,23 +677,46 @@ namespace WindowsScreenTime.ViewModels
 
                 if (point.Context.DataSource is ProcessChartInfo data)
                 {
+                    chartColor = data.Paint;
                     dayTimeData = _databaseService.QueryDayTimeData(data?.Name, StartDate.ToString(), EndDate.ToString());
                 }
             }
 
-            foreach(var data in dayTimeData)
+            foreach (var point in dayTimeData)
             {
-                ObservableValues.Add
-
+                if (DateTime.TryParse(point.Item2, out DateTime date))
+                {
+                    DateTimePoint data = new() { DateTime = date, Value = point.Item1 };
+                    dayTimePoint.Add(data);
+                }
             }
+            var series = new ColumnSeries<DateTimePoint>
+            {
+                Values = dayTimePoint,
+                DataLabelsPaint = new SolidColorPaint(new SKColor(245, 245, 245)),
+                DataLabelsPosition = DataLabelsPosition.Middle,
+                DataLabelsTranslate = new(0, 0),
+                DataLabelsFormatter = point => $"{point.Coordinate.PrimaryValue}",
+                DataLabelsSize = 25,
+                MaxBarWidth = 100,
+                MiniatureShapeSize = 20,
+                Rx=15,
+                Ry=15,               
+                Padding = 10,
+            }
+            .OnPointMeasured(point =>
+            {
+                if (point.Visual is null) return;
+                point.Visual.Fill = chartColor;
+            });
 
-            Series = [new LineSeries<ObservableValue>(ObservableValues)];
-
+            Series2 = [series];
         }
         [RelayCommand]
         private void Back()
         {
             TimeEnable = true;
+            PresetEnable = true;
             IsChart1Visible = true;
             IsChart2Visible = false;
         }

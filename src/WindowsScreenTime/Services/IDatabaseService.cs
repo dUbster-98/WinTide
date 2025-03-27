@@ -180,7 +180,6 @@ namespace WindowsScreenTime.Services
                                 }
                             }
                             else
-                            if (!reader.IsDBNull(2))
                             {
                                 timeList.Add((0, reader.GetString(3)));
                             }
