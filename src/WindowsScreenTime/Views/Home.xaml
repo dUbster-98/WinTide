@@ -278,6 +278,7 @@
                 <lvc:CartesianChart 
                     Series="{Binding Series2}"
                     XAxes="{Binding XAxes2}"
+                    ZoomMode="X"
                     Visibility="{Binding IsChart2Visible, Converter={StaticResource BoolToVisibilityConverter}, Mode=TwoWay}">
                 </lvc:CartesianChart>
 

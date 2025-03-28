@@ -211,14 +211,6 @@ namespace WindowsScreenTime.ViewModels
             ProcessList = new();
             _databaseService.InitializeDataBase();
 
-            if (_xmlSetService.LoadSelectedPreset() == null || _xmlSetService.LoadSelectedPreset() == "")
-                SelectedPreset = 0;
-            else
-            {
-                SelectedPreset = Convert.ToInt32(_xmlSetService.LoadSelectedPreset());
-                PresetChange();
-            }
-
             _ = MonitorActiveWindow();
         }
 
@@ -528,20 +520,20 @@ namespace WindowsScreenTime.ViewModels
         [RelayCommand]
         private void SetPeriodDay()
         {
-            StartDate = DateTime.Now.AddDays(-1);
-            EndDate = DateTime.Now;
+            StartDate = DateTime.Today.AddDays(-1);
+            EndDate = DateTime.Today;
         }
         [RelayCommand]
         private void SetPeriodWeek()
         {
-            StartDate = DateTime.Now.AddDays(-7);
-            EndDate = DateTime.Now;
+            StartDate = DateTime.Today.AddDays(-7);
+            EndDate = DateTime.Today;
         }
         [RelayCommand]
         private void SetPeriodMonth()
         {
-            StartDate = DateTime.Now.AddMonths(-1);
-            EndDate = DateTime.Now;
+            StartDate = DateTime.Today.AddMonths(-1);
+            EndDate = DateTime.Today;
         }
         [RelayCommand]
         private void PresetChange()
@@ -686,7 +678,7 @@ namespace WindowsScreenTime.ViewModels
             {
                 if (DateTime.TryParse(point.Item2, out DateTime date))
                 {
-                    DateTimePoint data = new() { DateTime = date, Value = point.Item1 };
+                    DateTimePoint data = new() { DateTime = date, Value = point.Item1 / 12 };
                     dayTimePoint.Add(data);
                 }
             }

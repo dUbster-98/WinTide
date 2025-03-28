@@ -66,7 +66,7 @@ namespace WindowsScreenTime.Services
 
                 if (!isExist)
                 {
-                    string insertQuery = "INSERT INTO AppTimer (name, day) VALUES (@name, @day);";
+                    string insertQuery = "INSERT INTO AppTimer (name, time, day) VALUES (@name, 0, @day);";
                     using (var insertCmd = new SqliteCommand(insertQuery, conn))
                     {
                         insertCmd.Parameters.AddWithValue("@name", name);
