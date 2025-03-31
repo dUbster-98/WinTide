@@ -61,7 +61,9 @@ namespace WindowsScreenTime.Services
             foreach (ProcessUsage process in viewList)
             {
                 XElement processElement = new XElement("Process",
-                    new XAttribute("Name", process.ProcessName), new XAttribute("EditedName", process.EditedName));
+                    new XAttribute("Name", process.ProcessName), 
+                    new XAttribute("EditedName", process.EditedName),
+                    new XAttribute("BaseName", process.BaseName));
                 presetElement.Add(processElement);
             }
 
@@ -128,6 +130,7 @@ namespace WindowsScreenTime.Services
             XElement presetElement = doc.Root.Elements("Preset")
                 .FirstOrDefault(e => e.Attribute("Name")?.Value == presetName);
 
+            
             if (presetElement != null)
             {
                 var processElement = presetElement.Elements("Process");
@@ -136,6 +139,7 @@ namespace WindowsScreenTime.Services
                     ProcessUsage process = new();
                     process.ProcessName = e.Attribute("Name")?.Value ?? string.Empty;
                     process.EditedName = e.Attribute("EditedName")?.Value ?? string.Empty;
+                    process.BaseName = e.Attribute("BaseName")?.Value ?? string.Empty;
                     processes.Add(process);
                 }
             }

@@ -163,17 +163,17 @@ namespace WindowsScreenTime.ViewModels
                         if (path == null) continue;
                   
                         BitmapImage? icon = GetCachedIcon(path);
+                        string processDescription = process.MainModule.FileVersionInfo.FileDescription; // 작업 관리자 이름 = 파일 설명
+                        string displayName = string.IsNullOrEmpty(processDescription) ? process.ProcessName : processDescription;
+                        // 파일 설명이 없는 경우 기본 ProcessName 사용
 
-                        if (!processUsageMap.TryGetValue(process.ProcessName, out var existingUsage))
+                        if (!processUsageMap.TryGetValue(displayName, out var existingUsage))
                         {
-                            string processDescription = process.MainModule.FileVersionInfo.FileDescription; // 작업 관리자 이름 = 파일 설명
-                            string displayName = string.IsNullOrEmpty(processDescription) ? process.ProcessName : processDescription;
-                            // 파일 설명이 없는 경우 기본 ProcessName 사용
-
                             processUsageMap[process.ProcessName] = new ProcessUsage
                             {
                                 ProcessIcon = icon,
                                 ProcessName = displayName,
+                                BaseName = process.ProcessName,
                                 MemorySize = process.WorkingSet64,
                                 RamUsagePer = (double)process.WorkingSet64 / totalRam * 100,
                                 ExecutablePath = path
@@ -328,7 +328,7 @@ namespace WindowsScreenTime.ViewModels
 
                         if (processName != null)
                         {
-                            string? path = _processContainService.GetProcessPathByString(processName);
+                            string? path = _processContainService.GetProcessPathByString(proc.BaseName);
                             //string iconPath = Path.Combine(ResourcePath, process.ProcessName + ".png");
                             // 프로세스 이름을 바탕으로 프로세스 경로를 찾는다
                             if (path != null)
