@@ -39,7 +39,8 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid x:Name="Part_grid" Background="#e3edf7">
+    <Grid x:Name="Part_grid" Background="#e3edf7"
+          Style="{DynamicResource AnimatedBackgroundStyle}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.5*"/>
             <ColumnDefinition Width="1*"/>
@@ -63,7 +64,8 @@
         <UniformGrid Grid.Column="2" Rows="10" HorizontalAlignment="Center">
             <Label/>
             <ToggleButton
-                IsChecked="False"
+                IsChecked="{Binding IsAutoStart}"
+                Command="{Binding AutoStartChangeCommand}"
                 Style="{StaticResource MaterialDesignSwitchDarkToggleButton}"
                 ToolTip="MaterialDesignSwitchDarkToggleButton" />
             <ToggleButton
@@ -74,6 +76,8 @@
             <ToggleButton
                 DockPanel.Dock="Bottom"
                 Style="{StaticResource ThemeButton}"
+                Command="{Binding ThemeChangeCommand}"
+                IsChecked="{Binding IsNightMode}"
                 Checked="ToggleButton_Checked" Unchecked="ToggleButton_UnChecked"/>
             <Label/>
             <Label/>

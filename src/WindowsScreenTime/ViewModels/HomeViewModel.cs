@@ -172,7 +172,6 @@ namespace WindowsScreenTime.ViewModels
         private int counter = 60000;
         private CancellationTokenSource cts = new();
 
-        public bool IsReading { get; set; } = true;
         private ProcessChartInfo[] SortData() => [.. _data.OrderBy(x => x.Value)];
         // ..(spread 연산자)는 컬렉션의 모든 요소를 새 배열로 복사하는 역할
 
@@ -232,7 +231,6 @@ namespace WindowsScreenTime.ViewModels
                                    .ToArray();
 
             _data = new List<ProcessChartInfo>();
-            IsReading = false;
 
             int i = 0;
             var value = 0;

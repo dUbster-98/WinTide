@@ -22,8 +22,10 @@
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Blue" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
                 
-                <ResourceDictionary Source="Styles/ButtonStyles.xaml"/>
-                <ResourceDictionary Source="Styles/GridStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/ButtonStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/GridStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/AnimationStyle.xaml"/>
+                <ResourceDictionary Source="/Themes/LightTheme.xaml"/>
 
                 <ResourceDictionary>
                     <DataTemplate DataType="{x:Type vm:HomeViewModel}">
