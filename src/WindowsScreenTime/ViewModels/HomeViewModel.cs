@@ -227,7 +227,7 @@ namespace WindowsScreenTime.ViewModels
 
         private void UpdateProcessList()
         {
-            var paints = Enumerable.Range(0, 7)
+            var paints = Enumerable.Range(0, 9)
                                    .Select(i => new SolidColorPaint(ColorPalletes.MaterialDesign500[i].AsSKColor()))
                                    .ToArray();
 
@@ -262,11 +262,11 @@ namespace WindowsScreenTime.ViewModels
                         value = value / 12; 
                         break;
                 }
-
+                
                 _data.Add(new(proc.ProcessName, proc.EditedName, value, paints[i], proc.IconPath));
-
+                
                 ++i;
-                if (i == ProcessList.Count())
+                if (i == 9)
                     i = 0;
             }
 
@@ -385,14 +385,17 @@ namespace WindowsScreenTime.ViewModels
                 if ((exStyle & WS_EX_TOOLWINDOW) != 0) return true;
 
                 GetWindowThreadProcessId(hWnd, out uint processId);
-                Process process;
+                Process process = new();
+                string displayName;
                 try
                 {
                     process = Process.GetProcessById((int)processId);
+                    string processDescription = process.MainModule.FileVersionInfo.FileDescription; // 작업 관리자 이름 = 파일 설명
+                    displayName = string.IsNullOrEmpty(processDescription) ? process.ProcessName : processDescription;
                 }
                 catch
                 {
-                    return true; // 프로세스가 종료된 경우 예외 방지
+                    displayName = process.ProcessName;
                 }
 
                 if (GetWindowRect(hWnd, out RECT rect))
@@ -413,7 +416,7 @@ namespace WindowsScreenTime.ViewModels
                     // 윈도우의 중심이 현재 화면의 중심과 같다면 보이는것
                     if (isVisible)
                     {
-                        var target = ProcessList.FirstOrDefault(p => p.ProcessName == process.ProcessName);
+                        var target = ProcessList.FirstOrDefault(p => p.ProcessName == displayName);
                         if (target != null)
                         {
                             target.TodayUsage += 1;

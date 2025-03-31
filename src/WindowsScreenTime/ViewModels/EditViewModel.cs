@@ -173,7 +173,7 @@ namespace WindowsScreenTime.ViewModels
                             processUsageMap[process.ProcessName] = new ProcessUsage
                             {
                                 ProcessIcon = icon,
-                                ProcessName = process.ProcessName,
+                                ProcessName = displayName,
                                 MemorySize = process.WorkingSet64,
                                 RamUsagePer = (double)process.WorkingSet64 / totalRam * 100,
                                 ExecutablePath = path
@@ -328,7 +328,8 @@ namespace WindowsScreenTime.ViewModels
 
                         if (processName != null)
                         {
-                            string? path = _processContainService.GetProcessPathByString(processName); 
+                            string? path = _processContainService.GetProcessPathByString(processName);
+                            //string iconPath = Path.Combine(ResourcePath, process.ProcessName + ".png");
                             // 프로세스 이름을 바탕으로 프로세스 경로를 찾는다
                             if (path != null)
                             {
