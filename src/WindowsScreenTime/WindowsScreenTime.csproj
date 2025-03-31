@@ -11,16 +11,12 @@
 
   <ItemGroup>
     <Compile Remove="Properties\**" />
-    <Compile Remove="Themes\**" />
     <Compile Remove="Views\Resources\**" />
     <EmbeddedResource Remove="Properties\**" />
-    <EmbeddedResource Remove="Themes\**" />
     <EmbeddedResource Remove="Views\Resources\**" />
     <None Remove="Properties\**" />
-    <None Remove="Themes\**" />
     <None Remove="Views\Resources\**" />
     <Page Remove="Properties\**" />
-    <Page Remove="Themes\**" />
     <Page Remove="Views\Resources\**" />
   </ItemGroup>
 

@@ -239,7 +239,7 @@
 
             <Grid Grid.Column="1">
                 <Border x:Name="ContentBorder"
-                        Background="#e3edf7" CornerRadius="0 0 20 0"
+                        Background="AliceBlue" CornerRadius="0 0 20 0"
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                         Margin="0">
                     <ContentControl x:Name="Pages"
