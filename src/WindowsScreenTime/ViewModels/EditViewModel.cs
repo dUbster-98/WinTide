@@ -161,7 +161,7 @@ namespace WindowsScreenTime.ViewModels
                     {
                         var path = _processContainService.GetProcessPath(process);
                         if (path == null) continue;
-                  
+
                         BitmapImage? icon = GetCachedIcon(path);
                         string processDescription = process.MainModule.FileVersionInfo.FileDescription; // 작업 관리자 이름 = 파일 설명
                         string displayName = string.IsNullOrEmpty(processDescription) ? process.ProcessName : processDescription;
@@ -296,7 +296,7 @@ namespace WindowsScreenTime.ViewModels
                 return;
 
             ViewListStr.Add(SelectedProcess.ProcessName);
-            ViewList.Add(SelectedProcess);                
+            ViewList.Add(SelectedProcess);
         }
 
         [RelayCommand]
@@ -382,7 +382,7 @@ namespace WindowsScreenTime.ViewModels
                         SaveBitmapImage(process.ProcessIcon, iconPath);
                     }
                 }
-                _xmlSetService.SavePreset(SelectedPreset.ToString()!, ViewList);                
+                _xmlSetService.SavePreset(SelectedPreset.ToString()!, ViewList);
             }
             IsActive = true;
         }

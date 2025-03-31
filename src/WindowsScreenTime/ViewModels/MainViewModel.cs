@@ -4,7 +4,9 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -65,6 +67,7 @@ namespace WindowsScreenTime.ViewModels
         public MainViewModel()
         {
             GoHome();
+            //EnsureRunAsAdmin();
         }
 
         private void GoMenu()
@@ -89,6 +92,37 @@ namespace WindowsScreenTime.ViewModels
             CurrentView = App.Current.Services.GetService(typeof(SettingsViewModel));
             var message = new TransferViewModelActivation { isActivated = false };
             WeakReferenceMessenger.Default.Send(message);
+        }
+
+        public static void EnsureRunAsAdmin()
+        {
+            // 현재 프로세스가 관리자 권한으로 실행 중인지 확인
+            using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
+            {
+                WindowsPrincipal principal = new WindowsPrincipal(identity);
+                bool isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
+
+                if (!isAdmin)
+                {
+                    // 관리자 권한으로 다시 실행
+                    var startInfo = new ProcessStartInfo
+                    {
+                        FileName = Process.GetCurrentProcess().MainModule.FileName,
+                        Verb = "runas", // 관리자 권한 요청
+                        UseShellExecute = true
+                    };
+
+                    try
+                    {
+                        Process.Start(startInfo);
+                        Environment.Exit(0); // 현재 프로세스 종료
+                    }
+                    catch
+                    {
+                        Console.WriteLine("❌ 관리자 권한 요청 실패!");
+                    }
+                }
+            }
         }
 
 

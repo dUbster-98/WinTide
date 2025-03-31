@@ -420,7 +420,7 @@ namespace WindowsScreenTime.ViewModels
                             target.TodayUsage += 1;
 
                             //AutoSave
-                            _databaseService.UpdateDataToDB(target.ProcessName, target.TodayUsage, DateTime.Now.ToString("yyyy-MM-dd"));
+                            _databaseService.UpdateDataToDB(target.ProcessName, target.TodayUsage, DateTime.Today.ToString("yyyy-MM-dd"));
                         }
                     }
                 }
@@ -475,10 +475,7 @@ namespace WindowsScreenTime.ViewModels
             {
                 pgOnDate = DateTime.Today;
 
-                foreach (var proc in ProcessList)
-                {
-                    proc.TodayUsage = 0;
-                }
+                PresetChange();
             }
         }
 
