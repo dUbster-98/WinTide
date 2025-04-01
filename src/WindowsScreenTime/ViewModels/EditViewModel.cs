@@ -162,7 +162,18 @@ namespace WindowsScreenTime.ViewModels
                         var path = _processContainService.GetProcessPath(process);
                         if (path == null) continue;
 
+                        string uriString = Directory.GetCurrentDirectory() + 
+                            "\\Resources\\Icons\\" + process.ProcessName + ".png";
+
                         BitmapImage? icon = GetCachedIcon(path);
+                        if (icon == null)
+                        {
+                            icon = new BitmapImage();
+                            icon.BeginInit();
+                            icon.UriSource = new Uri(uriString);
+                            icon.EndInit();
+                        }
+
                         string processDescription = process.MainModule.FileVersionInfo.FileDescription; // 작업 관리자 이름 = 파일 설명
                         string displayName = string.IsNullOrEmpty(processDescription) ? process.ProcessName : processDescription;
                         // 파일 설명이 없는 경우 기본 ProcessName 사용

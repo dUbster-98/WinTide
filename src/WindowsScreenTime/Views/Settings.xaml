@@ -51,15 +51,13 @@
         <UniformGrid Grid.Column="1" Rows="10" HorizontalAlignment="Center">
             <Label/>
             <Label Content="윈도우 시작시 자동 실행"/>
-            <Label Content="관리자 권한 부여"/>
             <Label Content="백그라운드 모드"/>
             <Label Content="야간 모드"/>
             <Label/>
             <Label/>
             <Label/>
-
+            <Label/>
             <Label Content="데이터 초기화"/>
-
         </UniformGrid>
 
         <UniformGrid Grid.Column="2" Rows="10" HorizontalAlignment="Center">
@@ -73,18 +71,13 @@
                 IsChecked="False"
                 Style="{StaticResource MaterialDesignSwitchDarkToggleButton}"
                 ToolTip="MaterialDesignSwitchDarkToggleButton" />
-            <ToggleButton
-                IsChecked="False"
-                Style="{StaticResource MaterialDesignSwitchDarkToggleButton}"
-                ToolTip="MaterialDesignSwitchDarkToggleButton" />
-
 
             <ToggleButton
                 DockPanel.Dock="Bottom"
                 Style="{StaticResource ThemeButton}"
                 Command="{Binding ThemeChangeCommand}"
-                IsChecked="{Binding IsNightMode}"
-                Checked="ToggleButton_Checked" Unchecked="ToggleButton_UnChecked"/>
+                IsChecked="{Binding IsNightMode}"/>
+            <Label/>
             <Label/>
             <Label/>
             <Label/>
