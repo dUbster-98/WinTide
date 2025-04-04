@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using WindowsScreenTime.Themes;
 using System.Configuration;
+using System.Diagnostics;
+using System.Windows.Input;
+using Microsoft.Win32.TaskScheduler;
+using System.Reflection;
+using System.IO;
 
 
 namespace WindowsScreenTime.ViewModels
@@ -23,35 +28,34 @@ namespace WindowsScreenTime.ViewModels
         // 부팅시 시작 프로그램을 등록하는 레지스트리 경로
         private static readonly string _startupRegPath = 
             @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+        private const string AppName = "WindowsScreenTime";
+        string exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+
         public SettingsViewModel()
         {
             // 시작프로그램 등록 여부 확인
-            using (var regKey = GetRegKey(_startupRegPath, false))
+            using (var regKey = Registry.CurrentUser.OpenSubKey(_startupRegPath, false))
             {
                 if (regKey.GetValue("WindowsScreenTime") == null)
                     IsAutoStart = false;
                 else
                     IsAutoStart = true;
             }
+
             if (IsNightMode)
                 ThemeManager.ChangeTheme(ThemeType.Dark);
         }
 
-        private Microsoft.Win32.RegistryKey GetRegKey(string regPath, bool writable)
-        {
-            return Microsoft.Win32.Registry.CurrentUser.OpenSubKey(regPath, writable);
-        }
-
         // 부팅시 시작 프로그램 등록
-        public void AddStartupProgram(string programName, string executablePath)
+        public void AddStartupProgram()
         {
-            using (var regKey = GetRegKey(_startupRegPath, true))
+            using (RegistryKey regKey = Registry.CurrentUser.OpenSubKey(_startupRegPath, true))
             {
                 try
                 {
                     // 키가 이미 등록돼 있지 않을때만 등록
-                    if (regKey.GetValue(programName) == null)
-                        regKey.SetValue(programName, executablePath);
+                    if (regKey.GetValue(AppName) == null)
+                        regKey.SetValue(AppName, exePath);
 
                     regKey.Close();
                 }
@@ -60,18 +64,41 @@ namespace WindowsScreenTime.ViewModels
                     Console.WriteLine(ex.Message);
                 }
             }
+
+            //using (TaskService ts = new TaskService())
+            //{
+            //    // 기존 작업 제거
+            //    var existing = ts.GetTask(TaskName);
+            //    if (existing != null)
+            //        ts.RootFolder.DeleteTask(TaskName);
+
+            //    TaskDefinition td = ts.NewTask();
+            //    td.RegistrationInfo.Description = "자동 시작용 작업";
+
+            //    // 로그인 시 실행
+            //    td.Triggers.Add(new LogonTrigger());
+
+            //    // 프로그램 실행
+            //    td.Actions.Add(new ExecAction(exePath, null, Path.GetDirectoryName(exePath)));
+
+            //    // 관리자 권한으로 실행
+            //    //td.Principal.RunLevel = TaskRunLevel.Highest;
+
+            //    // 등록
+            //    ts.RootFolder.RegisterTaskDefinition(TaskName, td);
+            //}
         }
 
         // 등록된 프로그램 제거
-        public void RemoveStartupProgram(string programName)
+        public void RemoveStartupProgram()
         {
-            using (var regKey = GetRegKey(_startupRegPath, true))
+            using (var regKey = Registry.CurrentUser.OpenSubKey(_startupRegPath, true))
             {
                 try
                 {
                     // 키가 이미 존재할때만 제거
-                    if (regKey.GetValue(programName) != null)
-                        regKey.DeleteValue(programName, false);
+                    if (regKey.GetValue(AppName) != null)
+                        regKey.DeleteValue(AppName, false);
 
                     regKey.Close();
                 }
@@ -79,6 +106,20 @@ namespace WindowsScreenTime.ViewModels
                 {
                     Console.WriteLine(ex.Message);
                 }
+            }
+            //using (TaskService ts = new TaskService())
+            //{
+            //    var existing = ts.GetTask(TaskName);
+            //    if (existing != null)
+            //        ts.RootFolder.DeleteTask(TaskName);
+            //}
+        }
+
+        public static bool IsRegistered()
+        {
+            using (TaskService ts = new TaskService())
+            {
+                return ts.GetTask(AppName) != null;
             }
         }
 
@@ -87,12 +128,12 @@ namespace WindowsScreenTime.ViewModels
         {
             if (IsAutoStart)
             {
-                AddStartupProgram("WindowsScreenTime", System.Reflection.Assembly.GetExecutingAssembly().Location);
+                AddStartupProgram();
                 IsAutoStart = true;
             }
             else
             {
-                RemoveStartupProgram("WindowsScreenTime");
+                RemoveStartupProgram();
                 IsAutoStart = false;
             }
         }

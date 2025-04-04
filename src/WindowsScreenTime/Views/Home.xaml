@@ -7,11 +7,21 @@
              xmlns:units="clr-namespace:SmartDateControl.UI.Units;assembly=SmartDateControl"
              xmlns:bar="clr-namespace:NavigationBar;assembly=NavigationBar"
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:behaviors="clr-namespace:WindowsScreenTime.Behaviors"
              xmlns:vm="clr-namespace:WindowsScreenTime.ViewModels"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              mc:Ignorable="d" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              d:DesignHeight="685" d:DesignWidth="860">
+
+    <UserControl.InputBindings>
+        <KeyBinding Key="Backspace" Command="{Binding BackCommand}" />
+        <KeyBinding Key="Esc" Command="{Binding BackCommand}" />
+    </UserControl.InputBindings>
+    <b:Interaction.Behaviors>
+        <behaviors:MouseBehavior Command="{Binding BackCommand}" />
+    </b:Interaction.Behaviors>
+
 
     <UserControl.Resources>
         <Style TargetType="Path">

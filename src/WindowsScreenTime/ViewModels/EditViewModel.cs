@@ -95,6 +95,13 @@ namespace WindowsScreenTime.ViewModels
             _processContainService = processContainService;
             _databaseService = databaseService;
 
+            string currentDirectory = Directory.GetCurrentDirectory();
+            string pathDir = Path.Combine(currentDirectory, "data");
+            if (!Directory.Exists(pathDir))
+            {
+                Directory.CreateDirectory(pathDir);
+            }
+
             WeakReferenceMessenger.Default.Register<TransferViewModelActivation>(this, OnTransferViewModelState);
 
             totalRam = GetTotalRam();
@@ -155,17 +162,18 @@ namespace WindowsScreenTime.ViewModels
                 {
                     if (string.Equals(process.ProcessName, "Idle", StringComparison.OrdinalIgnoreCase) ||
                         string.Equals(process.ProcessName, "System", StringComparison.OrdinalIgnoreCase) ||
-                        string.Equals(process.ProcessName, "WindowsScreenTime", StringComparison.OrdinalIgnoreCase))
+                        string.Equals(process.ProcessName, "svchost", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(process.ProcessName, "WindowsScreenTime", StringComparison.OrdinalIgnoreCase) ||
+                        process.ProcessName.Contains("dll", StringComparison.OrdinalIgnoreCase))
                         continue;
                     try
                     {
                         var path = _processContainService.GetProcessPath(process);
                         if (path == null) continue;
+                        BitmapImage? icon = GetCachedIcon(path);
 
                         string uriString = Directory.GetCurrentDirectory() + 
                             "\\Resources\\Icons\\" + process.ProcessName + ".png";
-
-                        BitmapImage? icon = GetCachedIcon(path);
                         if (icon == null)
                         {
                             icon = new BitmapImage();
@@ -203,35 +211,37 @@ namespace WindowsScreenTime.ViewModels
                 }
                 return processUsageMap.Values
                                     .Where(p => MatchesFilter(p, FilterText))
-                                    .OrderByDescending(p => p.RamUsagePer)
+                                    .OrderByDescending(p => p.MemorySize)
                                     .ToList();
             });
 
             // UI 업데이트
             Application.Current.Dispatcher.Invoke(() =>
             {
-                // 제거해야 할 항목 찾기
-                for (int i = ProcessList.Count - 1; i >= 0; i--)
-                {
-                    var existing = ProcessList[i];
-                    if (!updatedProcesses.Any(p => p.ProcessName == existing.ProcessName))
-                    {
-                        ProcessList.RemoveAt(i);
-                    }
-                }
-                // 새로운 항목 추가 및 업데이트
-                foreach (var process in updatedProcesses)
-                {
-                    var existingIndex = ProcessList.ToList().FindIndex(p => p.ProcessName == process.ProcessName);
-                    if (existingIndex == -1)
-                    {
-                        ProcessList.Add(process);
-                    }
-                    else
-                    {
-                        ProcessList[existingIndex] = process;
-                    }
-                }
+                //// 제거해야 할 항목 찾기
+                //for (int i = ProcessList.Count - 1; i >= 0; i--)
+                //{
+                //    var existing = ProcessList[i];
+                //    if (!updatedProcesses.Any(p => p.ProcessName == existing.ProcessName))
+                //    {
+                //        ProcessList.RemoveAt(i);
+                //    }
+                //}
+                //// 새로운 항목 추가 및 업데이트
+                //foreach (var process in updatedProcesses)
+                //{
+                //    var existingIndex = ProcessList.ToList().FindIndex(p => p.ProcessName == process.ProcessName);
+                //    if (existingIndex == -1)
+                //    {
+                //        ProcessList.Add(process);
+                //    }
+                //    else
+                //    {
+                //        ProcessList[existingIndex] = process;
+                //    }
+                //}
+                ProcessList.Clear();
+                ProcessList.AddRange(updatedProcesses);
             });
 
             IsLoading = false;
@@ -339,14 +349,25 @@ namespace WindowsScreenTime.ViewModels
 
                         if (processName != null)
                         {
-                            string? path = _processContainService.GetProcessPathByString(proc.BaseName);
-                            //string iconPath = Path.Combine(ResourcePath, process.ProcessName + ".png");
                             // 프로세스 이름을 바탕으로 프로세스 경로를 찾는다
+                            string? path = _processContainService.GetProcessPathByString(proc.BaseName);
+                            BitmapImage? icon = null;
                             if (path != null)
                             {
-                                BitmapImage? icon = GetCachedIcon(path);
+                                icon = GetCachedIcon(path);
                                 proc.ProcessIcon = icon;
                             }
+                            else
+                            {
+                                string uriString = Directory.GetCurrentDirectory() + "\\Resources\\Icons\\" + processName + ".png";
+
+                                icon = new BitmapImage();
+                                icon.BeginInit();
+                                icon.UriSource = new Uri(uriString);
+                                icon.EndInit();
+                                proc.ProcessIcon = icon;
+                            }
+                            if (icon != null) icon.Freeze();
                         }
                         ViewList.Add(proc);
                     }

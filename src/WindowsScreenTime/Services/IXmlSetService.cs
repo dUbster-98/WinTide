@@ -25,10 +25,7 @@ namespace WindowsScreenTime.Services
         
         public XmlSetService()
         {
-            if (!Directory.Exists(pathDir))
-            {
-                Directory.CreateDirectory(pathDir);
-            }
+
         }
 
         public void SavePreset(string presetName, ObservableCollection<ProcessUsage> viewList)

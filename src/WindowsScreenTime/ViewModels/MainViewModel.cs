@@ -5,11 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Threading;
 using WindowsScreenTime.Models;
 
 namespace WindowsScreenTime.ViewModels
@@ -66,6 +68,30 @@ namespace WindowsScreenTime.ViewModels
 
         public MainViewModel()
         {
+            string path = "C:\\RUO_data\\startup_log.txt";
+
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+            {
+                File.AppendAllText(path, $"Unhandled Exception: {e.ExceptionObject}\n");
+            };
+
+            try
+            {
+                File.AppendAllText(path, $"{DateTime.Now}: 프로그램 실행됨!\n");
+
+                // 원래 실행할 코드
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText(path, $"{DateTime.Now}: 오류 발생 - {ex}\n");
+            }
+
+            _ = Initialize();
+        }
+
+        private async Task Initialize()
+        {   
+            await Task.Delay(5000); // Simulate some initialization work
             GoHome();
             //EnsureRunAsAdmin();
         }

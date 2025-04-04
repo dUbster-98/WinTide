@@ -39,8 +39,8 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid x:Name="Part_grid" Background="#e3edf7"
-          Style="{DynamicResource AnimatedBackgroundStyle}">
+    <Grid x:Name="Part_grid"
+          Style="{StaticResource AnimatedBackgroundStyle}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.5*"/>
             <ColumnDefinition Width="1*"/>
@@ -51,9 +51,9 @@
         <UniformGrid Grid.Column="1" Rows="10" HorizontalAlignment="Center">
             <Label/>
             <Label Content="윈도우 시작시 자동 실행"/>
+            <Label Content="관리자 권한 부여"/>
             <Label Content="백그라운드 모드"/>
             <Label Content="야간 모드"/>
-            <Label/>
             <Label/>
             <Label/>
             <Label/>
@@ -71,13 +71,16 @@
                 IsChecked="False"
                 Style="{StaticResource MaterialDesignSwitchDarkToggleButton}"
                 ToolTip="MaterialDesignSwitchDarkToggleButton" />
-
             <ToggleButton
+                IsChecked="False"
+                Style="{StaticResource MaterialDesignSwitchDarkToggleButton}"
+                ToolTip="MaterialDesignSwitchDarkToggleButton" />
+            <ToggleButton
+                x:Name="ThemeToggle"
                 DockPanel.Dock="Bottom"
                 Style="{StaticResource ThemeButton}"
                 Command="{Binding ThemeChangeCommand}"
                 IsChecked="{Binding IsNightMode}"/>
-            <Label/>
             <Label/>
             <Label/>
             <Label/>

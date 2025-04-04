@@ -17,7 +17,9 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Threading;
 using WindowsScreenTime.ViewModels;
+using System.IO;
 
 namespace WindowsScreenTime
 {
@@ -26,11 +28,25 @@ namespace WindowsScreenTime
     /// </summary>
     public partial class MainWindow : Window
     {
-
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = App.Current.Services.GetService(typeof(MainViewModel));
+            
+            Dispatcher.BeginInvoke(() =>
+            {
+                Dispatcher.InvokeAsync(() =>
+                {
+                    try
+                    {
+                        DataContext = App.Current.Services.GetService(typeof(MainViewModel));
+                    }
+                    catch (Exception ex)
+                    {
+                        string path = "C:\\RUO_data\\startup_log.txt";
+                        File.AppendAllText(path, $"{DateTime.Now}: 오류 발생 - {ex}\n");
+                    }
+                }, DispatcherPriority.Background);
+            }, DispatcherPriority.ApplicationIdle);
 
             MaxHeight = SystemParameters.WorkArea.Height;
             PART_homeButton.IsChecked = true;

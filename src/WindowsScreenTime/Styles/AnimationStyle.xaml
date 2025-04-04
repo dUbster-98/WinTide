@@ -2,19 +2,37 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- 배경 애니메이션 스타일 -->
-    <Style x:Key="AnimatedBackgroundStyle" TargetType="Panel">
-        <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
+    <Color x:Key="LightThemeColor">#eaf3fb</Color>
+    <Color x:Key="DarkThemeColor">#2C2A34</Color>
+
+    <Style x:Key="AnimatedBackgroundStyle" TargetType="Grid">
+        <Setter Property="Background" Value="#eaf3fb"/>
         <Style.Triggers>
-            <EventTrigger RoutedEvent="Loaded">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
-                                        Duration="0:0:0.3" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
+            <DataTrigger Binding="{Binding ElementName=ThemeToggle, Path=IsChecked}" Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation 
+                                Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
+                                To="{StaticResource DarkThemeColor}"
+                                Duration="0:0:0.3" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation 
+                                Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
+                                To="{StaticResource LightThemeColor}"
+                                Duration="0:0:0.3" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
         </Style.Triggers>
     </Style>
+
 
     <!-- 텍스트 애니메이션 스타일 -->
     <Style x:Key="AnimatedTextStyle" TargetType="TextBlock">
