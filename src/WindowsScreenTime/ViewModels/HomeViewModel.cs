@@ -208,6 +208,7 @@ namespace WindowsScreenTime.ViewModels
             WeakReferenceMessenger.Default.Register<TransferViewModelActivation>(this, OnTransferViewModelState);
 
             ProcessList = new();
+
             _databaseService.InitializeDataBase();
 
             _ = MonitorActiveWindow();
@@ -431,44 +432,46 @@ namespace WindowsScreenTime.ViewModels
 
         public async Task SetProcessRanking()
         {
-            foreach (var proc in ProcessList)
+            if (ProcessList.Count > 0)
             {
-                var value = 0;
-
-                var item = _data.FirstOrDefault(p => p.EditedName == proc.EditedName);
-                if (item != null)
+                foreach (var proc in ProcessList)
                 {
-                    if (EndDate.Value == DateTime.Today)
-                    {
-                        value = proc.PastUsage + proc.TodayUsage;
-                    }
-                    else
-                    {
-                        value = proc.PastUsage;
-                    }
+                    var value = 0;
 
-                    switch (counter)
+                    var item = _data.FirstOrDefault(p => p.EditedName == proc.EditedName);
+                    if (item != null)
                     {
-                        case 1:
-                            value = value * 5;
-                            break;
-                        case 12:
-                            value = value / 12;
-                            break;
-                        case 720:
-                            value = value / 720;
-                            break;
-                        default:
-                            value = value / 12;
-                            break;
-                    }
+                        if (EndDate.Value == DateTime.Today)
+                        {
+                            value = proc.PastUsage + proc.TodayUsage;
+                        }
+                        else
+                        {
+                            value = proc.PastUsage;
+                        }
 
-                    item.Value = value;
-                }            
+                        switch (counter)
+                        {
+                            case 1:
+                                value = value * 5;
+                                break;
+                            case 12:
+                                value = value / 12;
+                                break;
+                            case 720:
+                                value = value / 720;
+                                break;
+                            default:
+                                value = value / 12;
+                                break;
+                        }
+
+                        item.Value = value;
+                    }
+                }
+                Series[0].Values = SortData();
             }
-            Series[0].Values = SortData();
         }
-
         public void DateChangeEvent()
         {
             if (pgOnDate != DateTime.Today)

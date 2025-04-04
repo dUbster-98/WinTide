@@ -5,7 +5,6 @@
              xmlns:vm="clr-namespace:WindowsScreenTime.ViewModels"
              xmlns:view="clr-namespace:WindowsScreenTime.Views"
              xmlns:cvts="clr-namespace:WindowsScreenTime.Converters"
-             StartupUri="/Views/MainWindow.xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
     <Application.Resources>
         <ResourceDictionary>

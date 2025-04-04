@@ -31,22 +31,7 @@ namespace WindowsScreenTime
         public MainWindow()
         {
             InitializeComponent();
-            
-            Dispatcher.BeginInvoke(() =>
-            {
-                Dispatcher.InvokeAsync(() =>
-                {
-                    try
-                    {
-                        DataContext = App.Current.Services.GetService(typeof(MainViewModel));
-                    }
-                    catch (Exception ex)
-                    {
-                        string path = "C:\\RUO_data\\startup_log.txt";
-                        File.AppendAllText(path, $"{DateTime.Now}: 오류 발생 - {ex}\n");
-                    }
-                }, DispatcherPriority.Background);
-            }, DispatcherPriority.ApplicationIdle);
+            DataContext = App.Current.Services.GetService(typeof(MainViewModel));
 
             MaxHeight = SystemParameters.WorkArea.Height;
             PART_homeButton.IsChecked = true;

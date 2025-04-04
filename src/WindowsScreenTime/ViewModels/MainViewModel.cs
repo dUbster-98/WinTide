@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Threading;
 using WindowsScreenTime.Models;
+using System.Windows.Shapes;
 
 namespace WindowsScreenTime.ViewModels
 {
@@ -68,32 +69,30 @@ namespace WindowsScreenTime.ViewModels
 
         public MainViewModel()
         {
-            string path = "C:\\RUO_data\\startup_log.txt";
+            //string path = "C:\\Test\\startup_log.txt";
 
-            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
-            {
-                File.AppendAllText(path, $"Unhandled Exception: {e.ExceptionObject}\n");
-            };
+            //AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+            //{
+            //    File.AppendAllText(path, $"Unhandled Exception: {e.ExceptionObject}\n");
+            //};
+            //try
+            //{
+            //    File.AppendAllText(path, $"{DateTime.Now}: 프로그램 실행됨!\n");
 
-            try
-            {
-                File.AppendAllText(path, $"{DateTime.Now}: 프로그램 실행됨!\n");
+            //    // 원래 실행할 코드
+            //}
+            //catch (Exception ex)
+            //{
+            //    File.AppendAllText(path, $"{DateTime.Now}: 오류 발생 - {ex}\n");
+            //}
 
-                // 원래 실행할 코드
-            }
-            catch (Exception ex)
-            {
-                File.AppendAllText(path, $"{DateTime.Now}: 오류 발생 - {ex}\n");
-            }
-
-            _ = Initialize();
+            Initialize();
         }
 
-        private async Task Initialize()
-        {   
-            await Task.Delay(5000); // Simulate some initialization work
-            GoHome();
+        private void Initialize()
+        {
             //EnsureRunAsAdmin();
+            GoHome();
         }
 
         private void GoMenu()
