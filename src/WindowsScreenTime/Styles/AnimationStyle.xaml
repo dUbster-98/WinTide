@@ -2,11 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- 배경 애니메이션 스타일 -->
-    <Color x:Key="LightThemeColor">#eaf3fb</Color>
-    <Color x:Key="DarkThemeColor">#2C2A34</Color>
-
     <Style x:Key="AnimatedBackgroundStyle" TargetType="Grid">
-        <Setter Property="Background" Value="#eaf3fb"/>
+        <Setter Property="Background" Value="#d5e7f7"/>
         <Style.Triggers>
             <DataTrigger Binding="{Binding ElementName=ThemeToggle, Path=IsChecked}" Value="True">
                 <DataTrigger.EnterActions>
@@ -14,7 +11,7 @@
                         <Storyboard>
                             <ColorAnimation 
                                 Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
-                                To="{StaticResource DarkThemeColor}"
+                                To="#2C2A34"
                                 Duration="0:0:0.3" />
                         </Storyboard>
                     </BeginStoryboard>
@@ -24,7 +21,7 @@
                         <Storyboard>
                             <ColorAnimation 
                                 Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
-                                To="{StaticResource LightThemeColor}"
+                                To="#d5e7f7"
                                 Duration="0:0:0.3" />
                         </Storyboard>
                     </BeginStoryboard>
@@ -35,7 +32,7 @@
 
 
     <!-- 텍스트 애니메이션 스타일 -->
-    <Style x:Key="AnimatedTextStyle" TargetType="TextBlock">
+    <Style x:Key="AnimatedTextBlockStyle" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
         <Style.Triggers>
             <EventTrigger RoutedEvent="Loaded">
@@ -48,5 +45,18 @@
             </EventTrigger>
         </Style.Triggers>
     </Style>
-
+    
+    <Style x:Key="AnimatedLabelStyle" TargetType="Label">
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation Storyboard.TargetProperty="Foreground.(SolidColorBrush.Color)"
+                                        Duration="0:0:0.3" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>

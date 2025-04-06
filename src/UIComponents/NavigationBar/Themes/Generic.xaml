@@ -66,7 +66,7 @@
         <Setter Property="Data" Value="{StaticResource ArcData}"/>
         <Setter Property="Width" Value="100"/>
         <Setter Property="Height" Value="100"/>
-        <Setter Property="Fill" Value="#ecf2f9"/>
+        <Setter Property="Fill" Value="{DynamicResource BackgroundBrush}"/>
         <Setter Property="Margin" Value="-10,18,-10,0"/>
     </Style>
     
@@ -101,7 +101,7 @@
                         <Canvas Margin="32,12,0,0">
                             <Grid x:Name="PART_Circle" Style="{StaticResource Circle}">
                                 <Path Style="{StaticResource Arc}"/>
-                                <Ellipse Fill="#F5f5f5"/>
+                                <Ellipse Fill="{DynamicResource BackgroundBrush}"/>
                                 <Ellipse Fill="CadetBlue" Margin="5"/>
                             </Grid>
                         </Canvas>

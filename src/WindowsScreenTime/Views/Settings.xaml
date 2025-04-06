@@ -23,8 +23,6 @@
                     Value="Center"/>
                 <Setter Property="HorizontalAlignment"
                     Value="Left"/>
-                <Setter Property="Foreground"
-                    Value="#333333"/>
                 <Setter Property="FontSize"
                     Value="15"/>
                 <Setter Property="Margin"
@@ -35,6 +33,17 @@
                         Value="Center"/>
                 <Setter Property="HorizontalAlignment"
                         Value="Center"/>
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
+                <Style.Triggers>
+                    <EventTrigger RoutedEvent="Loaded">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="Foreground.(SolidColorBrush.Color)"
+                                Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Style.Triggers>
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>

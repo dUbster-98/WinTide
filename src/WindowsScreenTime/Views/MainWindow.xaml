@@ -98,7 +98,7 @@
             <Style x:Key="MenuBorderStyle" TargetType="Border">
                 <Setter Property="CornerRadius" Value="0 0 0 20"/>
                 <Setter Property="Width" Value="220"/>
-                <Setter Property="Background" Value="#2C2A34"/>
+                <Setter Property="Background" Value="{DynamicResource WindowBrush}"/>
             </Style>
         </ResourceDictionary>
     </Window.Resources>
@@ -146,8 +146,8 @@
         <Grid Grid.Row="0">
             <Border MouseDown="Window_MouseDown"
                     CornerRadius="20,20,0,0"
-                    Margin="0 0 0 -1"
-                    Background="#2C2A34">
+                    Margin="0 0 0 0"
+                    Background="{DynamicResource WindowBrush}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 15 0">
                     <Button x:Name="MinimizseButton"
                             Style="{StaticResource MinimizeButton}" 
@@ -240,7 +240,7 @@
                 <Border x:Name="ContentBorder"
                         Background="AliceBlue" CornerRadius="0 0 20 0"
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                        Margin="0">
+                        Margin="0 -2 0 0">
                     <ContentControl x:Name="Pages"
                                     Content="{Binding CurrentView}"/>
                 </Border>
