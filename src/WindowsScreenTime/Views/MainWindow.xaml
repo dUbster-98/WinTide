@@ -150,14 +150,14 @@
                     Background="{DynamicResource WindowBrush}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 15 0">
                     <Button x:Name="MinimizseButton"
-                            Style="{StaticResource MinimizeButton}" 
+                            Style="{StaticResource MinimizeButton}"
                             Click="MinimizseButton_Click"/>
                     <ToggleButton x:Name="MaximizeButton"
                                   Style="{StaticResource MaximizeButton}"
                                   Click="MaximizeButton_Click"/>
                     <Button x:Name="CloseButton"
                             Style="{StaticResource ExitButton}"
-                            Click="CloseButton_Click"/>
+                            Command="{Binding WindowClosingCommand}"/>
                 </StackPanel>
             </Border>
         </Grid>
@@ -240,7 +240,7 @@
                 <Border x:Name="ContentBorder"
                         Background="AliceBlue" CornerRadius="0 0 20 0"
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                        Margin="0 -2 0 0">
+                        Margin="0 -1 0 0">
                     <ContentControl x:Name="Pages"
                                     Content="{Binding CurrentView}"/>
                 </Border>

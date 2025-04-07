@@ -43,7 +43,9 @@
                                         CommandParameter="{Binding ItemToRemove}"/>
                                 </StackPanel.InputBindings>
                                 <Image Source="{Binding ProcessIcon}" Width="24" Height="24" Margin="5"/>
-                                <TextBlock Text="{Binding ProcessName}" VerticalAlignment="Center" Margin="5"/>
+                                <TextBlock Text="{Binding ProcessName}" VerticalAlignment="Center" 
+                                           Foreground="{DynamicResource ForegroundBrush}"
+                                           Margin="5"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -58,6 +60,7 @@
                                          VerticalAlignment="Center" Margin="5"
                                          Height="25" Width="100" FontSize="15" x:Name="tb"
                                          Visibility="Hidden"
+                                         Foreground="{DynamicResource ForegroundBrush}"
                                          Padding="0 3 0 0"/>
                                 <CheckBox Style="{StaticResource EditProcessButton}" x:Name="cb" Visibility="Visible"/>
                             </StackPanel>

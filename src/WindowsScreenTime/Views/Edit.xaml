@@ -12,6 +12,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="685" d:DesignWidth="860">
 
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+        </Style>
+    </UserControl.Resources>
+
     <Grid Background="{DynamicResource BackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -23,7 +29,7 @@
             <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="7">
                 <TextBlock Text="Search" Style="{StaticResource Text_Style}"
                            FontSize="16"
-                           Foreground="Black"/>
+                           Foreground="{DynamicResource ForegroundBrush}"/>
                 <TextBox Style="{StaticResource MyFont_Style}" 
                          Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="12"
@@ -73,7 +79,9 @@
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
                                         <Image Source="{Binding ProcessIcon}" Width="14" Height="14" Margin="5 0 7 0"/>
-                                        <TextBlock Text="{Binding ProcessName}" Padding="0 3 0 0"/>
+                                        <TextBlock Text="{Binding ProcessName}" 
+                                                   Foreground="{DynamicResource ForegroundBrush}"
+                                                   Padding="0 3 0 0"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -82,7 +90,9 @@
                         <DataGridTemplateColumn Header="Memory (MB)" Width="auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding MemorySize, Converter={StaticResource BytesToMBConverter}}" Padding="5 3 0 0"/>
+                                    <TextBlock Text="{Binding MemorySize, Converter={StaticResource BytesToMBConverter}}" 
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               Padding="5 3 0 0"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -90,7 +100,9 @@
                         <DataGridTemplateColumn Header="Usage (%)">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding RamUsagePer, StringFormat={}{0:F2}}" Padding="5 3 0 0"/>
+                                    <TextBlock Text="{Binding RamUsagePer, StringFormat={}{0:F2}}"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               Padding="5 3 0 0"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -98,7 +110,9 @@
                         <DataGridTemplateColumn Header="Path">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding ExecutablePath}" Padding="5 3 0 0"/>
+                                    <TextBlock Text="{Binding ExecutablePath}" 
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               Padding="5 3 0 0"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

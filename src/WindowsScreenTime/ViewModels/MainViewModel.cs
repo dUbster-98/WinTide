@@ -14,11 +14,25 @@ using System.Windows.Input;
 using System.Threading;
 using WindowsScreenTime.Models;
 using System.Windows.Shapes;
+using WindowsScreenTime.Services;
 
 namespace WindowsScreenTime.ViewModels
 {
+    public class WindowActionEventArgs : EventArgs
+    {
+        public string Action { get; }
+
+        public WindowActionEventArgs(string action)
+        {
+            Action = action;
+        }
+    }
+
     public partial class MainViewModel : ObservableObject
     {
+        private readonly IXmlSetService _xmlSetService;
+        public event EventHandler<WindowActionEventArgs>? RequestWindowAction;
+
         private object? _currentView;
         public object CurrentView
         {
@@ -66,8 +80,7 @@ namespace WindowsScreenTime.ViewModels
             }
         }
 
-
-        public MainViewModel()
+        public MainViewModel(IXmlSetService xmlSetService)
         {
             //string path = "C:\\Test\\startup_log.txt";
 
@@ -85,14 +98,26 @@ namespace WindowsScreenTime.ViewModels
             //{
             //    File.AppendAllText(path, $"{DateTime.Now}: 오류 발생 - {ex}\n");
             //}
+            _xmlSetService = xmlSetService;
 
             Initialize();
         }
 
+        public MainViewModel()
+        {
+        }
+
         private void Initialize()
         {
-            //EnsureRunAsAdmin();
+            if (_xmlSetService.LoadConfig("Admin") == true)
+                EnsureRunAsAdmin();
+
             GoHome();
+        }
+
+        public void SetWindow()
+        {
+
         }
 
         private void GoMenu()
@@ -149,7 +174,19 @@ namespace WindowsScreenTime.ViewModels
                 }
             }
         }
-
+        [RelayCommand]
+        public void WindowClosing()
+        {
+            bool isBackground = _xmlSetService.LoadConfig("Background");
+            if (isBackground)
+            {
+                RequestWindowAction?.Invoke(this, new WindowActionEventArgs("Hide"));
+            }
+            else
+            {
+                RequestWindowAction?.Invoke(this, new WindowActionEventArgs("Close"));
+            }
+        }
 
     }
 

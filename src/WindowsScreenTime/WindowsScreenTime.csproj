@@ -65,7 +65,6 @@
     <PackageReference Include="SQLite" Version="3.13.0" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
     <PackageReference Include="System.Management" Version="9.0.0" />
-    <PackageReference Include="TaskScheduler" Version="2.12.1" />
   </ItemGroup>
 
   <ItemGroup>

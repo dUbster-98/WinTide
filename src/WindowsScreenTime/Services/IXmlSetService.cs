@@ -16,13 +16,16 @@ namespace WindowsScreenTime.Services
         void SaveSelectedPreset(string selectedPreset);
         string LoadSelectedPreset();
         List<ProcessUsage> LoadPresetProcess(string presetName);
+        void SaveConfig(string option, bool value);
+        bool LoadConfig(string option);
     }
     public class XmlSetService : IXmlSetService
     {
         private static string currentDirectory = Directory.GetCurrentDirectory();
         private static string pathDir = Path.Combine(currentDirectory, "data");
         public static string _filePath = pathDir + "/data.xml";
-        
+        public static string _filePath2 = pathDir + "/config.xml";
+
         public XmlSetService()
         {
 
@@ -69,11 +72,6 @@ namespace WindowsScreenTime.Services
 
             // 변경된 내용을 파일에 저장
             doc.Save(_filePath);
-        }
-
-        public void AddProcess(XElement precessElement)
-        {
-
         }
 
         // SelectedPreset을 저장하는 개별적인 메서드
@@ -142,6 +140,48 @@ namespace WindowsScreenTime.Services
             }
 
             return processes;
+        }
+
+        public void SaveConfig(string option, bool value)
+        {
+            XDocument doc;
+            // 파일이 존재하면 불러오고, 없으면 새로 만든다.
+            if (System.IO.File.Exists(_filePath2))
+            {
+                doc = XDocument.Load(_filePath2);
+            }
+            else
+            {
+                doc = new XDocument(new XElement("ConfigData"));
+            }
+
+            XElement selectedOptionElement = doc.Root.Element(option);
+            if (selectedOptionElement == null)
+            {
+                selectedOptionElement = new XElement(option);
+                doc.Root.Add(selectedOptionElement);
+            }
+
+            selectedOptionElement.Value = value.ToString();
+
+            // 변경된 내용을 파일에 저장
+            doc.Save(_filePath2);
+        }
+
+        public bool LoadConfig(string option)
+        {
+            if (!System.IO.File.Exists(_filePath2))
+                return false;
+            XDocument doc = XDocument.Load(_filePath2);
+            XElement selectedOptionElement = doc.Root.Element(option);
+            if (selectedOptionElement != null)
+            {
+                return bool.Parse(selectedOptionElement.Value);
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

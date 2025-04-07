@@ -233,7 +233,7 @@
                         <Path x:Name="path"
                           Data="M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13"
                           Width="30"
-                          Margin="6 13 6 6"
+                          Margin="6 9 6 6"
                           Fill="#DDDDDD"
                           Stretch="Uniform"/>
                     </Grid>
@@ -258,7 +258,7 @@
                         <Path x:Name="path"
                           Data="M4,4H20V20H4V4M6,8V18H18V8H6Z"
                           Width="30"
-                          Margin="7 14 7 7"
+                          Margin="7 10 7 7"
                           Fill="#DDDDDD"
                           Stretch="Uniform"/>
                     </Grid>
@@ -286,7 +286,7 @@
                         <Path x:Name="path"
                           Data="M20,12H4V10H20"
                           Width="30"
-                          Margin="11 7 11 0"
+                          Margin="11 3 11 0"
                           Fill="#DDDDDD"
                           Stretch="Uniform"/>
                     </Grid>

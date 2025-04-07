@@ -31,11 +31,24 @@ namespace WindowsScreenTime
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = App.Current.Services.GetService(typeof(MainViewModel));
+            var viewModel = (MainViewModel)App.Current.Services.GetService(typeof(MainViewModel));
+            DataContext = viewModel;
 
             MaxHeight = SystemParameters.WorkArea.Height;
             PART_homeButton.IsChecked = true;
             PART_menuButton.IsChecked = true;
+
+            viewModel.RequestWindowAction += (sender, args) =>
+            {
+                if (args.Action == "Hide")
+                {
+                    this.Hide();
+                }
+                else if (args.Action == "Close")
+                {
+                    this.Close();
+                }
+            };
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)

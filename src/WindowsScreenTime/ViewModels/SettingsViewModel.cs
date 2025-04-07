@@ -11,17 +11,23 @@ using WindowsScreenTime.Themes;
 using System.Configuration;
 using System.Diagnostics;
 using System.Windows.Input;
-using Microsoft.Win32.TaskScheduler;
 using System.Reflection;
 using System.IO;
+using WindowsScreenTime.Services;
 
 
 namespace WindowsScreenTime.ViewModels
 {
     public partial class SettingsViewModel :ObservableObject
     {
+        private readonly IXmlSetService _xmlSetService;
+
         [ObservableProperty]
         private bool isAutoStart;
+        [ObservableProperty]
+        private bool isAdmin;
+        [ObservableProperty]
+        private bool isBackground;
         [ObservableProperty]
         private bool isNightMode;
 
@@ -31,8 +37,10 @@ namespace WindowsScreenTime.ViewModels
         private const string AppName = "WindowsScreenTime";
         string exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
 
-        public SettingsViewModel()
+        public SettingsViewModel(IXmlSetService xmlSetService)
         {
+            _xmlSetService = xmlSetService;
+
             // 시작프로그램 등록 여부 확인
             using (var regKey = Registry.CurrentUser.OpenSubKey(_startupRegPath, false))
             {
@@ -42,8 +50,20 @@ namespace WindowsScreenTime.ViewModels
                     IsAutoStart = true;
             }
 
-            if (IsNightMode)
+            if(_xmlSetService.LoadConfig("Admin") == true)
+                IsAdmin = true;
+            else IsAdmin = false;
+
+            if (_xmlSetService.LoadConfig("Background") == true)
+                IsBackground = true;
+            else IsBackground = false;
+
+            if (_xmlSetService.LoadConfig("DarkTheme") == true)
+            {
+                IsNightMode = true;
                 ThemeManager.ChangeTheme(ThemeType.Dark);
+            }
+            else IsNightMode = false;
         }
 
         // 부팅시 시작 프로그램 등록
@@ -64,29 +84,6 @@ namespace WindowsScreenTime.ViewModels
                     Console.WriteLine(ex.Message);
                 }
             }
-
-            //using (TaskService ts = new TaskService())
-            //{
-            //    // 기존 작업 제거
-            //    var existing = ts.GetTask(TaskName);
-            //    if (existing != null)
-            //        ts.RootFolder.DeleteTask(TaskName);
-
-            //    TaskDefinition td = ts.NewTask();
-            //    td.RegistrationInfo.Description = "자동 시작용 작업";
-
-            //    // 로그인 시 실행
-            //    td.Triggers.Add(new LogonTrigger());
-
-            //    // 프로그램 실행
-            //    td.Actions.Add(new ExecAction(exePath, null, Path.GetDirectoryName(exePath)));
-
-            //    // 관리자 권한으로 실행
-            //    //td.Principal.RunLevel = TaskRunLevel.Highest;
-
-            //    // 등록
-            //    ts.RootFolder.RegisterTaskDefinition(TaskName, td);
-            //}
         }
 
         // 등록된 프로그램 제거
@@ -107,20 +104,6 @@ namespace WindowsScreenTime.ViewModels
                     Console.WriteLine(ex.Message);
                 }
             }
-            //using (TaskService ts = new TaskService())
-            //{
-            //    var existing = ts.GetTask(TaskName);
-            //    if (existing != null)
-            //        ts.RootFolder.DeleteTask(TaskName);
-            //}
-        }
-
-        public static bool IsRegistered()
-        {
-            using (TaskService ts = new TaskService())
-            {
-                return ts.GetTask(AppName) != null;
-            }
         }
 
         [RelayCommand]
@@ -128,13 +111,37 @@ namespace WindowsScreenTime.ViewModels
         {
             if (IsAutoStart)
             {
-                AddStartupProgram();
-                IsAutoStart = true;
+                AddStartupProgram();          
             }
             else
             {
                 RemoveStartupProgram();
-                IsAutoStart = false;
+            }
+        }
+
+        [RelayCommand]
+        public void AdminChange()
+        {
+            if (IsAdmin)
+            {
+                _xmlSetService.SaveConfig("Admin", true);
+            }
+            else
+            {
+                _xmlSetService.SaveConfig("Admin", false);
+            }
+        }
+
+        [RelayCommand]
+        public void BackgroundChange()
+        {
+            if (IsBackground)
+            {
+                _xmlSetService.SaveConfig("Background", true);
+            }
+            else
+            {
+                _xmlSetService.SaveConfig("Background", false);
             }
         }
 
@@ -142,10 +149,15 @@ namespace WindowsScreenTime.ViewModels
         public void ThemeChange()
         {
             if (IsNightMode)
+            {
+                _xmlSetService.SaveConfig("DarkTheme", true);
                 ThemeManager.ChangeTheme(ThemeType.Dark);
+            }
             else
+            {
                 ThemeManager.ChangeTheme(ThemeType.Light);
-            //ThemeManager.ToggleTheme();
+                _xmlSetService.SaveConfig("DarkTheme", false);
+            }
         }
     }
 }

@@ -4,9 +4,7 @@
     <SolidColorBrush x:Key="BackgroundBrush" Color="#d5e7f7" />
     <SolidColorBrush x:Key="ForegroundBrush" Color="#0F0616" />
     <SolidColorBrush x:Key="WindowBrush" Color="#2d2d4a" />
-    <SolidColorBrush x:Key="AccentBrush" Color="#007ACC" />
-    <SolidColorBrush x:Key="BorderBrush" Color="#DDDDDD" />
-    <SolidColorBrush x:Key="ButtonBrush" Color="#F0F0F0" />
-    <SolidColorBrush x:Key="ButtonHoverBrush" Color="#E0E0E0" />
+    <SolidColorBrush x:Key="DataGridBrush1" Color="#c9d7e9"/>
+    <SolidColorBrush x:Key="DataGridBrush2" Color="#a5bbdb"/>
 
 </ResourceDictionary>

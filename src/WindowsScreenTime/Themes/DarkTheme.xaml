@@ -2,11 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <SolidColorBrush x:Key="BackgroundBrush" Color="#2C2A34" />
-    <SolidColorBrush x:Key="ForegroundBrush" Color="#DDDDDD" />
+    <SolidColorBrush x:Key="ForegroundBrush" Color="#EEEEEE" />
     <SolidColorBrush x:Key="WindowBrush" Color="#2C2A34"/>
-    <SolidColorBrush x:Key="AccentBrush" Color="#0078D7" />
-    <SolidColorBrush x:Key="BorderBrush" Color="#333333" />
-    <SolidColorBrush x:Key="ButtonBrush" Color="#333333" />
-    <SolidColorBrush x:Key="ButtonHoverBrush" Color="#3F3F3F" />
+    <SolidColorBrush x:Key="DataGridBrush1" Color="#1d3048"/>
+    <SolidColorBrush x:Key="DataGridBrush2" Color="#2a446a"/>
 
 </ResourceDictionary>

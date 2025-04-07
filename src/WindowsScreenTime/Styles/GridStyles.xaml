@@ -9,10 +9,10 @@
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Style.Triggers>
             <Trigger Property="AlternationIndex" Value="0">
-                <Setter Property="Background" Value="#eef2f8"/>
+                <Setter Property="Background" Value="{DynamicResource DataGridBrush1}"/>
             </Trigger>
             <Trigger Property="AlternationIndex" Value="1">
-                <Setter Property="Background" Value="#c9d7e9"/>
+                <Setter Property="Background" Value="{DynamicResource DataGridBrush2}"/>
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="#a5bbdb"/>
@@ -38,7 +38,6 @@
         <Style.Triggers>
             <Trigger Property="IsSelected" Value="True">
                 <Setter Property="Background" Value="#6E66C8"/>
-                <Setter Property="Foreground" Value="#0a111b"/>
             </Trigger>
         </Style.Triggers>
     </Style>
