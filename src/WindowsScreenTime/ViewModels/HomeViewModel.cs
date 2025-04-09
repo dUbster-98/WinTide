@@ -41,6 +41,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.SkiaSharpView.WPF;
 using LiveChartsCore.Drawing;
+using System.Windows.Documents;
 
 namespace WindowsScreenTime.ViewModels
 {
@@ -56,6 +57,8 @@ namespace WindowsScreenTime.ViewModels
         {
             if (startDate != null && endDate != null)
             {
+                EndDate = DateTime.Today;
+                startDate = EndDate.Value.AddDays(-7);
                 PresetChange();
             }
         }
@@ -642,8 +645,6 @@ namespace WindowsScreenTime.ViewModels
         {
             TimeEnable = false;
             PresetEnable = false;
-            IsChart1Visible = false;
-            IsChart2Visible = true;
             List<(int,string)> dayTimeData = new();
             List<DateTimePoint> dayTimePoint = new();
             SolidColorPaint chartColor = new SolidColorPaint { Color = SKColors.Yellow };
@@ -686,11 +687,15 @@ namespace WindowsScreenTime.ViewModels
             var series = new ColumnSeries<DateTimePoint>
             {
                 Values = dayTimePoint,
-                DataLabelsPaint = new SolidColorPaint(new SKColor(245, 245, 245)),
+                DataLabelsPaint = new SolidColorPaint(new SKColor(245, 245, 245))
+                {
+                    SKTypeface = SKTypeface.FromFamilyName("Arial", new SKFontStyle(SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright)) // Correct usage
+                },            
                 DataLabelsPosition = DataLabelsPosition.Middle,
                 DataLabelsTranslate = new(0, 0),
                 DataLabelsFormatter = point => $"{point.Coordinate.PrimaryValue}",
                 DataLabelsSize = 25,
+                
                 MaxBarWidth = 100,
                 MiniatureShapeSize = 20,
                 Rx=15,
@@ -704,6 +709,10 @@ namespace WindowsScreenTime.ViewModels
             });
 
             Series2 = [series];
+
+            Thread.Sleep(100);
+            IsChart1Visible = false;
+            IsChart2Visible = true;
         }
         [RelayCommand]
         private void Back()
