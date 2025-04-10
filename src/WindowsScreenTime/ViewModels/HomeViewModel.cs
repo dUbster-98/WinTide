@@ -643,11 +643,10 @@ namespace WindowsScreenTime.ViewModels
         [RelayCommand]
         private void BarClick(PointerCommandArgs args)
         {
-            TimeEnable = false;
-            PresetEnable = false;
             List<(int,string)> dayTimeData = new();
             List<DateTimePoint> dayTimePoint = new();
             SolidColorPaint chartColor = new SolidColorPaint { Color = SKColors.Yellow };
+            bool isFound = false;
 
             var foundPoints = args.Chart.GetPointsAt(args.PointerPosition);
 
@@ -674,46 +673,54 @@ namespace WindowsScreenTime.ViewModels
                     chartColor = data.Paint;
                     dayTimeData = _databaseService.QueryDayTimeData(data?.Name, StartDate.ToString(), EndDate.ToString());
                 }
+
+                isFound = true;
             }
 
-            foreach (var point in dayTimeData)
+            if (isFound)
             {
-                if (DateTime.TryParse(point.Item2, out DateTime date))
+                foreach (var point in dayTimeData)
                 {
-                    DateTimePoint data = new() { DateTime = date, Value = point.Item1 / 12 };
-                    dayTimePoint.Add(data);
+                    if (DateTime.TryParse(point.Item2, out DateTime date))
+                    {
+                        DateTimePoint data = new() { DateTime = date, Value = point.Item1 / 12 };
+                        dayTimePoint.Add(data);
+                    }
                 }
-            }
-            var series = new ColumnSeries<DateTimePoint>
-            {
-                Values = dayTimePoint,
-                DataLabelsPaint = new SolidColorPaint(new SKColor(245, 245, 245))
+                var series = new ColumnSeries<DateTimePoint>
                 {
-                    SKTypeface = SKTypeface.FromFamilyName("Arial", new SKFontStyle(SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright)) // Correct usage
-                },            
-                DataLabelsPosition = DataLabelsPosition.Middle,
-                DataLabelsTranslate = new(0, 0),
-                DataLabelsFormatter = point => $"{point.Coordinate.PrimaryValue}",
-                DataLabelsSize = 25,
-                
-                MaxBarWidth = 100,
-                MiniatureShapeSize = 20,
-                Rx=15,
-                Ry=15,               
-                Padding = 10,
+                    Values = dayTimePoint,
+                    DataLabelsPaint = new SolidColorPaint(new SKColor(245, 245, 245))
+                    {
+                        SKTypeface = SKTypeface.FromFamilyName("Arial", new SKFontStyle(SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright)) // Correct usage
+                    },
+                    DataLabelsPosition = DataLabelsPosition.Middle,
+                    DataLabelsTranslate = new(0, 0),
+                    DataLabelsFormatter = point => $"{point.Coordinate.PrimaryValue}",
+                    DataLabelsSize = 25,
+
+                    MaxBarWidth = 100,
+                    MiniatureShapeSize = 20,
+                    Rx = 15,
+                    Ry = 15,
+                    Padding = 10,
+                }
+                .OnPointMeasured(point =>
+                {
+                    if (point.Visual is null) return;
+                    point.Visual.Fill = chartColor;
+                });
+
+                Series2 = [series];
+
+                Thread.Sleep(100);
+                TimeEnable = false;
+                PresetEnable = false;
+                IsChart1Visible = false;
+                IsChart2Visible = true;
             }
-            .OnPointMeasured(point =>
-            {
-                if (point.Visual is null) return;
-                point.Visual.Fill = chartColor;
-            });
-
-            Series2 = [series];
-
-            Thread.Sleep(100);
-            IsChart1Visible = false;
-            IsChart2Visible = true;
         }
+
         [RelayCommand]
         private void Back()
         {
