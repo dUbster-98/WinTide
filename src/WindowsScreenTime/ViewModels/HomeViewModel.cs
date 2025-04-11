@@ -57,8 +57,6 @@ namespace WindowsScreenTime.ViewModels
         {
             if (startDate != null && endDate != null)
             {
-                EndDate = DateTime.Today;
-                startDate = EndDate.Value.AddDays(-7);
                 PresetChange();
             }
         }
@@ -146,7 +144,8 @@ namespace WindowsScreenTime.ViewModels
 
         [ObservableProperty]
         private int? selectedPreset;
-        public ObservableCollection<ProcessUsage> ProcessList { get; set; }
+        public ObservableCollection<ProcessUsage> ProcessList { get; set; } = [];
+        public List<string> ProcessListInvisible { get; set; } = [];
         private static string ResourcePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources/Icons");
 
         private List<ProcessChartInfo> _data;
@@ -480,7 +479,7 @@ namespace WindowsScreenTime.ViewModels
             if (pgOnDate != DateTime.Today)
             {
                 pgOnDate = DateTime.Today;
-
+                EndDate = DateTime.Today;
                 PresetChange();
             }
         }
@@ -580,6 +579,9 @@ namespace WindowsScreenTime.ViewModels
             }
 
             UpdateProcessList();
+
+            ProcessListInvisible.Clear();
+            ProcessListInvisible = _databaseService.QueryInvisibleProcessData();
         }
 
         [RelayCommand]
@@ -618,7 +620,6 @@ namespace WindowsScreenTime.ViewModels
                 });
             }
         }
-
         [RelayCommand]
         private void SetSecond()
         {

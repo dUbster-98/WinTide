@@ -8,6 +8,9 @@ using System.IO;
 using System.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using YamlDotNet.Core.Tokens;
+using SmartDateControl.UI.Units;
+using System.Windows.Media.Animation;
+using System.Xml.Linq;
 
 namespace WindowsScreenTime.Services
 {
@@ -19,6 +22,7 @@ namespace WindowsScreenTime.Services
         int QueryPastUsageTime(string name, string startDate, string endDate);
         int QueryTodayUsageTime(string name, string today);
         List<(int, string)>QueryDayTimeData(string name, string startDate, string endDate);
+        List<string> QueryInvisibleProcessData();
     }
 
     public class DatabaseService : IDatabaseService
@@ -190,5 +194,38 @@ namespace WindowsScreenTime.Services
             }
             return timeList;
         }
-    }
+
+        public List<string> QueryInvisibleProcessData()
+        {
+            //HashSet<string> processSet = new HashSet<string>();
+            List<string> processList = new();
+            DateTime today = DateTime.Today;
+            DateTime pastDate = today.AddMonths(-1);
+            using (var conn = new SqliteConnection(ConnectionString))
+            {
+                conn.Open();
+                string selectQuery = "SELECT * FROM AppTimer day BETWEEN @startDate AND @endDate;";
+                using (var selectCmd = new SqliteCommand(selectQuery, conn))
+                {
+                    selectCmd.Parameters.AddWithValue("@startDate", pastDate);
+                    selectCmd.Parameters.AddWithValue("@endDate", today);
+                    using (var reader = selectCmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string processName = reader.GetString(1);
+                            if (!processList.Contains(processName))
+                            {
+                                processList.Add(processName);
+                            }
+                 
+                        }
+                    }
+                }
+                conn.Close();
+            }
+
+            return processList;
+        }
+   }
 }
