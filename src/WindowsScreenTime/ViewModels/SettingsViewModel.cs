@@ -14,6 +14,8 @@ using System.Windows.Input;
 using System.Reflection;
 using System.IO;
 using WindowsScreenTime.Services;
+using CommunityToolkit.Mvvm.Messaging;
+using WindowsScreenTime.Models;
 
 
 namespace WindowsScreenTime.ViewModels
@@ -30,6 +32,8 @@ namespace WindowsScreenTime.ViewModels
         private bool isBackground;
         [ObservableProperty]
         private bool isNightMode;
+        [ObservableProperty]
+        private bool isGifShow;
 
         // 부팅시 시작 프로그램을 등록하는 레지스트리 경로
         private static readonly string _startupRegPath = 
@@ -57,6 +61,12 @@ namespace WindowsScreenTime.ViewModels
             if (_xmlSetService.LoadConfig("Background") == true)
                 IsBackground = true;
             else IsBackground = false;
+
+            if (_xmlSetService.LoadConfig("GifShow") == true)
+            {
+                IsGifShow = true;
+            }
+            else IsGifShow = false;
 
             if (_xmlSetService.LoadConfig("DarkTheme") == true)
             {
@@ -142,6 +152,23 @@ namespace WindowsScreenTime.ViewModels
             else
             {
                 _xmlSetService.SaveConfig("Background", false);
+            }
+        }
+
+        [RelayCommand]
+        public void GifShowChange()
+        {
+            if (IsGifShow)
+            {
+                _xmlSetService.SaveConfig("GifShow", true);
+                var message = new TransferIsGifShowChange { isVisible = true };
+                WeakReferenceMessenger.Default.Send(message);
+            }
+            else
+            {
+                _xmlSetService.SaveConfig("DarkTheme", false);
+                var message = new TransferIsGifShowChange { isVisible = false };
+                WeakReferenceMessenger.Default.Send(message);
             }
         }
 

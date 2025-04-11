@@ -204,7 +204,7 @@ namespace WindowsScreenTime.Services
             using (var conn = new SqliteConnection(ConnectionString))
             {
                 conn.Open();
-                string selectQuery = "SELECT * FROM AppTimer day BETWEEN @startDate AND @endDate;";
+                string selectQuery = "SELECT * FROM AppTimer WHERE day BETWEEN @startDate AND @endDate;";
                 using (var selectCmd = new SqliteCommand(selectQuery, conn))
                 {
                     selectCmd.Parameters.AddWithValue("@startDate", pastDate);

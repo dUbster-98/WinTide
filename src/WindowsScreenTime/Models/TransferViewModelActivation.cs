@@ -10,4 +10,9 @@ namespace WindowsScreenTime.Models
     {
         public bool isActivated { get; set; }
     }
+
+    public class TransferIsGifShowChange
+    {
+        public bool isVisible { get; set; }
+    }
 }

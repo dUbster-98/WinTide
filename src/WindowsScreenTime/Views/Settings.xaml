@@ -62,8 +62,8 @@
             <Label Content="윈도우 시작시 자동 실행"/>
             <Label Content="관리자 권한 부여"/>
             <Label Content="백그라운드 모드"/>
+            <Label Content="Gif 보이기"/>
             <Label Content="야간 모드"/>
-            <Label/>
             <Label/>
             <Label/>
             <Label Content="데이터 초기화"/>
@@ -87,12 +87,17 @@
                 Style="{StaticResource MaterialDesignSwitchDarkToggleButton}"
                 ToolTip="MaterialDesignSwitchDarkToggleButton" />
             <ToggleButton
+                IsChecked="{Binding IsGifShow}"
+                Command="{Binding GifShowChangeCommand}"
+                Style="{StaticResource MaterialDesignSwitchDarkToggleButton}"
+                ToolTip="MaterialDesignSwitchDarkToggleButton" />
+            <ToggleButton
                 x:Name="ThemeToggle"
                 DockPanel.Dock="Bottom"
                 Style="{StaticResource ThemeButton}"
                 Command="{Binding ThemeChangeCommand}"
                 IsChecked="{Binding IsNightMode}"/>
-            <Label/>
+
             <Label/>
             <Label/>
             <Button

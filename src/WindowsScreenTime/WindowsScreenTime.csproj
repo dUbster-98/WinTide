@@ -24,6 +24,7 @@
     <None Remove="Resources\Fonts\Recipekorea FONT.ttf" />
     <None Remove="Resources\icon.ico" />
     <None Remove="Resources\icon.png" />
+    <None Remove="Resources\pic.gif" />
     <None Remove="Views\icon.ico" />
   </ItemGroup>
 
@@ -33,6 +34,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\pic.gif" />
   </ItemGroup>
 
   <ItemGroup>

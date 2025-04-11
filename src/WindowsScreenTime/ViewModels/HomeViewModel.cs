@@ -42,6 +42,8 @@ using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.SkiaSharpView.WPF;
 using LiveChartsCore.Drawing;
 using System.Windows.Documents;
+using WpfAnimatedGif;
+using WindowsScreenTime.Themes;
 
 namespace WindowsScreenTime.ViewModels
 {
@@ -165,6 +167,8 @@ namespace WindowsScreenTime.ViewModels
         private bool isChart1Visible = true;
         [ObservableProperty]
         private bool isChart2Visible = false;
+        [ObservableProperty]
+        private bool isGifVisible = false;
 
         private readonly HashSet<LiveChartsCore.Kernel.ChartPoint> _activePoints = [];
         public FindingStrategy Strategy { get; } = FindingStrategy.ExactMatch;
@@ -174,6 +178,9 @@ namespace WindowsScreenTime.ViewModels
         private int counter = 60000;
         private CancellationTokenSource cts = new();
 
+        [ObservableProperty]
+        private System.Windows.Controls.Image gifSource = new();
+      
         private ProcessChartInfo[] SortData() => [.. _data.OrderBy(x => x.Value)];
         // ..(spread 연산자)는 컬렉션의 모든 요소를 새 배열로 복사하는 역할
 
@@ -201,6 +208,11 @@ namespace WindowsScreenTime.ViewModels
             _processContainService = processContainService;
             _databaseService = databaseService;
 
+            if (_xmlSetService.LoadConfig("DarkTheme") == true)           
+                ThemeManager.ChangeTheme(ThemeType.Dark);
+            if (_xmlSetService.LoadConfig("GifShow") == true)
+                IsGifVisible = true;
+
             startDate = DateTime.Today.AddDays(-7);
             endDate = DateTime.Today;
             AlarmHours = "1";
@@ -208,6 +220,7 @@ namespace WindowsScreenTime.ViewModels
             pgOnDate = DateTime.Today;
 
             WeakReferenceMessenger.Default.Register<TransferViewModelActivation>(this, OnTransferViewModelState);
+            WeakReferenceMessenger.Default.Register<TransferIsGifShowChange>(this, OnTransferIsGifShowChange);
 
             ProcessList = new();
 
@@ -225,6 +238,13 @@ namespace WindowsScreenTime.ViewModels
                 SelectedPreset = Convert.ToInt32(_xmlSetService.LoadSelectedPreset());
                 PresetChange();
             }
+        }
+        private void OnTransferIsGifShowChange(object recipient, TransferIsGifShowChange message)
+        {
+            if (message.isVisible == true)
+                IsGifVisible = true;
+            else
+                IsGifVisible = false;
         }
 
         private void UpdateProcessList()
@@ -719,6 +739,7 @@ namespace WindowsScreenTime.ViewModels
                 PresetEnable = false;
                 IsChart1Visible = false;
                 IsChart2Visible = true;
+                IsGifVisible = false;
             }
         }
 
@@ -729,6 +750,7 @@ namespace WindowsScreenTime.ViewModels
             PresetEnable = true;
             IsChart1Visible = true;
             IsChart2Visible = false;
+            IsGifVisible = true;
         }
     }
 }
