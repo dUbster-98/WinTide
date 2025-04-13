@@ -11,6 +11,7 @@ using YamlDotNet.Core.Tokens;
 using SmartDateControl.UI.Units;
 using System.Windows.Media.Animation;
 using System.Xml.Linq;
+using WindowsScreenTime.Models;
 
 namespace WindowsScreenTime.Services
 {
@@ -22,7 +23,7 @@ namespace WindowsScreenTime.Services
         int QueryPastUsageTime(string name, string startDate, string endDate);
         int QueryTodayUsageTime(string name, string today);
         List<(int, string)>QueryDayTimeData(string name, string startDate, string endDate);
-        List<string> QueryVisibleProcessData();
+        List<ProcessUsage> QueryEntireProcessData();
     }
 
     public class DatabaseService : IDatabaseService
@@ -195,10 +196,11 @@ namespace WindowsScreenTime.Services
             return timeList;
         }
 
-        public List<string> QueryVisibleProcessData()
+        public List<ProcessUsage> QueryEntireProcessData()
         {
             //HashSet<string> processSet = new HashSet<string>();
             List<string> processList = new();
+            List<ProcessUsage> processes = new();
             DateTime today = DateTime.Today;
             DateTime pastDate = today.AddMonths(-1);
             using (var conn = new SqliteConnection(ConnectionString))
@@ -225,7 +227,14 @@ namespace WindowsScreenTime.Services
                 conn.Close();
             }
 
-            return processList;
+            foreach (var processName in processList)
+            {
+                ProcessUsage process = new();
+                process.ProcessName = processName;
+                processes.Add(process);
+            }
+            
+            return processes;
         }
    }
 }

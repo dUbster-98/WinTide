@@ -50,6 +50,8 @@ namespace WindowsScreenTime.Views
                     
                     var destRect = new SKRect(iconX, iconY, iconX + iconWidth, iconY + iconHeight);
                     canvas.DrawImage(image, destRect, paintImage);
+
+                    GC.Collect(0, GCCollectionMode.Optimized);
                 }
             }
         }

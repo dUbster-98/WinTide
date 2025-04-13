@@ -147,7 +147,7 @@ namespace WindowsScreenTime.ViewModels
         [ObservableProperty]
         private int? selectedPreset;
         public ObservableCollection<ProcessUsage> ProcessList { get; set; } = [];
-        public List<string> ProcessListInvisible { get; set; } = [];
+        public List<ProcessUsage> EntireProcessList { get; set; } = [];
         private static string ResourcePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources/Icons");
 
         private List<ProcessChartInfo> _data;
@@ -161,6 +161,7 @@ namespace WindowsScreenTime.ViewModels
         private Axis[] xAxes2 = [new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString("MM-dd"))];
         [ObservableProperty]
         private Axis[] yAxes2 = [new Axis()];
+        private SKColor foreGround = new();
 
         [ObservableProperty]
         private ISeries[] _series2;
@@ -221,7 +222,6 @@ namespace WindowsScreenTime.ViewModels
             AlarmMinutes = "00";
             pgOnDate = DateTime.Today;
 
-            WeakReferenceMessenger.Default.Register<TransferViewModelActivation>(this, OnTransferViewModelState);
             WeakReferenceMessenger.Default.Register<TransferIsGifShowChange>(this, OnTransferIsGifShowChange);
 
             ProcessList = new();
@@ -231,7 +231,7 @@ namespace WindowsScreenTime.ViewModels
             _ = MonitorActiveWindow();
         }
 
-        private void OnTransferViewModelState(object recipient, TransferViewModelActivation message)
+        public void OnNavigatedTo()
         {
             if (_xmlSetService.LoadSelectedPreset() == null || _xmlSetService.LoadSelectedPreset() == "")
                 SelectedPreset = 0;
@@ -241,6 +241,12 @@ namespace WindowsScreenTime.ViewModels
                 PresetChange();
             }
         }
+
+        public void OnNavigatedFrom()
+        {
+
+        }
+
         private void OnTransferIsGifShowChange(object recipient, TransferIsGifShowChange message)
         {
             if (message.isVisible == true)
@@ -298,17 +304,23 @@ namespace WindowsScreenTime.ViewModels
 
             var fontPath = Path.Combine(projectRoot, "Resources/Fonts/Recipekorea FONT.ttf");
             var koreanTypeface = SKTypeface.FromFile(fontPath);
+
+            if (_xmlSetService.LoadConfig("DarkTheme") == true)
+                foreGround = new SKColor(245, 245, 245);
+            else
+                foreGround = new SKColor(25, 25, 25);
+
             var rowSeries = new RowSeries<ProcessChartInfo, MyBarGeometry>
             {
                 Values = SortData(),
-                DataLabelsPaint = new SolidColorPaint(new SKColor(245, 245, 245))
+                DataLabelsPaint = new SolidColorPaint(foreGround)
                 {
                     SKTypeface = koreanTypeface // 한글 폰트 적용
                 },
                 DataLabelsPosition = DataLabelsPosition.End,
                 DataLabelsTranslate = new(-1, 0),
                 DataLabelsFormatter = point => $"{point.Model!.EditedName} {point.Coordinate.PrimaryValue}",
-                DataLabelsPadding = new(45,0,10,0),
+                DataLabelsPadding = new(45, 0, 10, 0),
                 DataLabelsMaxWidth = 250,
                 MaxBarWidth = 100,
                 MiniatureShapeSize = 20,
@@ -576,8 +588,12 @@ namespace WindowsScreenTime.ViewModels
             _xmlSetService.SaveSelectedPreset(SelectedPreset.ToString()!);
 
             List<ProcessUsage> processes = new();
+            List<ProcessUsage> EntireProcesses = new();
             ProcessList.Clear();
+            EntireProcessList.Clear();
+
             processes = _xmlSetService.LoadPresetProcess(SelectedPreset.ToString()!);
+            EntireProcesses = _databaseService.QueryEntireProcessData();
 
             if (processes != null)
             {
@@ -611,9 +627,6 @@ namespace WindowsScreenTime.ViewModels
             }
 
             UpdateProcessList();
-
-            ProcessListInvisible.Clear();
-            ProcessListInvisible = _databaseService.QueryInvisibleProcessData();
         }
 
         [RelayCommand]

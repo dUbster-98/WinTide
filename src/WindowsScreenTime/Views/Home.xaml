@@ -13,7 +13,9 @@
              xmlns:gif="http://wpfanimatedgif.codeplex.com"
              mc:Ignorable="d" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             d:DesignHeight="685" d:DesignWidth="860">
+             d:DesignHeight="685" d:DesignWidth="860"
+             Unloaded="UserControl_Unloaded"
+             Loaded="UserControl_Loaded">
 
     <UserControl.InputBindings>
         <KeyBinding Key="Backspace" Command="{Binding BackCommand}" />
@@ -292,12 +294,13 @@
                     Visibility="{Binding IsChart2Visible, Converter={StaticResource BoolToVisibilityConverter}, Mode=TwoWay}">
                 </lvc:CartesianChart>
 
-                <Image gif:ImageBehavior.AnimatedSource="/Resources/pic.gif"
+                <!--<Image x:Name="MyGif" CacheMode="BitmapCache"
+                       gif:ImageBehavior.AnimatedSource="/Resources/pic.gif"
                        HorizontalAlignment="Right"
                        VerticalAlignment="Bottom"
                        Width="300" Height="300"
-                       Margin="0 0 45 45"
-                       Visibility="{Binding IsGifVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=TwoWay}"/>
+                       Margin="0 0 40 40"
+                       Visibility="{Binding IsGifVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=TwoWay}"/>-->
 
                     <!--<ListView ItemsSource="{Binding ProcessList}"
                           AlternationCount="2" Margin="10">

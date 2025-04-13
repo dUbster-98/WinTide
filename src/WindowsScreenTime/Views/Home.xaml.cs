@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WindowsScreenTime.ViewModels;
+using WpfAnimatedGif;
 
 namespace WindowsScreenTime.Views
 {
@@ -25,6 +26,22 @@ namespace WindowsScreenTime.Views
         {
             InitializeComponent();
             DataContext = App.Current.Services.GetService(typeof(HomeViewModel));
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is HomeViewModel vm)
+            {
+                vm.OnNavigatedTo();
+            }
+        }
+
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is HomeViewModel vm)
+            {
+                vm.OnNavigatedFrom();
+            }
         }
     }
 }
