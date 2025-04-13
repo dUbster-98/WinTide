@@ -5,10 +5,10 @@
              xmlns:vm="clr-namespace:WindowsScreenTime.ViewModels"
              xmlns:view="clr-namespace:WindowsScreenTime.Views"
              xmlns:cvts="clr-namespace:WindowsScreenTime.Converters"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             StartupUri="/Views/MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
-            
             <cvts:BytesToMBConverter x:Key="BytesToMBConverter"/>
             <cvts:TimeViewConverter x:Key="TimeViewConverter"/>
             <cvts:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>

@@ -22,7 +22,7 @@ namespace WindowsScreenTime.Services
         int QueryPastUsageTime(string name, string startDate, string endDate);
         int QueryTodayUsageTime(string name, string today);
         List<(int, string)>QueryDayTimeData(string name, string startDate, string endDate);
-        List<string> QueryInvisibleProcessData();
+        List<string> QueryVisibleProcessData();
     }
 
     public class DatabaseService : IDatabaseService
@@ -195,7 +195,7 @@ namespace WindowsScreenTime.Services
             return timeList;
         }
 
-        public List<string> QueryInvisibleProcessData()
+        public List<string> QueryVisibleProcessData()
         {
             //HashSet<string> processSet = new HashSet<string>();
             List<string> processList = new();

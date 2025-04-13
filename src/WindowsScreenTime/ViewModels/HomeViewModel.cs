@@ -152,14 +152,16 @@ namespace WindowsScreenTime.ViewModels
 
         private List<ProcessChartInfo> _data;
         [ObservableProperty]
-        private Axis[] xAxes = [new Axis { SeparatorsPaint = new SolidColorPaint(new SKColor(220, 220, 220)) }];
+        private Axis[] xAxes = [new Axis { SeparatorsPaint = new SolidColorPaint(new SKColor(220, 220, 220)), MinLimit = 0 }];
         [ObservableProperty]
         private Axis[] yAxes = [new Axis { IsVisible = false }];
         [ObservableProperty]
         private ISeries[] _series;
         [ObservableProperty]
         private Axis[] xAxes2 = [new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString("MM-dd"))];
-  
+        [ObservableProperty]
+        private Axis[] yAxes2 = [new Axis()];
+
         [ObservableProperty]
         private ISeries[] _series2;
 
@@ -306,20 +308,30 @@ namespace WindowsScreenTime.ViewModels
                 DataLabelsPosition = DataLabelsPosition.End,
                 DataLabelsTranslate = new(-1, 0),
                 DataLabelsFormatter = point => $"{point.Model!.EditedName} {point.Coordinate.PrimaryValue}",
+                DataLabelsPadding = new(45,0,10,0),
+                DataLabelsMaxWidth = 250,
                 MaxBarWidth = 100,
                 MiniatureShapeSize = 20,
-                Padding = 10,
+                Padding = 5,
             }
             .OnPointMeasured(point =>
             {
                 if (point.Visual is null) return;
+
                 point.Visual.Fill = point.Model!.Paint;
 
                 point.Visual.UpdateData(point.Model!);
+
+                if (point.Visual.Width < 110 && point.Visual.Width != 0)
+                {
+                    point.Label.TranslateTransform = new(1, 0);
+                    //point.Label.X = point.Visual.Width + 112;
+                }
             });
 
             Series = [rowSeries];
         }
+        private bool labelsAdjusted = false;
 
         private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
@@ -500,7 +512,7 @@ namespace WindowsScreenTime.ViewModels
             {
                 pgOnDate = DateTime.Today;
                 EndDate = DateTime.Today;
-                PresetChange();
+                //PresetChange();
             }
         }
 
@@ -721,10 +733,9 @@ namespace WindowsScreenTime.ViewModels
                     DataLabelsSize = 25,
 
                     MaxBarWidth = 100,
-                    MiniatureShapeSize = 20,
                     Rx = 15,
                     Ry = 15,
-                    Padding = 10,
+                    Padding = 5,
                 }
                 .OnPointMeasured(point =>
                 {

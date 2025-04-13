@@ -6,7 +6,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,8 +23,6 @@
 
   <ItemGroup>
     <None Remove="Resources\Fonts\Recipekorea FONT.ttf" />
-    <None Remove="Resources\icon.ico" />
-    <None Remove="Resources\icon.png" />
     <None Remove="Resources\pic.gif" />
     <None Remove="Views\icon.ico" />
   </ItemGroup>
@@ -37,11 +36,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\pic.gif" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -75,6 +73,17 @@
 
   <ItemGroup>
     <Resource Include="Resources\Fonts\Recipekorea FONT.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\icon.ico">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="Resources\icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
