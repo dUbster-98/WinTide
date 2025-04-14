@@ -466,8 +466,17 @@ namespace WindowsScreenTime.ViewModels
                         {
                             target.TodayUsage += 1;
 
-                            //AutoSave
                             _databaseService.UpdateDataToDB(target.ProcessName, target.TodayUsage, DateTime.Today.ToString("yyyy-MM-dd"));
+
+                            return true;
+                        }
+
+                        var target2 = EntireProcessList.FirstOrDefault(p => p.ProcessName == displayName);
+                        if (target2 != null)
+                        {
+                            target2.TodayUsage += 1;
+
+                            _databaseService.UpdateDataToDB(target2.ProcessName, target2.TodayUsage, DateTime.Today.ToString("yyyy-MM-dd"));
                         }
                     }
                 }
@@ -593,7 +602,6 @@ namespace WindowsScreenTime.ViewModels
             EntireProcessList.Clear();
 
             processes = _xmlSetService.LoadPresetProcess(SelectedPreset.ToString()!);
-            EntireProcesses = _databaseService.QueryEntireProcessData();
 
             if (processes != null)
             {
@@ -623,6 +631,12 @@ namespace WindowsScreenTime.ViewModels
             foreach (var proc in ProcessList)
             {
                 proc.PastUsage = _databaseService.QueryPastUsageTime(proc.ProcessName, StartDate.ToString(), yesterDay.ToString());
+                proc.TodayUsage = _databaseService.QueryTodayUsageTime(proc.ProcessName, DateTime.Today.ToString("yyyy-MM-dd"));
+            }
+
+            EntireProcessList = _databaseService.QueryEntireProcessData();
+            foreach (var proc in EntireProcessList)
+            {
                 proc.TodayUsage = _databaseService.QueryTodayUsageTime(proc.ProcessName, DateTime.Today.ToString("yyyy-MM-dd"));
             }
 

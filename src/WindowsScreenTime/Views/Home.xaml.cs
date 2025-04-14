@@ -31,21 +31,21 @@ namespace WindowsScreenTime.Views
             InitializeComponent();
             //DataContext = App.Current.Services.GetService(typeof(HomeViewModel));
 
-            //_image = new BitmapImage();
-            //_image.BeginInit();
-            //_image.UriSource = new Uri($"{Directory.GetCurrentDirectory()}/Resources/pic.gif");
-            //_image.DecodePixelWidth = 300; // 실제 표시되는 크기로 제한
-            //_image.DecodePixelHeight = 300;
-            //_image.CacheOption = BitmapCacheOption.OnLoad; // 메모리에 완전히 로드
-            //_image.EndInit();
-            //_image.Freeze();
+            _image = new BitmapImage();
+            _image.BeginInit();
+            _image.UriSource = new Uri($"{Directory.GetCurrentDirectory()}/Resources/pic.gif");
+            _image.DecodePixelWidth = 300; // 실제 표시되는 크기로 제한
+            _image.DecodePixelHeight = 300;
+            _image.CacheOption = BitmapCacheOption.OnLoad; // 메모리에 완전히 로드
+            _image.EndInit();
+            _image.Freeze();
 
-            //_gifImageRef = new WeakReference<BitmapImage>(_image);
+            _gifImageRef = new WeakReference<BitmapImage>(_image);
 
-            //if (_gifImageRef != null && _gifImageRef.TryGetTarget(out var image))
-            //{
-            //    ImageBehavior.SetAnimatedSource(MyGif, image);
-            //}
+            if (_gifImageRef != null && _gifImageRef.TryGetTarget(out var image))
+            {
+                ImageBehavior.SetAnimatedSource(MyGif, image);
+            }
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)

@@ -57,7 +57,6 @@ namespace WindowsScreenTime.ViewModels
             }
         }
 
-        private List<string?> ViewListStr;
         private readonly double totalRam;
         private Task _processSerchTask;
 
@@ -108,7 +107,6 @@ namespace WindowsScreenTime.ViewModels
             ProcessList = new();
             ViewList = new();
             iconCache = new();
-            ViewListStr = new();
 
             if (!Directory.Exists(ResourcePath))
                 Directory.CreateDirectory(ResourcePath);
@@ -312,10 +310,6 @@ namespace WindowsScreenTime.ViewModels
             if (SelectedProcess == null)
                 return;
 
-            if (ViewListStr.Contains(SelectedProcess.ProcessName))
-                return;
-
-            ViewListStr.Add(SelectedProcess.ProcessName);
             ViewList.Add(SelectedProcess);
         }
 
@@ -325,7 +319,6 @@ namespace WindowsScreenTime.ViewModels
             if (ItemToRemove == null)
                 return;
 
-            ViewListStr.Remove(ItemToRemove.ProcessName);
             ViewList.Remove(ItemToRemove);
         }
 
