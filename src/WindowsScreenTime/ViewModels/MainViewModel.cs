@@ -31,9 +31,12 @@ namespace WindowsScreenTime.ViewModels
     public partial class MainViewModel : ObservableObject
     {
         private readonly IServiceProvider _services;
-
         private readonly IXmlSetService _xmlSetService;
+
         public event EventHandler<WindowActionEventArgs>? RequestWindowAction;
+
+        [ObservableProperty]
+        private bool isGifVisible = false;
 
         private readonly Dictionary<Type, ObservableObject> _vmCache = new();
 
@@ -105,11 +108,17 @@ namespace WindowsScreenTime.ViewModels
             _services = services;
             _xmlSetService = xmlSetService;
 
+            WeakReferenceMessenger.Default.Register<TransferIsGifShowChange>(this, OnTransferIsGifShowChange);
+
+            if (_xmlSetService.LoadConfig("GifShow") == true)
+                IsGifVisible = true;
+
             Initialize();
         }
 
         public MainViewModel()
         {
+
         }
 
         private void Initialize()
@@ -128,6 +137,13 @@ namespace WindowsScreenTime.ViewModels
         private void GoMenu()
         {
             
+        }
+        private void OnTransferIsGifShowChange(object recipient, TransferIsGifShowChange message)
+        {
+            if (message.isVisible == true)
+                IsGifVisible = true;
+            else
+                IsGifVisible = false;
         }
 
         private void GoHome()
@@ -182,6 +198,7 @@ namespace WindowsScreenTime.ViewModels
                 }
             }
         }
+
         [RelayCommand]
         public void WindowClosing()
         {

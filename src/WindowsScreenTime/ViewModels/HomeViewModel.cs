@@ -170,10 +170,6 @@ namespace WindowsScreenTime.ViewModels
         private bool isChart1Visible = true;
         [ObservableProperty]
         private bool isChart2Visible = false;
-        [ObservableProperty]
-        private bool isGifVisible = false;
-        [ObservableProperty]
-        private BitmapImage gifSource = new();
 
         private readonly HashSet<LiveChartsCore.Kernel.ChartPoint> _activePoints = [];
         public FindingStrategy Strategy { get; } = FindingStrategy.ExactMatch;
@@ -212,16 +208,12 @@ namespace WindowsScreenTime.ViewModels
 
             if (_xmlSetService.LoadConfig("DarkTheme") == true)           
                 ThemeManager.ChangeTheme(ThemeType.Dark);
-            if (_xmlSetService.LoadConfig("GifShow") == true)
-                IsGifVisible = true;
 
             startDate = DateTime.Today.AddDays(-7);
             endDate = DateTime.Today;
             AlarmHours = "1";
             AlarmMinutes = "00";
             pgOnDate = DateTime.Today;
-
-            WeakReferenceMessenger.Default.Register<TransferIsGifShowChange>(this, OnTransferIsGifShowChange);
 
             ProcessList = new();
 
@@ -239,19 +231,15 @@ namespace WindowsScreenTime.ViewModels
                 SelectedPreset = Convert.ToInt32(_xmlSetService.LoadSelectedPreset());
                 PresetChange();
             }
+
+            var message = new TransferIsGifShowChange { isVisible = true };
+            WeakReferenceMessenger.Default.Send(message);
         }
 
         public void OnNavigatedFrom()
         {
-           
-        }
-
-        private void OnTransferIsGifShowChange(object recipient, TransferIsGifShowChange message)
-        {
-            if (message.isVisible == true)
-                IsGifVisible = true;
-            else
-                IsGifVisible = false;
+            var message = new TransferIsGifShowChange { isVisible = false };
+            WeakReferenceMessenger.Default.Send(message);
         }
 
         private void UpdateProcessList()
@@ -777,7 +765,8 @@ namespace WindowsScreenTime.ViewModels
                 PresetEnable = false;
                 IsChart1Visible = false;
                 IsChart2Visible = true;
-                IsGifVisible = false;
+                var message = new TransferIsGifShowChange { isVisible = false };
+                WeakReferenceMessenger.Default.Send(message);
             }
         }
 
@@ -788,7 +777,8 @@ namespace WindowsScreenTime.ViewModels
             PresetEnable = true;
             IsChart1Visible = true;
             IsChart2Visible = false;
-            IsGifVisible = true;
+            var message = new TransferIsGifShowChange { isVisible = true };
+            WeakReferenceMessenger.Default.Send(message);
         }
     }
 }

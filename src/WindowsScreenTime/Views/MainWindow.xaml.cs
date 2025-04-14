@@ -20,6 +20,7 @@ using System.Windows.Threading;
 using System.Threading;
 using WindowsScreenTime.ViewModels;
 using System.IO;
+using WpfAnimatedGif;
 
 namespace WindowsScreenTime
 {
@@ -28,6 +29,9 @@ namespace WindowsScreenTime
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static BitmapImage _image;
+        private WeakReference<BitmapImage> _gifImageRef;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -49,6 +53,22 @@ namespace WindowsScreenTime
                     this.Close();
                 }
             };
+
+            _image = new BitmapImage();
+            _image.BeginInit();
+            _image.UriSource = new Uri($"{Directory.GetCurrentDirectory()}/Resources/pic.gif");
+            _image.DecodePixelWidth = 300; // 실제 표시되는 크기로 제한
+            _image.DecodePixelHeight = 300;
+            _image.CacheOption = BitmapCacheOption.None; // 메모리에 완전히 로드
+            _image.EndInit();
+            _image.Freeze();
+
+            _gifImageRef = new WeakReference<BitmapImage>(_image);
+
+            if (_gifImageRef != null && _gifImageRef.TryGetTarget(out var image))
+            {
+                ImageBehavior.SetAnimatedSource(MyGif, image);
+            }
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)

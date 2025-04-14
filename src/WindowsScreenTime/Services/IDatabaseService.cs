@@ -36,6 +36,12 @@ namespace WindowsScreenTime.Services
 
         public void InitializeDataBase()         // DB 연결만 확인하는 부분
         {
+            string directoryPath = Path.GetDirectoryName(_filePath);
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
 
             using (var conn = new SqliteConnection(ConnectionString))
             {

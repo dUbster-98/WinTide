@@ -166,7 +166,7 @@ namespace WindowsScreenTime.ViewModels
             }
             else
             {
-                _xmlSetService.SaveConfig("DarkTheme", false);
+                _xmlSetService.SaveConfig("GifShow", false);
                 var message = new TransferIsGifShowChange { isVisible = false };
                 WeakReferenceMessenger.Default.Send(message);
             }
@@ -182,8 +182,8 @@ namespace WindowsScreenTime.ViewModels
             }
             else
             {
-                ThemeManager.ChangeTheme(ThemeType.Light);
                 _xmlSetService.SaveConfig("DarkTheme", false);
+                ThemeManager.ChangeTheme(ThemeType.Light);
             }
         }
     }
