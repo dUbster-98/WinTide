@@ -28,7 +28,7 @@ namespace WindowsScreenTime.Views
         public Settings()
         {
             InitializeComponent();
-            DataContext = App.Current.Services.GetService(typeof(SettingsViewModel));
+            //DataContext = App.Current.Services.GetService(typeof(SettingsViewModel));
         }
         private void SetForegroundColorDay(DependencyObject parent)
         {

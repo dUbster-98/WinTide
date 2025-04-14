@@ -29,7 +29,6 @@ namespace WindowsScreenTime.ViewModels
         private readonly IProcessContainService _processContainService;
         private readonly IDatabaseService _databaseService;
 
-
         public ObservableCollection<ProcessUsage> ProcessList { get; set; }
         public ObservableCollection<ProcessUsage> ViewList { get; set; }
 

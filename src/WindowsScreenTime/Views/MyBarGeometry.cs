@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using LiveChartsCore.Drawing;
 using LiveChartsCore.Measure;
@@ -15,6 +16,7 @@ namespace WindowsScreenTime.Views
     class MyBarGeometry : BoundedDrawnGeometry, IDrawnElement<SkiaSharpDrawingContext>
     {
         public string? IconPath { get; set; }
+        private Dictionary<string, SKBitmap> iconCache = [];
 
         public void UpdateData(ProcessChartInfo data)
         {
@@ -34,7 +36,16 @@ namespace WindowsScreenTime.Views
 
             if (!string.IsNullOrEmpty(IconPath))
             {
-                using var bitmap = SKBitmap.Decode(IconPath); // PNG 불러오기
+                SKBitmap bitmap;
+                if (!iconCache.TryGetValue(IconPath, out bitmap))
+                {
+                    bitmap = SKBitmap.Decode(IconPath);
+                    if (bitmap != null)
+                    {
+                        iconCache[IconPath] = bitmap;
+                    }
+                }
+
                 if (bitmap != null)
                 {
                     using var image = SKImage.FromBitmap(bitmap);
@@ -50,10 +61,17 @@ namespace WindowsScreenTime.Views
                     
                     var destRect = new SKRect(iconX, iconY, iconX + iconWidth, iconY + iconHeight);
                     canvas.DrawImage(image, destRect, paintImage);
-
-                    GC.Collect(0, GCCollectionMode.Optimized);
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            foreach (var bitmap in iconCache.Values)
+            {
+                bitmap?.Dispose();
+            }
+            iconCache.Clear();
         }
     }
 }

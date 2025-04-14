@@ -32,7 +32,7 @@ namespace WindowsScreenTime
         {
             InitializeComponent();
             var viewModel = (MainViewModel)App.Current.Services.GetService(typeof(MainViewModel));
-            DataContext = viewModel;
+            //DataContext = viewModel;
 
             MaxHeight = SystemParameters.WorkArea.Height;
             PART_homeButton.IsChecked = true;

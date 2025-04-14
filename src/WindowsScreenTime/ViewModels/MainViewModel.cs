@@ -30,8 +30,12 @@ namespace WindowsScreenTime.ViewModels
 
     public partial class MainViewModel : ObservableObject
     {
+        private readonly IServiceProvider _services;
+
         private readonly IXmlSetService _xmlSetService;
         public event EventHandler<WindowActionEventArgs>? RequestWindowAction;
+
+        private readonly Dictionary<Type, ObservableObject> _vmCache = new();
 
         private object? _currentView;
         public object CurrentView
@@ -80,7 +84,7 @@ namespace WindowsScreenTime.ViewModels
             }
         }
 
-        public MainViewModel(IXmlSetService xmlSetService)
+        public MainViewModel(IServiceProvider services, IXmlSetService xmlSetService)
         {
             //string path = "C:\\Test\\startup_log.txt";
 
@@ -98,6 +102,7 @@ namespace WindowsScreenTime.ViewModels
             //{
             //    File.AppendAllText(path, $"{DateTime.Now}: 오류 발생 - {ex}\n");
             //}
+            _services = services;
             _xmlSetService = xmlSetService;
 
             Initialize();
@@ -127,19 +132,22 @@ namespace WindowsScreenTime.ViewModels
 
         private void GoHome()
         {
-            CurrentView = App.Current.Services.GetService(typeof(HomeViewModel));
+            //CurrentView = App.Current.Services.GetService(typeof(HomeViewModel));
+            NavigateTo<HomeViewModel>();
             var message = new TransferViewModelActivation { isActivated = false };
             WeakReferenceMessenger.Default.Send(message);
         }
         private void GoEdit()
         {
-            CurrentView = App.Current.Services.GetService(typeof(EditViewModel));
+            //CurrentView = App.Current.Services.GetService(typeof(EditViewModel));
+            NavigateTo<EditViewModel>();
             var message = new TransferViewModelActivation { isActivated = true };
             WeakReferenceMessenger.Default.Send(message);
         }
         private void GoSettings()
         {
-            CurrentView = App.Current.Services.GetService(typeof(SettingsViewModel));
+            //CurrentView = App.Current.Services.GetService(typeof(SettingsViewModel));
+            NavigateTo<SettingsViewModel>();
             var message = new TransferViewModelActivation { isActivated = false };
             WeakReferenceMessenger.Default.Send(message);
         }
@@ -188,6 +196,16 @@ namespace WindowsScreenTime.ViewModels
             }
         }
 
+        public void NavigateTo<T>() where T : ObservableObject
+        {
+            if (!_vmCache.TryGetValue(typeof(T), out var vm))
+            {
+                vm = (ObservableObject)_services.GetRequiredService(typeof(T));
+                _vmCache[typeof(T)] = vm;
+            }
+
+            CurrentView = vm;
+        }
     }
 
 }

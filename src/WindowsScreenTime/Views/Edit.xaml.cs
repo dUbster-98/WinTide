@@ -24,7 +24,7 @@ namespace WindowsScreenTime.Views
         public Edit()
         {
             InitializeComponent();
-            DataContext = App.Current.Services.GetService(typeof(EditViewModel));
+            //DataContext = App.Current.Services.GetService(typeof(EditViewModel));
         }
     }
 }

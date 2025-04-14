@@ -172,6 +172,8 @@ namespace WindowsScreenTime.ViewModels
         private bool isChart2Visible = false;
         [ObservableProperty]
         private bool isGifVisible = false;
+        [ObservableProperty]
+        private BitmapImage gifSource = new();
 
         private readonly HashSet<LiveChartsCore.Kernel.ChartPoint> _activePoints = [];
         public FindingStrategy Strategy { get; } = FindingStrategy.ExactMatch;
@@ -181,9 +183,6 @@ namespace WindowsScreenTime.ViewModels
         private int counter = 60000;
         private CancellationTokenSource cts = new();
 
-        [ObservableProperty]
-        private System.Windows.Controls.Image gifSource = new();
-      
         private ProcessChartInfo[] SortData() => [.. _data.OrderBy(x => x.Value)];
         // ..(spread 연산자)는 컬렉션의 모든 요소를 새 배열로 복사하는 역할
 
@@ -244,7 +243,7 @@ namespace WindowsScreenTime.ViewModels
 
         public void OnNavigatedFrom()
         {
-
+           
         }
 
         private void OnTransferIsGifShowChange(object recipient, TransferIsGifShowChange message)
@@ -302,7 +301,8 @@ namespace WindowsScreenTime.ViewModels
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var projectRoot = Directory.GetParent(baseDirectory)?.Parent?.Parent?.Parent?.FullName;
 
-            var fontPath = Path.Combine(projectRoot, "Resources/Fonts/Recipekorea FONT.ttf");
+            //var fontPath = Path.Combine(projectRoot, "Resources/Fonts/Recipekorea FONT.ttf");
+            var fontPath = Path.Combine(projectRoot, $"{Directory.GetCurrentDirectory()}/Resources/Fonts/Recipekorea FONT.ttf");
             var koreanTypeface = SKTypeface.FromFile(fontPath);
 
             if (_xmlSetService.LoadConfig("DarkTheme") == true)

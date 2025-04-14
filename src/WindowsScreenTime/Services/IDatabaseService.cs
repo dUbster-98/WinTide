@@ -36,6 +36,7 @@ namespace WindowsScreenTime.Services
 
         public void InitializeDataBase()         // DB 연결만 확인하는 부분
         {
+
             using (var conn = new SqliteConnection(ConnectionString))
             {
                 conn.Open();    // db파일 생성
@@ -44,6 +45,7 @@ namespace WindowsScreenTime.Services
                 {
                     cmd.ExecuteNonQuery();
                 }
+
                 conn.Close();
             }
         }

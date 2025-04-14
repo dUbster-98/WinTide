@@ -21,40 +21,36 @@ namespace WindowsScreenTime
     {
         public App()
         {
-            Services = ConfigureServices();
-            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-            // 시작 프로그램으로 실행시, 작업 디렉토리가 앱 실행경로가 아니기 때문에 발생하는 오류 방지
             InitializeComponent();
         }
-        //protected override void OnStartup(StartupEventArgs e)
-        //{
-        //    base.OnStartup(e);
-
-        //    Dispatcher.BeginInvoke(new Action(() =>
-        //    {
-        //        var mainWindow = new MainWindow();
-        //        mainWindow.Show();
-        //    }));
-        //}
 
         public new static App Current => (App)Application.Current;
-
         public IServiceProvider Services { get; private set; }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            Services = ConfigureServices();
+
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            // 시작 프로그램으로 실행시, 작업 디렉토리가 앱 실행경로가 아니기 때문에 발생하는 오류 방지
+        }
 
         private static IServiceProvider ConfigureServices()
         {
             var services = new ServiceCollection();
 
             services.AddSingleton<MainViewModel>();
-            services.AddSingleton<HomeViewModel>();
-            services.AddSingleton<EditViewModel>();
-            services.AddSingleton<SettingsViewModel>();
+            services.AddTransient<HomeViewModel>();
+            services.AddTransient<EditViewModel>();
+            services.AddTransient<SettingsViewModel>();
             services.AddTransient<AlarmPopupViewModel>();
 
-            services.AddTransient<IIniSetService, IniSetService>();
-            services.AddTransient<IXmlSetService, XmlSetService>();
-            services.AddTransient<IProcessContainService, ProcessContainService>();
-            services.AddTransient<IDatabaseService, DatabaseService>();
+            services.AddSingleton<IIniSetService, IniSetService>();
+            services.AddSingleton<IXmlSetService, XmlSetService>();
+            services.AddSingleton<IProcessContainService, ProcessContainService>();
+            services.AddSingleton<IDatabaseService, DatabaseService>();
 
             return services.BuildServiceProvider();
         }
