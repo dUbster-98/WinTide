@@ -10,4 +10,9 @@ namespace WindowsScreenTime.Models
     {
         public string? Message { get; set; }
     }
+
+    public class TransferDeleteExecute
+    {
+        public bool? IsExecute { get; set; }
+    }
 }

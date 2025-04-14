@@ -16,6 +16,7 @@ using System.IO;
 using WindowsScreenTime.Services;
 using CommunityToolkit.Mvvm.Messaging;
 using WindowsScreenTime.Models;
+using WindowsScreenTime.Views;
 
 
 namespace WindowsScreenTime.ViewModels
@@ -45,6 +46,8 @@ namespace WindowsScreenTime.ViewModels
         {
             _xmlSetService = xmlSetService;
 
+            WeakReferenceMessenger.Default.Register<TransferDeleteExecute>(this, OnTransferDeleteExecute);
+
             // 시작프로그램 등록 여부 확인
             using (var regKey = Registry.CurrentUser.OpenSubKey(_startupRegPath, false))
             {
@@ -61,12 +64,6 @@ namespace WindowsScreenTime.ViewModels
             if (_xmlSetService.LoadConfig("Background") == true)
                 IsBackground = true;
             else IsBackground = false;
-
-            if (_xmlSetService.LoadConfig("GifShow") == true)
-            {
-                IsGifShow = true;
-            }
-            else IsGifShow = false;
 
             if (_xmlSetService.LoadConfig("DarkTheme") == true)
             {
@@ -161,14 +158,10 @@ namespace WindowsScreenTime.ViewModels
             if (IsGifShow)
             {
                 _xmlSetService.SaveConfig("GifShow", true);
-                var message = new TransferIsGifShowChange { isVisible = true };
-                WeakReferenceMessenger.Default.Send(message);
             }
             else
             {
                 _xmlSetService.SaveConfig("GifShow", false);
-                var message = new TransferIsGifShowChange { isVisible = false };
-                WeakReferenceMessenger.Default.Send(message);
             }
         }
 
@@ -185,6 +178,24 @@ namespace WindowsScreenTime.ViewModels
                 _xmlSetService.SaveConfig("DarkTheme", false);
                 ThemeManager.ChangeTheme(ThemeType.Light);
             }
+        }
+
+        [RelayCommand]
+        public void DataDelete()
+        {
+            AlarmYesOrNoPopup alarmPopup = new();
+
+            string AlarmMessage = "데이터가 모두 삭제됩니다.\r\n정말로 진행하시겠습니까?";
+
+            var message = new TransferAlarmMessage { Message = AlarmMessage };
+            WeakReferenceMessenger.Default.Send(message);
+
+            alarmPopup.Show();
+        }
+
+        public void OnTransferDeleteExecute(object recipient, TransferDeleteExecute message)
+        {
+            IsGifShow = false;
         }
     }
 }

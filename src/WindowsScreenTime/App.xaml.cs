@@ -46,6 +46,7 @@ namespace WindowsScreenTime
             services.AddTransient<EditViewModel>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<AlarmPopupViewModel>();
+            services.AddTransient<AlarmYesOrNoPopupViewModel>();
 
             services.AddSingleton<IIniSetService, IniSetService>();
             services.AddSingleton<IXmlSetService, XmlSetService>();

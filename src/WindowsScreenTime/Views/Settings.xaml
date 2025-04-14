@@ -102,7 +102,8 @@
             <Label/>
             <Button
                 Width="100"
-                materialDesign:ButtonAssist.CornerRadius="10">
+                materialDesign:ButtonAssist.CornerRadius="10"
+                Command="{Binding DataDeleteCommand}">
                 <TextBlock Text="EXECUTE" 
                            Style="{StaticResource Text_Style}"
                            FontSize="12"

@@ -110,8 +110,12 @@ namespace WindowsScreenTime.ViewModels
 
             WeakReferenceMessenger.Default.Register<TransferIsGifShowChange>(this, OnTransferIsGifShowChange);
 
+
             if (_xmlSetService.LoadConfig("GifShow") == true)
+            {
                 IsGifVisible = true;
+            }
+            else IsGifVisible = false;
 
             Initialize();
         }
@@ -141,7 +145,11 @@ namespace WindowsScreenTime.ViewModels
         private void OnTransferIsGifShowChange(object recipient, TransferIsGifShowChange message)
         {
             if (message.isVisible == true)
-                IsGifVisible = true;
+                if (_xmlSetService.LoadConfig("GifShow") == true)
+                {
+                    IsGifVisible = true;
+                }
+                else IsGifVisible = false;
             else
                 IsGifVisible = false;
         }
