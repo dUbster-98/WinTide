@@ -160,7 +160,7 @@ namespace WindowsScreenTime.ViewModels
 
         private List<ProcessChartInfo> _data;
         [ObservableProperty]
-        private Axis[] xAxes = [new Axis { SeparatorsPaint = new SolidColorPaint(new SKColor(220, 220, 220)), MinLimit = 0 }];
+        private Axis[] xAxes = [new Axis { SeparatorsPaint = new SolidColorPaint(new SKColor(245, 245, 245)), MinLimit = 0 }];
         [ObservableProperty]
         private Axis[] yAxes = [new Axis { IsVisible = false }];
         [ObservableProperty]
@@ -340,7 +340,6 @@ namespace WindowsScreenTime.ViewModels
 
             Series = [rowSeries];
         }
-        private bool labelsAdjusted = false;
 
         private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
