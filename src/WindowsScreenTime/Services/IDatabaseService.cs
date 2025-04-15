@@ -24,6 +24,7 @@ namespace WindowsScreenTime.Services
         int QueryTodayUsageTime(string name, string today);
         List<(int, string)>QueryDayTimeData(string name, string startDate, string endDate);
         List<ProcessUsage> QueryEntireProcessData();
+        void DeleteData();
     }
 
     public class DatabaseService : IDatabaseService
@@ -244,5 +245,19 @@ namespace WindowsScreenTime.Services
             
             return processes;
         }
-   }
+
+        public void DeleteData()
+        {
+            using (var conn = new SqliteConnection(ConnectionString))
+            {
+                conn.Open();
+                string deleteQuery = "DELETE FROM AppTimer";
+                using (var deleteCmd = new SqliteCommand(deleteQuery, conn))
+                {
+                    deleteCmd.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+        }
+    }
 }

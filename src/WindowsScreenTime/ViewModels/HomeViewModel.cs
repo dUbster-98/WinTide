@@ -61,6 +61,10 @@ namespace WindowsScreenTime.ViewModels
             {
                 PresetChange();
             }
+            if (IsChart2Visible == true)
+            {
+                DayChartChange();
+            }
         }
         [ObservableProperty]
         private DateTime? endDate;
@@ -69,6 +73,10 @@ namespace WindowsScreenTime.ViewModels
             if (endDate != null && endDate != null)
             {
                 PresetChange();
+            }
+            if (IsChart2Visible == true)
+            {
+                DayChartChange();
             }
         }
         [ObservableProperty]
@@ -170,6 +178,7 @@ namespace WindowsScreenTime.ViewModels
         private bool isChart1Visible = true;
         [ObservableProperty]
         private bool isChart2Visible = false;
+        private ProcessChartInfo ShowingChart { get; set; }
 
         private readonly HashSet<LiveChartsCore.Kernel.ChartPoint> _activePoints = [];
         public FindingStrategy Strategy { get; } = FindingStrategy.ExactMatch;
@@ -718,6 +727,7 @@ namespace WindowsScreenTime.ViewModels
 
                 if (point.Context.DataSource is ProcessChartInfo data)
                 {
+                    ShowingChart = data;
                     chartColor = data.Paint;
                     dayTimeData = _databaseService.QueryDayTimeData(data?.Name, StartDate.ToString(), EndDate.ToString());
                 }
@@ -768,6 +778,48 @@ namespace WindowsScreenTime.ViewModels
                 var message = new TransferIsGifShowChange { isVisible = false };
                 WeakReferenceMessenger.Default.Send(message);
             }
+        }
+
+        private void DayChartChange()
+        {
+            List<(int, string)> dayTimeData = new();
+            List<DateTimePoint> dayTimePoint = new();
+            SolidColorPaint chartColor;
+            chartColor = ShowingChart.Paint;
+            dayTimeData = _databaseService.QueryDayTimeData(ShowingChart?.Name, StartDate.ToString(), EndDate.ToString());
+
+            foreach (var point in dayTimeData)
+            {
+                if (DateTime.TryParse(point.Item2, out DateTime date))
+                {
+                    DateTimePoint data = new() { DateTime = date, Value = point.Item1 / 12 };
+                    dayTimePoint.Add(data);
+                }
+            }
+            var series = new ColumnSeries<DateTimePoint>
+            {
+                Values = dayTimePoint,
+                DataLabelsPaint = new SolidColorPaint(new SKColor(245, 245, 245))
+                {
+                    SKTypeface = SKTypeface.FromFamilyName("Arial", new SKFontStyle(SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright)) // Correct usage
+                },
+                DataLabelsPosition = DataLabelsPosition.Middle,
+                DataLabelsTranslate = new(0, 0),
+                DataLabelsFormatter = point => $"{point.Coordinate.PrimaryValue}",
+                DataLabelsSize = 25,
+
+                MaxBarWidth = 100,
+                Rx = 15,
+                Ry = 15,
+                Padding = 5,
+            }
+            .OnPointMeasured(point =>
+            {
+                if (point.Visual is null) return;
+                point.Visual.Fill = chartColor;
+            });
+
+            Series2 = [series];
         }
 
         [RelayCommand]

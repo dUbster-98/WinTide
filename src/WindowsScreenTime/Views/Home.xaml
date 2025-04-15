@@ -220,6 +220,7 @@
                             Grid.Column="1"
                             FontWeight="Bold"
                             VerticalAlignment="Bottom"
+                            Foreground="Black"
                             Text="  시간  "
                             Margin="0 0 0 10"/>
                         <TextBlock
@@ -227,6 +228,7 @@
                             Grid.Column="1"
                             FontWeight="Bold"
                             VerticalAlignment="Bottom"
+                            Foreground="Black"
                             Text="  분  "
                             Margin="0 0 0 10"/>
                         <ComboBox
@@ -247,6 +249,7 @@
                             <TextBlock Text="{Binding RemainingTime}"
                                        Width="auto"
                                        FontSize="15"
+                                       Foreground="Black"
                                        Margin="5 16 0 8"/>
                         </StackPanel>
                         <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal">
@@ -256,6 +259,7 @@
                                        Margin="8 11 8 8"/>
                             <CheckBox Style="{StaticResource MaterialDesignCheckBox}"
                                       Margin="0 0 0 0"
+                                      Foreground="Black"
                                       IsChecked="{Binding IsSystemOff}"/>
                         </StackPanel>
                         <StackPanel

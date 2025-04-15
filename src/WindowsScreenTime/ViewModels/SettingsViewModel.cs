@@ -24,6 +24,7 @@ namespace WindowsScreenTime.ViewModels
     public partial class SettingsViewModel :ObservableObject
     {
         private readonly IXmlSetService _xmlSetService;
+        private readonly IDatabaseService _databaseService;
 
         [ObservableProperty]
         private bool isAutoStart;
@@ -42,9 +43,10 @@ namespace WindowsScreenTime.ViewModels
         private const string AppName = "WindowsScreenTime";
         string exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
 
-        public SettingsViewModel(IXmlSetService xmlSetService)
+        public SettingsViewModel(IXmlSetService xmlSetService, IDatabaseService databaseService)
         {
             _xmlSetService = xmlSetService;
+            _databaseService = databaseService;
 
             WeakReferenceMessenger.Default.Register<TransferDeleteExecute>(this, OnTransferDeleteExecute);
 
@@ -71,6 +73,11 @@ namespace WindowsScreenTime.ViewModels
                 ThemeManager.ChangeTheme(ThemeType.Dark);
             }
             else IsNightMode = false;
+
+            if (_xmlSetService.LoadConfig("GifShow") == true)
+                IsGifShow = true;
+            else IsGifShow = false;
+
         }
 
         // 부팅시 시작 프로그램 등록
@@ -195,7 +202,8 @@ namespace WindowsScreenTime.ViewModels
 
         public void OnTransferDeleteExecute(object recipient, TransferDeleteExecute message)
         {
-            IsGifShow = false;
+            _xmlSetService.DeleteConfig();
+            _databaseService.DeleteData();
         }
     }
 }

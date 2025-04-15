@@ -18,6 +18,7 @@ namespace WindowsScreenTime.Services
         List<ProcessUsage> LoadPresetProcess(string presetName);
         void SaveConfig(string option, bool value);
         bool LoadConfig(string option);
+        void DeleteConfig();
     }
     public class XmlSetService : IXmlSetService
     {
@@ -181,6 +182,18 @@ namespace WindowsScreenTime.Services
             else
             {
                 return false;
+            }
+        }
+
+        public void DeleteConfig()
+        {
+            if (System.IO.File.Exists(_filePath))
+            {
+                System.IO.File.Delete(_filePath);
+            }
+            if (System.IO.File.Exists(_filePath2))
+            {
+                System.IO.File.Delete(_filePath2);
             }
         }
     }
