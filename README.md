@@ -1,6 +1,6 @@
 # WinTide
  Windows Screen Time App<br/>
- /WinTide/WindowsScreenTime.exe로 실행
+ /WinTide/WindowsScreenTime.exe로 실행<br/>
  프로그램의 사용 시간을 측정하는 프로그램입니다.<br/>
  모니터에 창이 표시되고 일정 부분이 드러나 있어야 사용하는 것으로 간주합니다.<br/>
  측정된 사용 시간은 기간 별로 열람할 수 있습니다.
